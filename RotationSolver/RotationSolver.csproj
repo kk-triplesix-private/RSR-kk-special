@@ -57,8 +57,8 @@
 		<PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2" />
 	</ItemGroup>
 
-	<!-- Auto-copy to devPlugins after build -->
-	<Target Name="CopyToDevPlugins" AfterTargets="Build">
+	<!-- Auto-copy to devPlugins after build (skip in CI) -->
+	<Target Name="CopyToDevPlugins" AfterTargets="Build" Condition="'$(CI)' != 'true'">
 		<PropertyGroup>
 			<DevPluginDir>$(AppData)\XIVLauncher\devPlugins\RotationSolverReborn-Dev\</DevPluginDir>
 		</PropertyGroup>

@@ -4,6 +4,9 @@ on:
     tags:
       - '*.*.*.*'
 
+env:
+  CI: true
+
 jobs:
   Build:
     permissions:
@@ -38,13 +41,12 @@ jobs:
           dotnet build --no-restore -c Release RotationSolver/RotationSolver.csproj `
             -p:AssemblyVersion=${{ env.tag }} `
             -p:FileVersion=${{ env.tag }} `
-            -p:InformationalVersion=${{ env.tag }} `
-            --output .\build
+            -p:InformationalVersion=${{ env.tag }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./build/RotationSolver/latest.zip
+          files: ./bin/Release/RotationSolver/latest.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Plugin Repo Update
