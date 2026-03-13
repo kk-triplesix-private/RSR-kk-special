@@ -78,6 +78,9 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "M12S: Seconds before mechanic resolves to pause rotation")]
     public float DirectionPauseLeadTime { get; set; } = 1.5f;
 
+    [RotationConfig(CombatType.PvE, Name = "M11S: Always summon Ifrit last during Trophy Weapon phases")]
+    public bool M11SIfritLast { get; set; } = true;
+
     #endregion
 
     #region Helper Properties
@@ -167,6 +170,26 @@ public sealed class SMN_Dynamic : SummonerRotation
         return false;
     }
 
+    /// <summary>
+    /// M11S Trophy Weapon Phase Erkennung.
+    /// Trophy Weapon Adds DataId: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2).
+    /// Wenn diese Adds existieren, sind wir in einer Trophy-Weapon-Phase (regulär oder Ultimate).
+    /// </summary>
+    private static bool IsInM11STrophyPhase()
+    {
+        if (DataCenter.AllHostileTargets == null) return false;
+        for (int i = 0, n = DataCenter.AllHostileTargets.Count; i < n; i++)
+        {
+            var h = DataCenter.AllHostileTargets[i];
+            if (h == null) continue;
+            var dataId = h.BaseId;
+            // Trophy Weapon Adds: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2)
+            if (dataId is 0x4AF0 or 0x4AF1 or 0x4AF2)
+                return true;
+        }
+        return false;
+    }
+
     #endregion
 
     #region Countdown Logic
@@ -177,11 +200,18 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             return act;
         }
-        if (HasSummon && remainTime <= RuinPvE.Info.CastTime + CountDownAhead
-            && RuinPvE.CanUse(out act))
+
+        // Precast: Ruin III so timen, dass der Cast genau beim Pull-Ende fertig ist
+        if (HasSummon)
         {
-            return act;
+            float castTime = RuinIiiPvE.EnoughLevel ? RuinIiiPvE.Info.CastTime : RuinPvE.Info.CastTime;
+            if (remainTime <= castTime + CountDownAhead)
+            {
+                if (RuinIiiPvE.EnoughLevel && RuinIiiPvE.CanUse(out act)) return act;
+                if (RuinPvE.CanUse(out act)) return act;
+            }
         }
+
         return base.CountDownAction(remainTime);
     }
 
@@ -574,23 +604,44 @@ public sealed class SMN_Dynamic : SummonerRotation
         }
 
         // Big summon phase (Bahamut/Phoenix/Solar Bahamut)
-        if (SummonBahamutPvE.CanUse(out act))
+        // Opener: 2x Ruin III vor dem allerersten Big Summon (nur ganz am Kampfanfang)
+        bool isOpener = CombatElapsedLessGCD(2) && !NoPrimalReady;
+        if (isOpener)
         {
-            return true;
+            // Noch im Opener, erst Ruin III füllen bevor Big Summon kommt
+            // (Ruin III wird weiter unten in der GCD-Chain gecasted)
         }
-        if (!SummonBahamutPvE.Info.EnoughLevelAndQuest() && DreadwyrmTrancePvE.CanUse(out act))
+        else
         {
-            return true;
-        }
+            // Ruin IV vor Big Summon aufbrauchen wenn Big Summon bald bereit
+            if (HasFurtherRuin && NoPrimalReady && SummonTimeEndAfterGCD() && AttunmentTimeEndAfterGCD())
+            {
+                float bigSummonCD = BigSummonCooldownRemain();
+                // Big Summon kommt in ~1 GCD → erst Ruin IV verbrauchen (instant), dann Big Summon
+                if (bigSummonCD > 0 && bigSummonCD <= GCDTime(1) + 0.5f)
+                {
+                    if (RuinIvPvE.CanUse(out act, skipAoeCheck: true)) return true;
+                }
+            }
 
-        if ((HasSearingLight || SearingLightPvE.Cooldown.IsCoolingDown) && SummonBahamutPvE.CanUse(out act))
-        {
-            return true;
-        }
+            if (SummonBahamutPvE.CanUse(out act))
+            {
+                return true;
+            }
+            if (!SummonBahamutPvE.Info.EnoughLevelAndQuest() && DreadwyrmTrancePvE.CanUse(out act))
+            {
+                return true;
+            }
 
-        if (IsBurst && !SearingLightPvE.Cooldown.IsCoolingDown && SummonSolarBahamutPvE.CanUse(out act))
-        {
-            return true;
+            if ((HasSearingLight || SearingLightPvE.Cooldown.IsCoolingDown) && SummonBahamutPvE.CanUse(out act))
+            {
+                return true;
+            }
+
+            if (IsBurst && !SearingLightPvE.Cooldown.IsCoolingDown && SummonSolarBahamutPvE.CanUse(out act))
+            {
+                return true;
+            }
         }
 
         // Garuda: Slipstream
@@ -724,6 +775,16 @@ public sealed class SMN_Dynamic : SummonerRotation
     private bool DynamicPrimalSelection(out IAction? act)
     {
         act = null;
+
+        // M11S Trophy Phase: Ifrit immer zuletzt (viel Bewegung in dieser Phase)
+        if (M11SIfritLast && IsInM11STrophyPhase())
+        {
+            if (TitanTime(out act)) return true;
+            if (GarudaTime(out act)) return true;
+            if (IfritTime(out act)) return true;
+            return false;
+        }
+
         bool preferInstants = IsMoving;
 
         // BossMod SpecialMode: überschreibt Bewegungserkennung

@@ -63,7 +63,7 @@
 			<DevPluginDir>$(AppData)\XIVLauncher\devPlugins\RotationSolverReborn-Dev\</DevPluginDir>
 		</PropertyGroup>
 		<MakeDir Directories="$(DevPluginDir)" />
-		<Copy SourceFiles="$(OutputPath)RotationSolver.dll;$(OutputPath)RotationSolver.Basic.dll;$(OutputPath)ECommons.dll;$(OutputPath)RotationSolver.json" DestinationFolder="$(DevPluginDir)" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="$(OutputPath)RotationSolver.dll;$(OutputPath)RotationSolver.Basic.dll;$(OutputPath)ECommons.dll" DestinationFolder="$(DevPluginDir)" SkipUnchangedFiles="true" />
 		<Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File $(SolutionDir)patch-dev-name.ps1" />
 		<Message Text="Copied plugin to $(DevPluginDir)" Importance="high" />
 	</Target>
