@@ -43,10 +43,18 @@ jobs:
             -p:FileVersion=${{ env.tag }} `
             -p:InformationalVersion=${{ env.tag }}
 
+      - name: Find latest.zip
+        id: find_zip
+        run: |
+          $zip = Get-ChildItem -Recurse -Filter "latest.zip" -Path RotationSolver | Select-Object -First 1
+          if (-not $zip) { throw "latest.zip not found" }
+          Write-Host "Found: $($zip.FullName)"
+          "zip_path=$($zip.FullName)" | Out-File -Append -FilePath $Env:GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./bin/Release/RotationSolver/latest.zip
+          files: ${{ steps.find_zip.outputs.zip_path }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Plugin Repo Update
