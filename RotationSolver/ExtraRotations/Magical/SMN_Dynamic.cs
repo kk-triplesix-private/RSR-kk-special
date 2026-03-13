@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using RotationSolver.IPC;
 
 namespace RotationSolver.ExtraRotations.Magical;
 
@@ -12,8 +13,11 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Dynamic Egi Selection (avoid Ifrit casts while moving)")]
     public bool DynamicEgis { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Auto Addle on hostile targets")]
+    [RotationConfig(CombatType.PvE, Name = "Auto Addle on raidwide casts")]
     public bool AutoAddle { get; set; } = true;
+
+    [RotationConfig(CombatType.PvE, Name = "Proactive Radiant Aegis on raidwide casts")]
+    public bool ProactiveAegis { get; set; } = true;
 
     [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Searing Light)")]
     public bool SmartPotion { get; set; } = true;
@@ -45,6 +49,20 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     [RotationConfig(CombatType.PvE, Name = "Use Radiant Aegis on cooldown (spam)")]
     public bool RadiantOnCooldownSpam { get; set; } = false;
+
+    [RotationConfig(CombatType.PvE, Name = "Smart Ruin IV: Save for movement, prefer Ruin III when stationary")]
+    public bool SmartRuinIV { get; set; } = true;
+
+    [Range(0, 2000, ConfigUnitType.None)]
+    [RotationConfig(CombatType.PvE, Name = "Max delay (ms) for big summon before forcing Ruin IV instead of Ruin III")]
+    public int BigSummonDelayThreshold { get; set; } = 500;
+
+    [RotationConfig(CombatType.PvE, Name = "Use BossMod IPC for raidwide/stack detection (requires BossModReborn)")]
+    public bool UseBossModIPC { get; set; } = true;
+
+    [Range(1, 10, ConfigUnitType.Seconds)]
+    [RotationConfig(CombatType.PvE, Name = "BossMod lookahead (seconds) for raidwide/stack prediction")]
+    public float BossModLookahead { get; set; } = 5f;
 
     #endregion
 
@@ -98,11 +116,11 @@ public sealed class SMN_Dynamic : SummonerRotation
         return base.HealSingleAbility(nextGCD, out act);
     }
 
-    [RotationDesc(ActionID.AddlePvE)]
+    [RotationDesc(ActionID.AddlePvE, ActionID.RadiantAegisPvE)]
     protected override bool DefenseAreaAbility(IAction nextGCD, out IAction? act)
     {
-        // Auto Addle logic
-        if (AutoAddle && HostileTarget != null && !HostileTarget.HasStatus(false, StatusID.Addle))
+        // Addle: nur wenn Ziel castet und noch kein Addle hat
+        if (AutoAddle && ShouldUseAddle())
         {
             if (AddlePvE.CanUse(out act))
             {
@@ -110,7 +128,8 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        if (!IsLastAction(false, RadiantAegisPvE) && RadiantAegisPvE.CanUse(out act, usedUp: true))
+        // Radiant Aegis: Schild vor Raidwide
+        if (ProactiveAegis && !IsLastAction(false, RadiantAegisPvE) && RadiantAegisPvE.CanUse(out act, usedUp: true))
         {
             return true;
         }
@@ -360,6 +379,28 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     protected override bool EmergencyAbility(IAction nextGCD, out IAction? act)
     {
+        // Höchste Priorität: Raidwide/Stack erkannt → Addle + Schild SOFORT
+        // EmergencyAbility wird VOR allen anderen oGCDs aufgerufen (höchste Priorität im Framework)
+        bool damageImminent = IsDamageImminent();
+
+        if (damageImminent)
+        {
+            // Addle zuerst: reduziert den eingehenden Schaden
+            if (AutoAddle && ShouldUseAddle())
+            {
+                if (AddlePvE.CanUse(out act))
+                {
+                    return true;
+                }
+            }
+
+            // Radiant Aegis: Schild aktivieren bevor der Schaden eintrifft
+            if (ProactiveAegis && !IsLastAction(false, RadiantAegisPvE) && RadiantAegisPvE.CanUse(out act))
+            {
+                return true;
+            }
+        }
+
         if (SwiftcastPvE.CanUse(out act))
         {
             if (AddSwiftcastOnRaise && nextGCD.IsTheSameTo(false, ResurrectionPvE))
@@ -478,6 +519,13 @@ public sealed class SMN_Dynamic : SummonerRotation
         // Primal summon phase - DYNAMIC EGI SELECTION
         if (!InBahamut && !InPhoenix && !InSolarBahamut)
         {
+            // Moving: Ruin IV sofort nutzen (instant cast, perfekt für Movement)
+            if (IsMoving && HasFurtherRuin && SummonTimeEndAfterGCD() && AttunmentTimeEndAfterGCD()
+                && RuinIvPvE.CanUse(out act, skipAoeCheck: true))
+            {
+                return true;
+            }
+
             if (DynamicEgis)
             {
                 if (DynamicPrimalSelection(out act))
@@ -494,13 +542,6 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Ruin IV with Further Ruin
-        if (SummonTimeEndAfterGCD() && AttunmentTimeEndAfterGCD() && !InBahamut && !InPhoenix && !InSolarBahamut &&
-            RuinIvPvE.CanUse(out act, skipAoeCheck: true))
-        {
-            return true;
-        }
-
         // Big summon GCDs
         if (BrandOfPurgatoryPvE.CanUse(out act)) return true;
         if (UmbralFlarePvE.CanUse(out act)) return true;
@@ -510,6 +551,40 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (FountainOfFirePvE.CanUse(out act)) return true;
         if (UmbralImpulsePvE.CanUse(out act)) return true;
         if (AstralImpulsePvE.CanUse(out act)) return true;
+
+        // Smart Ruin IV Logik: Ruin III vs Ruin IV Entscheidung
+        if (!InBahamut && !InPhoenix && !InSolarBahamut && SummonTimeEndAfterGCD() && AttunmentTimeEndAfterGCD())
+        {
+            if (SmartRuinIV && HasFurtherRuin)
+            {
+                // Prüfe ob genug Zeit für Ruin III + GCD bis große Beschwörung bereit ist
+                // Ruin III hat ~2.5s Cast. Wenn Bahamut/etc. in weniger als 1 GCD bereit ist,
+                // würde Ruin III die große Beschwörung zu lange verzögern → Ruin IV nehmen
+                float bigSummonRemain = BigSummonCooldownRemain();
+                float threshold = BigSummonDelayThreshold / 1000f;
+                bool bigSummonSoon = bigSummonRemain <= GCDTime(1) + threshold && NoPrimalReady;
+
+                if (IsMoving || bigSummonSoon)
+                {
+                    // Ruin IV: instant, keine Verzögerung der großen Beschwörung
+                    if (RuinIvPvE.CanUse(out act, skipAoeCheck: true)) return true;
+                }
+                else
+                {
+                    // Genug Zeit: Ruin III bevorzugen, Ruin IV aufsparen
+                    if (RuinIiiPvE.EnoughLevel && RuinIiiPvE.CanUse(out act)) return true;
+                    if (!RuinIiiPvE.Info.EnoughLevelAndQuest() && RuinIiPvE.EnoughLevel && RuinIiPvE.CanUse(out act)) return true;
+                    if (!RuinIiPvE.Info.EnoughLevelAndQuest() && RuinPvE.CanUse(out act)) return true;
+                    // Fallback auf Ruin IV wenn Ruin III nicht verfügbar
+                    if (RuinIvPvE.CanUse(out act, skipAoeCheck: true)) return true;
+                }
+            }
+            else
+            {
+                // Smart Ruin IV aus: normales Verhalten
+                if (RuinIvPvE.CanUse(out act, skipAoeCheck: true)) return true;
+            }
+        }
 
         // Filler GCDs
         if (RuinIiiPvE.EnoughLevel && RuinIiiPvE.CanUse(out act)) return true;
@@ -547,6 +622,128 @@ public sealed class SMN_Dynamic : SummonerRotation
         }
 
         return false;
+    }
+
+    #endregion
+
+    #region Defense Helpers
+
+    /// <summary>
+    /// Prüft ob Schaden bevorsteht - nutzt BossMod IPC wenn verfügbar, sonst RSR-eigene Erkennung.
+    /// </summary>
+    private bool IsDamageImminent()
+    {
+        // BossMod IPC: präzise Vorhersage von Raidwides und Stacks
+        if (UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
+        {
+            try
+            {
+                if (BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(BossModLookahead) == true)
+                    return true;
+                if (BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true)
+                    return true;
+            }
+            catch
+            {
+                // IPC-Fehler: Fallback auf RSR-Erkennung
+            }
+        }
+
+        // Fallback: RSR-eigene VFX/Cast-basierte Erkennung
+        return DataCenter.IsHostileCastingAOE;
+    }
+
+    /// <summary>
+    /// Prüft ob Addle sinnvoll eingesetzt werden kann:
+    /// - Nutzt BossMod IPC für präzise Raidwide-Erkennung wenn verfügbar
+    /// - Eingehender Schaden muss MAGICAL sein
+    /// - Ziel hat noch kein Addle
+    /// - Bei Raidwides: immer Addle
+    /// - Bei Stacks: nur wenn Addle-CD es erlaubt
+    /// </summary>
+    private bool ShouldUseAddle()
+    {
+        // Nur bei magischem Schaden (RSR-eigene Erkennung)
+        if (!DataCenter.IsMagicalDamageIncoming())
+        {
+            return false;
+        }
+
+        // Ziel muss existieren und darf noch kein Addle haben
+        if (HostileTarget == null || HostileTarget.HasStatus(false, StatusID.Addle))
+        {
+            return false;
+        }
+
+        // BossMod IPC: präzise Unterscheidung Raidwide vs Stack
+        if (UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
+        {
+            try
+            {
+                bool raidwide = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(BossModLookahead) == true;
+                if (raidwide)
+                    return true; // Raidwide: Addle immer
+
+                bool shared = BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true;
+                if (shared && !AddlePvE.Cooldown.IsCoolingDown)
+                    return true; // Stack: nur wenn Addle nicht auf CD
+            }
+            catch
+            {
+                // Fallback auf RSR-Erkennung
+            }
+        }
+
+        // Fallback: RSR-eigene Erkennung
+        bool isRaidwideCast = IsAnyHostileCastingKnownRaidwide();
+        if (isRaidwideCast)
+            return true;
+
+        if (DataCenter.IsHostileCastingAOE && !AddlePvE.Cooldown.IsCoolingDown)
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Prüft ob ein Feind einen bekannten Raidwide aus der HostileCastingArea-Liste castet.
+    /// </summary>
+    private static bool IsAnyHostileCastingKnownRaidwide()
+    {
+        if (DataCenter.AllHostileTargets == null)
+            return false;
+
+        for (int i = 0, n = DataCenter.AllHostileTargets.Count; i < n; i++)
+        {
+            var hostile = DataCenter.AllHostileTargets[i];
+            if (hostile == null || !hostile.IsCasting)
+                continue;
+
+            if (DataCenter.IsHostileCastingArea(hostile))
+                return true;
+        }
+        return false;
+    }
+
+    #endregion
+
+    #region Big Summon Helpers
+
+    /// <summary>
+    /// Gibt die verbleibende Cooldown-Zeit bis zur nächsten großen Beschwörung zurück.
+    /// Prüft Bahamut, Phoenix und Solar Bahamut und gibt die kürzeste Zeit zurück.
+    /// </summary>
+    private float BigSummonCooldownRemain()
+    {
+        if (SummonBahamutPvE.EnoughLevel)
+        {
+            return SummonBahamutPvE.Cooldown.RecastTimeRemainOneCharge;
+        }
+        if (DreadwyrmTrancePvE.EnoughLevel)
+        {
+            return DreadwyrmTrancePvE.Cooldown.RecastTimeRemainOneCharge;
+        }
+        return float.MaxValue;
     }
 
     #endregion

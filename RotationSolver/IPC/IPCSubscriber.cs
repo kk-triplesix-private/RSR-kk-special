@@ -10,40 +10,35 @@ namespace RotationSolver.IPC
 	using ECommons.GameFunctions;
 	using System.ComponentModel;
 
-	//internal static class BossModReborn_IPCSubscriber
-	//{
-	//	private static readonly EzIPCDisposalToken[] _disposalTokens = EzIPC.Init(typeof(BossModReborn_IPCSubscriber), "BossMod", SafeWrapper.AnyException);
+	internal static class BossModHints_IPCSubscriber
+	{
+		private static readonly EzIPCDisposalToken[] _disposalTokens = EzIPC.Init(typeof(BossModHints_IPCSubscriber), "BossMod", SafeWrapper.AnyException);
 
-	//	internal static bool IsEnabled => IPCSubscriber_Common.IsReady("BossModReborn");
+		internal static bool IsEnabled => IPCSubscriber_Common.IsReady("BossModReborn");
 
-	//	[EzIPC("AI.GetPreset", true)] internal static readonly Func<string> Presets_GetActive;
+		// Predicted damage events as JSON: [{ "Players": <ulong>, "Activation": <ISO8601>, "Type": "Raidwide"|"Tankbuster"|"Shared"|"None" }]
+		[EzIPC("Hints.PredictedDamage", true)] internal static readonly Func<string> Hints_PredictedDamage;
 
-	//	[EzIPC("AI.SetPreset", true)] internal static readonly Action<string> Presets_SetActive;
+		// Convenience: is a raidwide predicted within N seconds?
+		[EzIPC("Hints.IsRaidwideImminent", true)] internal static readonly Func<float, bool> Hints_IsRaidwideImminent;
 
-	//	internal static void Dispose() => IPCSubscriber_Common.DisposeAll(_disposalTokens);
-	//}
+		// Convenience: is a tankbuster predicted within N seconds?
+		[EzIPC("Hints.IsTankbusterImminent", true)] internal static readonly Func<float, bool> Hints_IsTankbusterImminent;
 
-	//internal static class BossMod_IPCSubscriber
-	//{
-	//	private static readonly EzIPCDisposalToken[] _disposalTokens = EzIPC.Init(typeof(BossMod_IPCSubscriber), "BossMod", SafeWrapper.AnyException);
+		// Convenience: is a shared/stack predicted within N seconds?
+		[EzIPC("Hints.IsSharedImminent", true)] internal static readonly Func<float, bool> Hints_IsSharedImminent;
 
-	//	internal static bool IsEnabled => IPCSubscriber_Common.IsReady("BossMod") || IPCSubscriber_Common.IsReady("BossModReborn");
+		// Forbidden directions as JSON: [{ "Center": <float rad>, "HalfWidth": <float rad>, "Activation": <ISO8601> }]
+		[EzIPC("Hints.ForbiddenDirections", true)] internal static readonly Func<string> Hints_ForbiddenDirections;
 
-	//	[EzIPC] internal static readonly Func<uint, bool> HasModuleByDataId;
-	//	[EzIPC] internal static readonly Func<IReadOnlyList<string>, bool, List<string>> Configuration;
-	//	[EzIPC("Presets.Get", true)] internal static readonly Func<string, string> Presets_Get;
-	//	[EzIPC("Presets.Create", true)] internal static readonly Func<string, bool, bool> Presets_Create;
-	//	[EzIPC("Presets.Delete", true)] internal static readonly Func<string, bool> Presets_Delete;
-	//	[EzIPC("Presets.GetActive", true)] internal static readonly Func<string> Presets_GetActive;
-	//	[EzIPC("Presets.SetActive", true)] internal static readonly Func<string, bool> Presets_SetActive;
-	//	[EzIPC("Presets.ClearActive", true)] internal static readonly Func<bool> Presets_ClearActive;
-	//	[EzIPC("Presets.GetForceDisabled", true)] internal static readonly Func<bool> Presets_GetForceDisabled;
-	//	[EzIPC("Presets.SetForceDisabled", true)] internal static readonly Func<bool> Presets_SetForceDisabled;
-	//	/** string presetName, string moduleTypeName, string trackName, string value*/
-	//	[EzIPC("Presets.AddTransientStrategy")] internal static readonly Func<string, string, string, string, bool> Presets_AddTransientStrategy;
+		// Current special mode: "Normal", "Pyretic", "NoMovement", "Freezing", "Misdirection"
+		[EzIPC("Hints.SpecialMode", true)] internal static readonly Func<string> Hints_SpecialMode;
 
-	//	internal static void Dispose() => IPCSubscriber_Common.DisposeAll(_disposalTokens);
-	//}
+		// Activation time of special mode (ISO8601 string, null if Normal)
+		[EzIPC("Hints.SpecialModeActivation", true)] internal static readonly Func<string> Hints_SpecialModeActivation;
+
+		internal static void Dispose() => IPCSubscriber_Common.DisposeAll(_disposalTokens);
+	}
 
 	public static class Wrath_IPCSubscriber
 	{

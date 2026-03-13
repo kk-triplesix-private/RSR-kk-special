@@ -27,6 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RotationSolver.GameData", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RotationSolver.DocumentationGenerator", "RotationSolver.DocumentationGenerator\RotationSolver.DocumentationGenerator.csproj", "{17FAD28D-4AC9-42DE-94D0-98ED1BE86595}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BossModReborn", "BossModReborn", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossModReborn", "..\BossmodRebornPrivate\BossMod\BossModReborn.csproj", "{13C812E9-0D42-4B95-8646-40EEBF30636F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,9 +57,16 @@ Global
 		{17FAD28D-4AC9-42DE-94D0-98ED1BE86595}.Debug|x64.Build.0 = Debug|x64
 		{17FAD28D-4AC9-42DE-94D0-98ED1BE86595}.Release|x64.ActiveCfg = Release|x64
 		{17FAD28D-4AC9-42DE-94D0-98ED1BE86595}.Release|x64.Build.0 = Release|x64
+		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Debug|x64.ActiveCfg = Debug|x64
+		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Debug|x64.Build.0 = Debug|x64
+		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.ActiveCfg = Release|x64
+		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{13C812E9-0D42-4B95-8646-40EEBF30636F} = {A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37674B88-2038-4C63-A979-84404391773A}
