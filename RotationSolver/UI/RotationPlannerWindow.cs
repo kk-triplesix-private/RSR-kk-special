@@ -407,10 +407,41 @@ internal class RotationPlannerWindow : Window
         float totalSeconds = Math.Max(_currentPlan.TotalDuration, 600f);
         float totalWidth = totalSeconds * _pixelsPerSecond;
 
-        // Handle mouse interactions
-        HandleCanvasInput(canvasPos, canvasSize, totalWidth);
+        // InvisibleButton FIRST as base interactable (drop target + input)
+        ImGui.SetCursorScreenPos(canvasPos);
+        ImGui.InvisibleButton("##CanvasDrop", canvasSize);
+        bool canvasHovered = ImGui.IsItemHovered();
 
-        // Draw layers
+        // Handle drop on the invisible button
+        if (ImGui.BeginDragDropTarget())
+        {
+            var payload = ImGui.AcceptDragDropPayload("PLANNED_ACTION");
+            if (_dragPayloadActionId != 0)
+            {
+                float dropTime = (ImGui.GetMousePos().X - canvasPos.X + _scrollX) / _pixelsPerSecond;
+                dropTime = Math.Max(0, dropTime);
+
+                // Determine lane from Y position
+                float mouseY = ImGui.GetMousePos().Y - canvasPos.Y;
+                bool isGCDLane = mouseY < (MechanicLaneHeight + GCDLaneHeight);
+
+                // Snap to GCD slots if dropping in GCD lane
+                float gcdTime = ActionTimelineManager.Instance.GCD;
+                if (isGCDLane && gcdTime > 0)
+                {
+                    dropTime = MathF.Round(dropTime / gcdTime) * gcdTime;
+                }
+
+                AddActionToPlan(_dragPayloadActionId, dropTime);
+                _dragPayloadActionId = 0;
+            }
+            ImGui.EndDragDropTarget();
+        }
+
+        // Handle mouse interactions (zoom, pan, select, context menu)
+        HandleCanvasInput(canvasPos, canvasSize, totalWidth, canvasHovered);
+
+        // Draw layers on top via draw list
         DrawGrid(drawList, canvasPos, canvasSize, totalSeconds);
         DrawPhaseSeparators(drawList, canvasPos, canvasSize);
         DrawMechanicLane(drawList, canvasPos, canvasSize);
@@ -418,19 +449,14 @@ internal class RotationPlannerWindow : Window
         DrawOGCDLane(drawList, canvasPos, canvasSize);
         DrawCurrentTimeLine(drawList, canvasPos, canvasSize);
 
-        // Drop target for the entire canvas
-        HandleDrop(canvasPos, canvasSize);
-
         ImGui.EndChild();
         ImGui.PopStyleColor();
     }
 
-    private void HandleCanvasInput(Vector2 pos, Vector2 size, float totalWidth)
+    private void HandleCanvasInput(Vector2 pos, Vector2 size, float totalWidth, bool isHovered)
     {
         var io = ImGui.GetIO();
         var mousePos = io.MousePos;
-        bool isHovered = mousePos.X >= pos.X && mousePos.X <= pos.X + size.X
-                      && mousePos.Y >= pos.Y && mousePos.Y <= pos.Y + size.Y;
 
         if (!isHovered) return;
 
@@ -541,34 +567,6 @@ internal class RotationPlannerWindow : Window
             }
         }
         return null;
-    }
-
-    private void HandleDrop(Vector2 canvasPos, Vector2 canvasSize)
-    {
-        // Invisible button covering the canvas for drop target
-        ImGui.SetCursorScreenPos(canvasPos);
-        ImGui.InvisibleButton("##CanvasDrop", canvasSize);
-
-        if (ImGui.BeginDragDropTarget())
-        {
-            var payload = ImGui.AcceptDragDropPayload("PLANNED_ACTION");
-            if (_dragPayloadActionId != 0)
-            {
-                float dropTime = (ImGui.GetMousePos().X - canvasPos.X + _scrollX) / _pixelsPerSecond;
-                dropTime = Math.Max(0, dropTime);
-
-                // Snap to GCD slots
-                float gcdTime = ActionTimelineManager.Instance.GCD;
-                if (gcdTime > 0)
-                {
-                    dropTime = MathF.Round(dropTime / gcdTime) * gcdTime;
-                }
-
-                AddActionToPlan(_dragPayloadActionId, dropTime);
-                _dragPayloadActionId = 0;
-            }
-            ImGui.EndDragDropTarget();
-        }
     }
 
     private void AddActionToPlan(uint actionId, float combatTime)
