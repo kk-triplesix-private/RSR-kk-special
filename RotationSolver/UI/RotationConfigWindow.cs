@@ -585,6 +585,35 @@ public partial class RotationConfigWindow : Window
                     RSRStyle.ThemedSeparator();
                 }
 			}
+
+            // Rotation Planner button
+            RSRStyle.ThemedSeparator();
+            {
+                bool plannerOpen = Service.Config.ShowRotationPlannerWindow;
+                float itemHeight = 26 * Scale;
+                Vector2 itemScreenPos = ImGui.GetCursorScreenPos();
+                if (plannerOpen)
+                {
+                    RSRStyle.DrawAccentBar(itemScreenPos, itemHeight);
+                }
+
+                using (ImRaii.PushColor(ImGuiCol.Header, RSRStyle.SidebarActive))
+                using (ImRaii.PushColor(ImGuiCol.HeaderHovered, RSRStyle.SidebarHover))
+                using (ImRaii.PushColor(ImGuiCol.Text, plannerOpen ? RSRStyle.Accent : RSRStyle.TextPrimary))
+                using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.0f, 0.5f)))
+                {
+                    if (ImGui.Selectable($"  Planner", plannerOpen, ImGuiSelectableFlags.None, new Vector2(0, itemHeight)))
+                    {
+                        Service.Config.ShowRotationPlannerWindow.Value = !plannerOpen;
+                    }
+                }
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+                    ImguiTooltips.ShowTooltip("Rotation Timeline Planner");
+                }
+            }
+
             DrawDiagnosticInfoCube();
             ImGui.Spacing();
         }
