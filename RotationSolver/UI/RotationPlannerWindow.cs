@@ -405,6 +405,7 @@ internal class RotationPlannerWindow : Window
 
     private void DrawPaletteActions(IEnumerable<RotationSolver.Basic.Actions.IBaseAction> actions, bool isGCD, string filter)
     {
+        int idx = 0;
         foreach (var action in actions)
         {
             bool actionIsGCD = action.Info.IsRealGCD;
@@ -417,36 +418,31 @@ internal class RotationPlannerWindow : Window
 
             float iconSize = isGCD ? 28 : 24;
 
-            // Draw icon + clickable area
+            // InvisibleButton captures mouse input (prevents window drag)
+            var btnPos = ImGui.GetCursorScreenPos();
+            ImGui.InvisibleButton($"##palAction_{(isGCD ? "g" : "o")}_{idx}", new Vector2(iconSize, iconSize));
+            idx++;
+
+            // Draw icon on top via draw list
+            var dl = ImGui.GetWindowDrawList();
             if (IconSet.GetTexture(action.IconID, out IDalamudTextureWrap? texture) && texture != null)
             {
-                ImGui.Image(texture.Handle, new Vector2(iconSize, iconSize));
-
-                // Start drag on mouse down + drag
-                if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
-                {
-                    _isDraggingFromPalette = true;
-                    _draggingActionId = action.ID;
-                    _draggingIconId = action.IconID;
-                    _draggingActionName = name;
-                    _draggingIsGCD = actionIsGCD;
-                }
+                dl.AddImage(texture.Handle, btnPos, btnPos + new Vector2(iconSize, iconSize));
             }
             else
             {
                 var fallbackColor = isGCD ? RSRStyle.Accent : RSRStyle.AccentDim;
-                var cursor = ImGui.GetCursorScreenPos();
-                ImGui.GetWindowDrawList().AddRectFilled(cursor, cursor + new Vector2(iconSize), ImGui.ColorConvertFloat4ToU32(fallbackColor), 4f);
-                ImGui.Dummy(new Vector2(iconSize, iconSize));
+                dl.AddRectFilled(btnPos, btnPos + new Vector2(iconSize), ImGui.ColorConvertFloat4ToU32(fallbackColor), 4f);
+            }
 
-                if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
-                {
-                    _isDraggingFromPalette = true;
-                    _draggingActionId = action.ID;
-                    _draggingIconId = 0;
-                    _draggingActionName = name;
-                    _draggingIsGCD = actionIsGCD;
-                }
+            // Start drag on mouse down + drag
+            if (ImGui.IsItemActive() && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+            {
+                _isDraggingFromPalette = true;
+                _draggingActionId = action.ID;
+                _draggingIconId = action.IconID;
+                _draggingActionName = name;
+                _draggingIsGCD = actionIsGCD;
             }
 
             ImGui.SameLine();
