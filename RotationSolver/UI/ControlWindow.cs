@@ -288,7 +288,7 @@ internal class ControlWindow : CtrlWindow
     {
         Vector2 offset = ImGui.GetStyle().ItemSpacing / 2;
         ImGui.GetWindowDrawList().AddRect(pt - offset, pt + size + offset,
-            ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudGrey), 5, ImDrawFlags.RoundCornersAll, thickness);
+            RSRStyle.AccentDimU32, 5, ImDrawFlags.RoundCornersAll, thickness);
     }
 
     private static void DrawCommandAction(IAction? ability, SpecialCommandType command, Vector4 color)

@@ -925,7 +925,7 @@ public partial class RotationConfigWindow : Window
 				ImGui.PopTextWrapPos(); // Reset text wrapping position
 			}
 
-			ImGui.Separator();
+			RSRStyle.ThemedSeparator();
 			ImGui.Spacing();
 		}
 
@@ -1028,7 +1028,7 @@ public partial class RotationConfigWindow : Window
                 // Display search results header
                 using (ImRaii.Font font = ImRaii.PushFont(FontManager.GetFont(18)))
                 {
-                    using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudYellow));
+                    using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, RSRStyle.Accent);
                     ImGui.TextWrapped(UiString.ConfigWindow_Search_Result.GetDescription());
                 }
 
@@ -1307,7 +1307,7 @@ public partial class RotationConfigWindow : Window
 
         bool hasAny = false;
         foreach (var _ in set.Configs) { hasAny = true; break; }
-        if (hasAny) ImGui.Separator();
+        if (hasAny) RSRStyle.ThemedSeparator();
 
         foreach (IRotationConfig config in set.Configs)
         {
@@ -1496,7 +1496,7 @@ public partial class RotationConfigWindow : Window
 		// Draw the punchline with a specific font and color
 		using (ImRaii.Font font = ImRaii.PushFont(FontManager.GetFont(18)))
 		{
-			using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudYellow));
+			using ImRaii.Color color = ImRaii.PushColor(ImGuiCol.Text, RSRStyle.AccentU32);
 			ImGui.TextWrapped(UiString.ConfigWindow_About_Punchline.GetDescription());
 		}
 
@@ -1572,7 +1572,7 @@ public partial class RotationConfigWindow : Window
 		}
 
 		ImGui.Spacing();
-		ImGui.Separator();
+		RSRStyle.ThemedSeparator();
 		ImGui.Spacing();
 
 		// Defensive: ensure we have supporters
@@ -1625,7 +1625,7 @@ public partial class RotationConfigWindow : Window
 		}
 
 		ImGui.Spacing();
-		ImGui.Separator();
+		RSRStyle.ThemedSeparator();
 		ImGui.Spacing();
 	}
 	private static void DrawAboutMacros()
@@ -1754,7 +1754,7 @@ public partial class RotationConfigWindow : Window
 	{
 		if (type.HasFlag(CompatibleType.Skill_Usage))
 		{
-			ImGui.TextColored(ImGuiColors.DalamudYellow, CompatibleType.Skill_Usage.GetDescription().Replace('_', ' '));
+			ImGui.TextColored(RSRStyle.Accent, CompatibleType.Skill_Usage.GetDescription().Replace('_', ' '));
 			ImguiTooltips.HoveredTooltip(UiString.ConfigWindow_About_Compatibility_Mistake.GetDescription());
 		}
 		if (type.HasFlag(CompatibleType.Skill_Selection))
@@ -1897,12 +1897,12 @@ public partial class RotationConfigWindow : Window
             string text;
             if (plugin.Name == "Boss Mod" && isBossModEnabled && isBossModRebornEnabled)
             {
-                color = ImGuiColors.DalamudYellow;
+                color = RSRStyle.Accent;
                 text = $"{plugin.Name} is {(isEnabled ? "installed and enabled" : "not enabled")}. Both Boss Mods cannot be installed and enabled at the same time. Please disable Boss Mod.";
             }
             else if (plugin.Name == "Boss Mod" && isBossModEnabled && !isBossModRebornEnabled)
             {
-                color = isEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudRed;
+                color = isEnabled ? RSRStyle.Accent : ImGuiColors.DalamudRed;
                 text = $"{plugin.Name} is {(isEnabled ? "installed and enabled" : "not enabled")}. Please use BossModReborn instead, BMR has specific integration with RSR that improves RSRs ability to react to combat i.e. Gaze effects.";
             }
             else if (plugin.Name == "BossModReborn" && isBossModRebornEnabled && !isBossModEnabled)
@@ -2053,7 +2053,7 @@ public partial class RotationConfigWindow : Window
                 bool isOnCommand = attr.IsOnCommand;
                 if (isOnCommand)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
+                    ImGui.PushStyleColor(ImGuiCol.Text, RSRStyle.Accent);
                 }
 
                 ImGui.Text(" " + attr.Type.GetDescription());
@@ -2203,7 +2203,7 @@ public partial class RotationConfigWindow : Window
             hasAny = true;
             break;
         }
-        if (hasAny) ImGui.Separator();
+        if (hasAny) RSRStyle.ThemedSeparator();
 
         foreach (IRotationConfig config in set.Configs)
         {
@@ -2755,13 +2755,13 @@ public partial class RotationConfigWindow : Window
                 DrawConfigsOfBaseAction(a);
             }
 
-            ImGui.Separator();
+            RSRStyle.ThemedSeparator();
 
             static void DrawConfigsOfBaseAction(IBaseAction a)
             {
                 ActionConfig config = a.Config;
 
-                ImGui.Separator();
+                RSRStyle.ThemedSeparator();
 
                 int ttk = config.TimeToKill;
                 ImGui.SetNextItemWidth(Scale * 150);
@@ -3427,7 +3427,7 @@ public partial class RotationConfigWindow : Window
             {
                 if (string.IsNullOrWhiteSpace(_actionPopupSearching))
                 {
-                    ImGui.TextColored(ImGuiColors.DalamudYellow, "Enter a search term to filter actions.");
+                    ImGui.TextColored(RSRStyle.Accent, "Enter a search term to filter actions.");
                     // Clear cached results when no query
                     if (!string.IsNullOrEmpty(_lastActionPopupSearching))
                     {
@@ -3761,7 +3761,7 @@ public partial class RotationConfigWindow : Window
         {() => "Effect", () =>
             {
                 ImGui.Text(Watcher.ShowStrSelf);
-                ImGui.Separator();
+                RSRStyle.ThemedSeparator();
                 ImGui.Text(DataCenter.Role.ToString());
             } },
     });

@@ -1,5 +1,4 @@
-﻿using Dalamud.Interface.Colors;
-using Dalamud.Interface.Windowing;
+﻿using Dalamud.Interface.Windowing;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using RotationSolver.Updaters;
@@ -97,7 +96,10 @@ internal class NextActionWindow : Window
         Vector2 cursor = ImGui.GetCursorPos() + ImGui.GetWindowPos();
         float height = Service.Config.ControlProgressHeight;
 
+        ImGui.PushStyleColor(ImGuiCol.PlotHistogram, RSRStyle.AccentActive);
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, RSRStyle.FrameBg);
         ImGui.ProgressBar(elapsed / total, new Vector2(width, height), string.Empty);
+        ImGui.PopStyleColor(2);
 
 		float actionRemain = DataCenter.DefaultGCDRemain;
 		if (actionRemain > 0)
@@ -110,7 +112,7 @@ internal class NextActionWindow : Window
 				Vector2 pt = cursor + (new Vector2(width, 0) * value / total);
 
 				ImGui.GetWindowDrawList().AddLine(pt, pt + new Vector2(0, height),
-					ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudRed), 2);
+					RSRStyle.AccentU32, 2);
 			}
 		}
 	}

@@ -102,7 +102,7 @@ public partial class RotationConfigWindow
     private static void DrawActionUsageControl()
     {
         ImGui.TextWrapped(UiString.ConfigWindow_Auto_ActionUsage_Description.GetDescription());
-        ImGui.Separator();
+        RSRStyle.ThemedSeparator();
         _allSearchable.DrawItems(Configs.AutoActionUsage);
     }
 
@@ -112,7 +112,7 @@ public partial class RotationConfigWindow
     private static void DrawHealingActionCondition()
     {
         ImGui.TextWrapped(UiString.ConfigWindow_Auto_HealingCondition_Description.GetDescription());
-        ImGui.Separator();
+        RSRStyle.ThemedSeparator();
         _allSearchable.DrawItems(Configs.HealingActionCondition);
     }
     #endregion
@@ -246,7 +246,7 @@ public partial class RotationConfigWindow
         ImGui.SameLine();
         Service.Config.DutyEnd.DisplayMacro();
 
-        ImGui.Separator();
+        RSRStyle.ThemedSeparator();
 
         for (int i = 0; i < Service.Config.Events.Count; i++)
         {
@@ -260,7 +260,7 @@ public partial class RotationConfigWindow
                 Service.Config.Events.RemoveAt(i);
                 i--; // Adjust index after removal
             }
-            ImGui.Separator();
+            RSRStyle.ThemedSeparator();
         }
     }
     #endregion

@@ -216,8 +216,8 @@ internal abstract class CheckBoxSearch : Searchable
 			}
 			else
 			{
-				ImGui.PushStyleColor(ImGuiCol.HeaderHovered, 0x0);
-				ImGui.PushStyleColor(ImGuiCol.HeaderActive, 0x0);
+				ImGui.PushStyleColor(ImGuiCol.HeaderHovered, ImGui.ColorConvertFloat4ToU32(RSRStyle.BgCard));
+				ImGui.PushStyleColor(ImGuiCol.HeaderActive, ImGui.ColorConvertFloat4ToU32(RSRStyle.BgCard));
 				_ = ImGui.TreeNodeEx(name, ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen);
 				if (ImGui.IsItemHovered())
 				{

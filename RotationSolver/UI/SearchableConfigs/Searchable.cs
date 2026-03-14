@@ -313,7 +313,7 @@ internal abstract class Searchable(PropertyInfo property) : ISearchable
                 }
                 if (showDesc)
                 {
-                    ImGui.Separator();
+                    RSRStyle.ThemedSeparator();
                 }
                 float wholeWidth = ImGui.GetWindowWidth();
 

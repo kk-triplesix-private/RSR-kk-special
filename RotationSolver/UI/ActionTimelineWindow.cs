@@ -72,22 +72,7 @@ internal class ActionTimelineWindow : Window
             return;
         }
 
-        using ImRaii.Style selectableAlign = ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
-        using var framePad = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, new Vector2(4, 3));
-        using var childWinPad = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(12, 12));
-        using var frameCellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4, 2));
-        using var frameItemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(8, 4));
-        using var frameItemInnerSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemInnerSpacing, new Vector2(4, 4));
-        using var frameIndentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, 21f);
-        using var frameScrollbarSize = ImRaii.PushStyle(ImGuiStyleVar.ScrollbarSize, 16f);
-        using var frameGrabMinSize = ImRaii.PushStyle(ImGuiStyleVar.GrabMinSize, 13f);
-        using var frameWindowRounding = ImRaii.PushStyle(ImGuiStyleVar.WindowRounding, 11f);
-        using var frameChildRounding = ImRaii.PushStyle(ImGuiStyleVar.ChildRounding, 11f);
-        using var frameFrameRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 11f);
-        using var framePopupRounding = ImRaii.PushStyle(ImGuiStyleVar.PopupRounding, 11f);
-        using var frameScrollbarRounding = ImRaii.PushStyle(ImGuiStyleVar.ScrollbarRounding, 11f);
-        using var frameGrabRounding = ImRaii.PushStyle(ImGuiStyleVar.GrabRounding, 11f);
-        using var frameTabRounding = ImRaii.PushStyle(ImGuiStyleVar.TabRounding, 11f);
+        using var theme = RSRStyle.PushTheme();
         var pos = ImGui.GetWindowPos();
         var size = ImGui.GetWindowSize();
         var now = DateTime.Now;
@@ -138,10 +123,10 @@ internal class ActionTimelineWindow : Window
         {
             var barColor = item.State switch
             {
-                TimelineItemState.Casting => ImGui.ColorConvertFloat4ToU32(new Vector4(0.2f, 0.8f, 0.2f, 0.8f)),
-                TimelineItemState.Finished => ImGui.ColorConvertFloat4ToU32(new Vector4(0.5f, 0.5f, 0.5f, 0.8f)),
-                TimelineItemState.Canceled => ImGui.ColorConvertFloat4ToU32(new Vector4(0.8f, 0.2f, 0.2f, 0.8f)),
-                _ => ImGui.ColorConvertFloat4ToU32(new Vector4(0.3f, 0.3f, 0.3f, 0.8f))
+                TimelineItemState.Casting => ImGui.ColorConvertFloat4ToU32(RSRStyle.Accent with { W = 0.75f }),
+                TimelineItemState.Finished => ImGui.ColorConvertFloat4ToU32(RSRStyle.BgRaised with { W = 0.80f }),
+                TimelineItemState.Canceled => ImGui.ColorConvertFloat4ToU32(new Vector4(0.75f, 0.25f, 0.25f, 0.80f)),
+                _ => ImGui.ColorConvertFloat4ToU32(RSRStyle.BgCard with { W = 0.70f })
             };
 
             drawList.AddRectFilled(
@@ -170,10 +155,10 @@ internal class ActionTimelineWindow : Window
             // Fallback: draw colored rectangle
             var fallbackColor = item.Type switch
             {
-                TimelineItemType.GCD => ImGui.ColorConvertFloat4ToU32(new Vector4(0.8f, 0.3f, 0.3f, 1f)),
-                TimelineItemType.OGCD => ImGui.ColorConvertFloat4ToU32(new Vector4(0.3f, 0.3f, 0.8f, 1f)),
-                TimelineItemType.AutoAttack => ImGui.ColorConvertFloat4ToU32(new Vector4(0.6f, 0.6f, 0.6f, 1f)),
-                _ => ImGui.ColorConvertFloat4ToU32(new Vector4(0.5f, 0.5f, 0.5f, 1f))
+                TimelineItemType.GCD => RSRStyle.AccentU32,
+                TimelineItemType.OGCD => ImGui.ColorConvertFloat4ToU32(RSRStyle.AccentDim),
+                TimelineItemType.AutoAttack => ImGui.ColorConvertFloat4ToU32(RSRStyle.TextSecondary),
+                _ => ImGui.ColorConvertFloat4ToU32(RSRStyle.TextDisabled)
             };
 
             var iconPos = new Vector2(Math.Max(startX, pos.X), pos.Y + yOffset + (itemHeight - iconSize) / 2);
@@ -190,7 +175,7 @@ internal class ActionTimelineWindow : Window
     {
         var drawList = ImGui.GetWindowDrawList();
         var timelineLength = IsHorizontal ? size.X : size.Y;
-        var gridColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.3f, 0.3f, 0.3f, 0.3f));
+        var gridColor = RSRStyle.SeparatorU32;
 
         // Determine step so we don't draw too many lines/labels per frame.
         float secondsVisible = MathF.Max(1f, timelineLength / SizePerSecond);
@@ -217,7 +202,7 @@ internal class ActionTimelineWindow : Window
 
         // Draw current time line
         var currentTimeX = pos.X + timelineLength - TimeOffset * SizePerSecond;
-        var currentTimeColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.3f, 0.8f, 0.2f, 1f));
+        var currentTimeColor = RSRStyle.AccentU32;
         drawList.AddLine(
             new Vector2(currentTimeX, pos.Y),
             new Vector2(currentTimeX, pos.Y + size.Y),
