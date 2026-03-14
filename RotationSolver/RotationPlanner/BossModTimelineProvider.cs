@@ -255,26 +255,27 @@ internal static class BossModTimelineProvider
         foreach (var item in arr)
         {
             var name = item["Name"]?.Value<string>() ?? "";
-            if (string.IsNullOrEmpty(name)) continue; // Skip unnamed states
+            if (string.IsNullOrEmpty(name)) continue;
 
             var time = item["Time"]?.Value<float>() ?? 0;
             var duration = item["Duration"]?.Value<float>() ?? 0;
 
-            MechanicType? type = null;
+            // Determine mechanic type from flags — prioritized
+            MechanicType type;
             if (item["IsRaidwide"]?.Value<bool>() == true) type = MechanicType.Raidwide;
             else if (item["IsTankbuster"]?.Value<bool>() == true) type = MechanicType.Tankbuster;
             else if (item["IsKnockback"]?.Value<bool>() == true) type = MechanicType.Knockback;
             else if (item["IsDowntime"]?.Value<bool>() == true) type = MechanicType.Downtime;
             else if (item["IsPositioning"]?.Value<bool>() == true) type = MechanicType.Positioning;
             else if (item["IsVulnerable"]?.Value<bool>() == true) type = MechanicType.Vulnerable;
-
-            if (type == null) continue; // Only include states with mechanic flags
+            else if (item["BossIsCasting"]?.Value<bool>() == true) type = MechanicType.BossCast;
+            else type = MechanicType.Custom;
 
             mechanics.Add(new TimelineMechanic
             {
                 CombatTime = time,
                 Name = name,
-                Type = type.Value,
+                Type = type,
                 Duration = duration
             });
         }

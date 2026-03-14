@@ -66,6 +66,7 @@ public enum MechanicType
     Downtime,
     Positioning,
     Vulnerable,
+    BossCast,
     Custom
 }
 

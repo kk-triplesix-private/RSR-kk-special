@@ -23,7 +23,7 @@ internal class RotationPlannerWindow : Window
     private const float PaletteWidth = 200f;
     private const float ToolbarHeight = 32f;
     private const float ToolbarTotalHeight = 68f;
-    private const float MechanicLaneHeight = 28f;
+    private const float MechanicLaneHeight = 40f;
     private const float GCDLaneHeight = 48f;
     private const float OGCDLaneHeight = 36f;
     private const float PropertiesHeight = 0f; // Collapsed by default
@@ -55,7 +55,8 @@ internal class RotationPlannerWindow : Window
     private static readonly Vector4 DowntimeColor = new(0.50f, 0.50f, 0.50f, 0.50f);
     private static readonly Vector4 PositioningColor = new(0.60f, 0.40f, 0.80f, 0.70f);
     private static readonly Vector4 VulnerableColor = new(0.30f, 0.85f, 0.40f, 0.70f);
-    private static readonly Vector4 CustomColor = new(0.70f, 0.70f, 0.70f, 0.70f);
+    private static readonly Vector4 BossCastColor = new(0.85f, 0.85f, 0.40f, 0.50f);
+    private static readonly Vector4 CustomColor = new(0.70f, 0.70f, 0.70f, 0.50f);
 
     public RotationPlannerWindow() : base("Rotation Planner", BaseFlags)
     {
@@ -648,25 +649,40 @@ internal class RotationPlannerWindow : Window
         drawList.AddRectFilled(pos, new Vector2(pos.X + size.X, pos.Y + MechanicLaneHeight),
             ImGui.ColorConvertFloat4ToU32(RSRStyle.BgMid with { W = 0.40f }));
 
-        foreach (var mech in _currentPlan.Mechanics)
+        // Lane label with mechanic count
+        var mechanics = _currentPlan.Mechanics;
+        string laneLabel = mechanics.Count > 0
+            ? $"Mechaniken ({mechanics.Count})"
+            : "Mechaniken (Import fuer Daten)";
+        drawList.AddText(new Vector2(pos.X + 4, pos.Y + 2),
+            ImGui.ColorConvertFloat4ToU32(RSRStyle.TextDisabled), laneLabel);
+
+        foreach (var mech in mechanics)
         {
             float x = pos.X + mech.CombatTime * _pixelsPerSecond - _scrollX;
-            float w = Math.Max(mech.Duration * _pixelsPerSecond, 4f);
+            float w = Math.Max(mech.Duration * _pixelsPerSecond, 6f);
             if (x + w < pos.X || x > pos.X + size.X) continue;
 
             var color = GetMechanicColor(mech.Type);
-            float y = pos.Y + 2;
-            float h = MechanicLaneHeight - 4;
+            float y = pos.Y + 16;
+            float h = MechanicLaneHeight - 18;
 
             // Draw marker
             drawList.AddRectFilled(new Vector2(x, y), new Vector2(x + w, y + h),
                 ImGui.ColorConvertFloat4ToU32(color), 3f);
 
+            // Outline for important mechanics
+            if (mech.Type is MechanicType.Raidwide or MechanicType.Tankbuster)
+            {
+                drawList.AddRect(new Vector2(x, y), new Vector2(x + w, y + h),
+                    ImGui.ColorConvertFloat4ToU32(color with { W = 1.0f }), 3f, ImDrawFlags.None, 1.5f);
+            }
+
             // Label
-            if (w > 20)
+            if (w > 30)
             {
                 var labelColor = ImGui.ColorConvertFloat4ToU32(RSRStyle.TextPrimary);
-                drawList.AddText(new Vector2(x + 3, y + 2), labelColor, TruncateText(mech.Name, w - 6));
+                drawList.AddText(new Vector2(x + 3, y + 1), labelColor, TruncateText(mech.Name, w - 6));
             }
 
             // Tooltip
@@ -674,9 +690,11 @@ internal class RotationPlannerWindow : Window
             if (mousePos.X >= x && mousePos.X <= x + w && mousePos.Y >= y && mousePos.Y <= y + h)
             {
                 ImGui.BeginTooltip();
-                ImGui.Text($"{mech.Type}: {mech.Name}");
-                ImGui.Text($"Time: {FormatTime(mech.CombatTime)}");
-                if (mech.Duration > 0) ImGui.Text($"Duration: {mech.Duration:F1}s");
+                ImGui.TextColored(GetMechanicColor(mech.Type), mech.Type.ToString());
+                ImGui.SameLine();
+                ImGui.Text(mech.Name);
+                ImGui.Text($"Zeit: {FormatTime(mech.CombatTime)}");
+                if (mech.Duration > 0) ImGui.Text($"Dauer: {mech.Duration:F1}s");
                 ImGui.EndTooltip();
             }
         }
@@ -858,6 +876,7 @@ internal class RotationPlannerWindow : Window
         MechanicType.Downtime => DowntimeColor,
         MechanicType.Positioning => PositioningColor,
         MechanicType.Vulnerable => VulnerableColor,
+        MechanicType.BossCast => BossCastColor,
         _ => CustomColor
     };
 
