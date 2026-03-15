@@ -300,6 +300,8 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 
 	internal static void UpdateDisplayWindow()
     {
+        RSRStyle.GlassEnabled = Service.Config.EnableGlassmorphism;
+
         bool isValid = MajorUpdater.IsValid && DataCenter.CurrentRotation != null;
 
         isValid &= !Service.Config.OnlyShowWithHostileOrInDuty

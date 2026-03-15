@@ -297,6 +297,7 @@ public partial class RotationConfigWindow : Window
         }
 
         using var theme = RSRStyle.PushTheme(Scale);
+        RSRStyle.DrawGlassWindowBackground();
         try
         {
             using ImRaii.IEndObject table = ImRaii.Table("Rotation Config Table", 2, ImGuiTableFlags.Resizable);
@@ -473,14 +474,23 @@ public partial class RotationConfigWindow : Window
 
     private void DrawSideBar()
     {
-        using var sidebarBg = ImRaii.PushColor(ImGuiCol.ChildBg, RSRStyle.SidebarBg);
+        var sidebarColor = RSRStyle.GlassEnabled
+            ? new Vector4(RSRStyle.SidebarBg.X, RSRStyle.SidebarBg.Y, RSRStyle.SidebarBg.Z, 0.40f)
+            : RSRStyle.SidebarBg;
+        using var sidebarBg = ImRaii.PushColor(ImGuiCol.ChildBg, sidebarColor);
         using ImRaii.IEndObject child = ImRaii.Child("Rotation Solver Side bar", -Vector2.One, false, ImGuiWindowFlags.NoScrollbar);
         if (child)
         {
+            if (RSRStyle.GlassEnabled)
+            {
+                var childPos = ImGui.GetWindowPos();
+                var childSize = ImGui.GetWindowSize();
+                RSRStyle.DrawGlassPanel(childPos, childSize);
+            }
             float wholeWidth = ImGui.GetWindowSize().X;
             DrawHeader(wholeWidth);
             ImGui.Spacing();
-            RSRStyle.ThemedSeparator();
+            if (RSRStyle.GlassEnabled) RSRStyle.GlassSeparator(); else RSRStyle.ThemedSeparator();
             float iconSize = Math.Max(Scale * MIN_COLUMN_WIDTH, Math.Min(wholeWidth, Scale * JOB_ICON_WIDTH)) * 0.6f;
             if (wholeWidth > JOB_ICON_WIDTH * Scale)
             {
@@ -586,33 +596,33 @@ public partial class RotationConfigWindow : Window
                 }
 			}
 
-            // Rotation Planner button
-            RSRStyle.ThemedSeparator();
-            {
-                bool plannerOpen = Service.Config.ShowRotationPlannerWindow;
-                float itemHeight = 26 * Scale;
-                Vector2 itemScreenPos = ImGui.GetCursorScreenPos();
-                if (plannerOpen)
-                {
-                    RSRStyle.DrawAccentBar(itemScreenPos, itemHeight);
-                }
-
-                using (ImRaii.PushColor(ImGuiCol.Header, RSRStyle.SidebarActive))
-                using (ImRaii.PushColor(ImGuiCol.HeaderHovered, RSRStyle.SidebarHover))
-                using (ImRaii.PushColor(ImGuiCol.Text, plannerOpen ? RSRStyle.Accent : RSRStyle.TextPrimary))
-                using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.0f, 0.5f)))
-                {
-                    if (ImGui.Selectable($"  Planner", plannerOpen, ImGuiSelectableFlags.None, new Vector2(0, itemHeight)))
-                    {
-                        Service.Config.ShowRotationPlannerWindow.Value = !plannerOpen;
-                    }
-                }
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-                    ImguiTooltips.ShowTooltip("Rotation Timeline Planner");
-                }
-            }
+            // Rotation Planner button (temporarily disabled)
+            // RSRStyle.ThemedSeparator();
+            // {
+            //     bool plannerOpen = Service.Config.ShowRotationPlannerWindow;
+            //     float itemHeight = 26 * Scale;
+            //     Vector2 itemScreenPos = ImGui.GetCursorScreenPos();
+            //     if (plannerOpen)
+            //     {
+            //         RSRStyle.DrawAccentBar(itemScreenPos, itemHeight);
+            //     }
+            //
+            //     using (ImRaii.PushColor(ImGuiCol.Header, RSRStyle.SidebarActive))
+            //     using (ImRaii.PushColor(ImGuiCol.HeaderHovered, RSRStyle.SidebarHover))
+            //     using (ImRaii.PushColor(ImGuiCol.Text, plannerOpen ? RSRStyle.Accent : RSRStyle.TextPrimary))
+            //     using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.0f, 0.5f)))
+            //     {
+            //         if (ImGui.Selectable($"  Planner", plannerOpen, ImGuiSelectableFlags.None, new Vector2(0, itemHeight)))
+            //         {
+            //             Service.Config.ShowRotationPlannerWindow.Value = !plannerOpen;
+            //         }
+            //     }
+            //     if (ImGui.IsItemHovered())
+            //     {
+            //         ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+            //         ImguiTooltips.ShowTooltip("Rotation Timeline Planner");
+            //     }
+            // }
 
             DrawDiagnosticInfoCube();
             ImGui.Spacing();

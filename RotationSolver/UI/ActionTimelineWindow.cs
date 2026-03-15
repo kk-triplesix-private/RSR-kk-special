@@ -73,6 +73,7 @@ internal class ActionTimelineWindow : Window
         }
 
         using var theme = RSRStyle.PushTheme();
+        RSRStyle.DrawGlassWindowBackground();
         var pos = ImGui.GetWindowPos();
         var size = ImGui.GetWindowSize();
         var now = DateTime.Now;

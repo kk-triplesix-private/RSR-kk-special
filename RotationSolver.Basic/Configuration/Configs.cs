@@ -629,6 +629,9 @@ internal partial class Configs : IPluginConfiguration
     [ConditionBool, UI("Save timeline to JSON file after combat", Parent = nameof(ShowActionTimelineWindow))]
     private static readonly bool _actionTimelineSaveToFile = false;
 
+    [ConditionBool, UI("Enable Glassmorphism UI", Filter = UiWindows)]
+    private static readonly bool _enableGlassmorphism = true;
+
     [ConditionBool, UI("Show Rotation Planner Window", Filter = UiWindows)]
     private static readonly bool _showRotationPlannerWindow = false;
 

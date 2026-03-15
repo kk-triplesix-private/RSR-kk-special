@@ -40,6 +40,7 @@ internal class ControlWindow : CtrlWindow
     public override unsafe void Draw()
     {
         using var theme = RSRStyle.PushTheme();
+        RSRStyle.DrawGlassWindowBackground();
 
         ImGui.Columns(3, "Control Bolder", false);
         float gcd = Service.Config.ControlWindowGCDSize

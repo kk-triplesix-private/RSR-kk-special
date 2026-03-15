@@ -4,11 +4,22 @@ using Dalamud.Interface.Utility.Raii;
 namespace RotationSolver.UI;
 
 /// <summary>
-/// Centralized dark elegant theme for RSR.
-/// Replaces all duplicated PushStyle blocks across windows.
+/// Centralized dark elegant theme for RSR with optional glassmorphism mode.
 /// </summary>
 internal static class RSRStyle
 {
+    // ── Glass mode toggle ──
+    public static bool GlassEnabled { get; set; } = true;
+
+    // ── Glass tuning ──
+    private const float GlassAlpha        = 0.68f;  // Window background opacity
+    private const float GlassChildAlpha   = 0.45f;  // Child/card opacity
+    private const float GlassBorderAlpha  = 0.18f;  // Border brightness
+    private const float GlassHighlight    = 0.08f;  // Top-edge highlight intensity
+    private const float GlassShadowAlpha  = 0.35f;  // Drop shadow opacity
+    private const float GlassShadowSize   = 8f;     // Drop shadow spread (px)
+    private const float GlassRounding     = 12f;    // Corner radius
+
     // ── Background tiers (deep charcoal) ──
     public static readonly Vector4 BgDeep    = new(0.09f, 0.09f, 0.11f, 1.00f);
     public static readonly Vector4 BgMid     = new(0.13f, 0.13f, 0.15f, 1.00f);
@@ -87,12 +98,18 @@ internal static class RSRStyle
     private static uint? _sidebarBgU32;
     public static uint SidebarBgU32 => _sidebarBgU32 ??= ImGui.ColorConvertFloat4ToU32(SidebarBg);
 
+    // ── Helpers: alpha-blend a color ──
+    private static Vector4 WithAlpha(Vector4 c, float a) => new(c.X, c.Y, c.Z, a);
+
     /// <summary>
-    /// Push the full RSR dark theme. Returns IDisposable that pops everything.
-    /// Replaces all duplicated PushStyle blocks across ControlWindow and RotationConfigWindow.
+    /// Push the full RSR theme. When GlassEnabled is true, all backgrounds become
+    /// semi-transparent so the game world shines through with a frosted-glass feel.
     /// </summary>
     public static ThemeScope PushTheme(float scale = 1f)
     {
+        bool glass = GlassEnabled;
+        float rounding = glass ? GlassRounding : 8f;
+
         // ── Style vars ──
         ImGui.PushStyleVar(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(6, 4) * scale);
@@ -103,48 +120,94 @@ internal static class RSRStyle
         ImGui.PushStyleVar(ImGuiStyleVar.IndentSpacing, 22f * scale);
         ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize, 12f * scale);
         ImGui.PushStyleVar(ImGuiStyleVar.GrabMinSize, 11f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 1f);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0f);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 8f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 5f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 6f * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, glass ? 1.5f : 1f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, glass ? 1f : 0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, rounding * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, (glass ? 10f : 6f) * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, (glass ? 8f : 5f) * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, (glass ? 10f : 6f) * scale);
         ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarRounding, 6f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, 4f * scale);
-        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding, 5f * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, (glass ? 6f : 4f) * scale);
+        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding, (glass ? 8f : 5f) * scale);
 
         // ── Colors ──
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, BgDeep);
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, BgMid);
-        ImGui.PushStyleColor(ImGuiCol.PopupBg, BgMid);
-        ImGui.PushStyleColor(ImGuiCol.Border, SeparatorColor);
-        ImGui.PushStyleColor(ImGuiCol.BorderShadow, Vector4.Zero);
+        if (glass)
+        {
+            // Glass backgrounds: semi-transparent with slight teal tint
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.08f, 0.09f, 0.12f, GlassAlpha));
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.10f, 0.11f, 0.14f, GlassChildAlpha));
+            ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.10f, 0.11f, 0.14f, 0.88f));
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1.0f, 1.0f, 1.0f, GlassBorderAlpha));
+            ImGui.PushStyleColor(ImGuiCol.BorderShadow, new Vector4(0f, 0f, 0f, 0.20f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, BgDeep);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, BgMid);
+            ImGui.PushStyleColor(ImGuiCol.PopupBg, BgMid);
+            ImGui.PushStyleColor(ImGuiCol.Border, SeparatorColor);
+            ImGui.PushStyleColor(ImGuiCol.BorderShadow, Vector4.Zero);
+        }
 
-        ImGui.PushStyleColor(ImGuiCol.FrameBg, FrameBg);
-        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, FrameHover);
+        if (glass)
+        {
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0.14f, 0.15f, 0.19f, 0.50f));
+            ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new Vector4(0.20f, 0.22f, 0.26f, 0.60f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, FrameBg);
+            ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, FrameHover);
+        }
         ImGui.PushStyleColor(ImGuiCol.FrameBgActive, FrameActive);
 
-        ImGui.PushStyleColor(ImGuiCol.TitleBg, TitleBg);
-        ImGui.PushStyleColor(ImGuiCol.TitleBgActive, TitleBgActive);
-        ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, TitleBg);
+        if (glass)
+        {
+            ImGui.PushStyleColor(ImGuiCol.TitleBg, new Vector4(0.06f, 0.07f, 0.10f, 0.80f));
+            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(0.08f, 0.09f, 0.13f, 0.85f));
+            ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, new Vector4(0.06f, 0.07f, 0.10f, 0.50f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.TitleBg, TitleBg);
+            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, TitleBgActive);
+            ImGui.PushStyleColor(ImGuiCol.TitleBgCollapsed, TitleBg);
+        }
 
         ImGui.PushStyleColor(ImGuiCol.Text, TextPrimary);
         ImGui.PushStyleColor(ImGuiCol.TextDisabled, TextDisabled);
 
-        ImGui.PushStyleColor(ImGuiCol.Button, Button);
-        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ButtonHover);
-        ImGui.PushStyleColor(ImGuiCol.ButtonActive, ButtonActive);
+        if (glass)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.22f, 0.23f, 0.28f, 0.45f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.28f, 0.30f, 0.36f, 0.60f));
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.18f, 0.19f, 0.24f, 0.70f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, Button);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ButtonHover);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, ButtonActive);
+        }
 
-        ImGui.PushStyleColor(ImGuiCol.Header, BgCard);
-        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, BgRaised);
+        if (glass)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.20f, 0.21f, 0.26f, 0.40f));
+            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0.26f, 0.28f, 0.34f, 0.55f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.Header, BgCard);
+            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, BgRaised);
+        }
         ImGui.PushStyleColor(ImGuiCol.HeaderActive, AccentActive);
 
-        ImGui.PushStyleColor(ImGuiCol.Separator, SeparatorColor);
+        ImGui.PushStyleColor(ImGuiCol.Separator, glass ? new Vector4(1f, 1f, 1f, 0.10f) : SeparatorColor);
         ImGui.PushStyleColor(ImGuiCol.SeparatorHovered, AccentDim);
         ImGui.PushStyleColor(ImGuiCol.SeparatorActive, Accent);
 
-        ImGui.PushStyleColor(ImGuiCol.ScrollbarBg, ScrollBg);
-        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrab, ScrollGrab);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarBg, glass ? new Vector4(0.10f, 0.10f, 0.12f, 0.20f) : ScrollBg);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrab, glass ? WithAlpha(ScrollGrab, 0.60f) : ScrollGrab);
         ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabHovered, ScrollGrabHover);
         ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabActive, ScrollGrabActive);
 
@@ -152,10 +215,20 @@ internal static class RSRStyle
         ImGui.PushStyleColor(ImGuiCol.SliderGrab, Accent);
         ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, AccentActive);
 
-        ImGui.PushStyleColor(ImGuiCol.Tab, Tab);
-        ImGui.PushStyleColor(ImGuiCol.TabHovered, TabHovered);
-        ImGui.PushStyleColor(ImGuiCol.TabActive, TabActive);
-        ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, TabActive);
+        if (glass)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Tab, new Vector4(0.14f, 0.15f, 0.19f, 0.45f));
+            ImGui.PushStyleColor(ImGuiCol.TabHovered, WithAlpha(TabHovered, 0.65f));
+            ImGui.PushStyleColor(ImGuiCol.TabActive, WithAlpha(TabActive, 0.75f));
+            ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, WithAlpha(TabActive, 0.60f));
+        }
+        else
+        {
+            ImGui.PushStyleColor(ImGuiCol.Tab, Tab);
+            ImGui.PushStyleColor(ImGuiCol.TabHovered, TabHovered);
+            ImGui.PushStyleColor(ImGuiCol.TabActive, TabActive);
+            ImGui.PushStyleColor(ImGuiCol.TabUnfocusedActive, TabActive);
+        }
 
         ImGui.PushStyleColor(ImGuiCol.ResizeGrip, AccentSubtle);
         ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, AccentDim);
@@ -163,6 +236,168 @@ internal static class RSRStyle
 
         return new ThemeScope();
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Glassmorphism drawing helpers
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Draw a glass card effect behind the current window. Call this at the very start
+    /// of Draw() BEFORE any content, using the background draw list.
+    /// Renders: outer shadow -> frosted fill -> top-edge highlight -> inner glow border.
+    /// </summary>
+    public static void DrawGlassWindowBackground()
+    {
+        if (!GlassEnabled) return;
+
+        var pos = ImGui.GetWindowPos();
+        var size = ImGui.GetWindowSize();
+        var max = pos + size;
+        var drawList = ImGui.GetWindowDrawList();
+        float rounding = GlassRounding;
+
+        // 1) Drop shadow (layered for soft falloff)
+        for (int i = 3; i >= 1; i--)
+        {
+            float spread = GlassShadowSize * i * 0.4f;
+            float alpha = GlassShadowAlpha * (1f - i * 0.25f);
+            var shadowOffset = new Vector2(0, 2f * i);
+            drawList.AddRectFilled(
+                pos + shadowOffset - new Vector2(spread),
+                max + shadowOffset + new Vector2(spread),
+                ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, alpha)),
+                rounding + spread * 0.5f);
+        }
+
+        // 2) Top-edge highlight (simulates light hitting the glass from above)
+        float highlightHeight = MathF.Min(size.Y * 0.35f, 60f);
+        drawList.AddRectFilledMultiColor(
+            pos,
+            new Vector2(max.X, pos.Y + highlightHeight),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, GlassHighlight)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, GlassHighlight)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)));
+
+        // 3) Inner glow border (accent-tinted, subtle)
+        drawList.AddRect(
+            pos + Vector2.One,
+            max - Vector2.One,
+            ImGui.ColorConvertFloat4ToU32(new Vector4(Accent.X, Accent.Y, Accent.Z, 0.06f)),
+            rounding - 1f, ImDrawFlags.RoundCornersAll, 1f);
+    }
+
+    /// <summary>
+    /// Draw a glass card effect for a child region / panel.
+    /// Call after BeginChild() to overlay glass effects on the child.
+    /// </summary>
+    public static void DrawGlassPanel(Vector2 pos, Vector2 size, float rounding = -1f)
+    {
+        if (!GlassEnabled) return;
+        if (rounding < 0) rounding = GlassRounding - 2f;
+
+        var max = pos + size;
+        var drawList = ImGui.GetWindowDrawList();
+
+        // Subtle shadow beneath the panel
+        drawList.AddRectFilled(
+            pos + new Vector2(0, 2),
+            max + new Vector2(0, 4),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.18f)),
+            rounding);
+
+        // Top highlight gradient
+        float hlHeight = MathF.Min(size.Y * 0.3f, 30f);
+        drawList.AddRectFilledMultiColor(
+            pos,
+            new Vector2(max.X, pos.Y + hlHeight),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.05f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.05f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)));
+
+        // Bright top-edge line (light refraction)
+        drawList.AddLine(
+            pos + new Vector2(rounding, 0),
+            new Vector2(max.X - rounding, pos.Y),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.12f)),
+            1f);
+
+        // Inner accent glow
+        drawList.AddRect(pos, max,
+            ImGui.ColorConvertFloat4ToU32(new Vector4(Accent.X, Accent.Y, Accent.Z, 0.04f)),
+            rounding, ImDrawFlags.RoundCornersAll, 1f);
+    }
+
+    /// <summary>
+    /// Draw a glowing glass button background. Use in combination with InvisibleButton
+    /// for fully custom button styling.
+    /// </summary>
+    public static void DrawGlassButton(Vector2 pos, Vector2 size, bool hovered, bool active)
+    {
+        if (!GlassEnabled) return;
+
+        var max = pos + size;
+        var drawList = ImGui.GetWindowDrawList();
+        float rounding = 8f;
+
+        // Button fill
+        float alpha = active ? 0.55f : hovered ? 0.40f : 0.25f;
+        drawList.AddRectFilled(pos, max,
+            ImGui.ColorConvertFloat4ToU32(new Vector4(Accent.X, Accent.Y, Accent.Z, alpha * 0.3f)),
+            rounding);
+
+        // Top highlight
+        drawList.AddRectFilledMultiColor(
+            pos,
+            new Vector2(max.X, pos.Y + size.Y * 0.45f),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, hovered ? 0.10f : 0.05f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, hovered ? 0.10f : 0.05f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0f)));
+
+        // Border
+        drawList.AddRect(pos, max,
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, hovered ? 0.22f : 0.10f)),
+            rounding, ImDrawFlags.RoundCornersAll, 1f);
+    }
+
+    /// <summary>
+    /// Draw a glass-styled separator with a subtle glow line.
+    /// </summary>
+    public static void GlassSeparator()
+    {
+        if (!GlassEnabled)
+        {
+            ThemedSeparator();
+            return;
+        }
+
+        ImGui.Dummy(new Vector2(0, 3));
+        var pos = ImGui.GetCursorScreenPos();
+        var width = ImGui.GetContentRegionAvail().X;
+        var drawList = ImGui.GetWindowDrawList();
+
+        // Glow line (wider, faded)
+        drawList.AddLine(
+            pos + new Vector2(width * 0.1f, 0),
+            new Vector2(pos.X + width * 0.9f, pos.Y),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(Accent.X, Accent.Y, Accent.Z, 0.12f)),
+            3f);
+
+        // Sharp center line
+        drawList.AddLine(
+            pos + new Vector2(width * 0.05f, 0),
+            new Vector2(pos.X + width * 0.95f, pos.Y),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.08f)),
+            1f);
+
+        ImGui.Dummy(new Vector2(0, 4));
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Original helpers (unchanged)
+    // ═══════════════════════════════════════════════════════════════
 
     /// <summary>
     /// Draws a vertical accent bar on the left edge (for active sidebar items / section headers).
