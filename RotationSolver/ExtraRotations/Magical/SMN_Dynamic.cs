@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Text.Json;
 using ECommons.DalamudServices;
+using RotationSolver.Basic.Configuration;
 using RotationSolver.IPC;
 
 namespace RotationSolver.ExtraRotations.Magical;
@@ -86,6 +87,9 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Addle timing: seconds before cast ends to apply Addle")]
     public float AddleLeadTime { get; set; } = 3.5f;
 
+    [RotationConfig(CombatType.PvE, Name = "Diagnostics: Show real-time decision state in Rotation Status panel")]
+    public bool ShowDiagnostics { get; set; } = false;
+
     #endregion
 
     #region Helper Properties
@@ -97,6 +101,35 @@ public sealed class SMN_Dynamic : SummonerRotation
     private bool _pauseForDirectionValid;
     private string? _specialModeCache;
     private bool _specialModeCacheValid;
+
+    // === Simulation State ===
+    // Ermöglicht das Testen defensiver Reaktionen ohne echte Boss-Angriffe.
+    // Overrides werden nur im Diagnostics-Panel aktiviert und beeinflussen die echten Decision-Methoden.
+    private static bool _simEnabled;
+    private static bool _simRaidwideImminent;
+    private static bool _simSharedImminent;
+    private static bool _simTankbusterImminent;
+    private static bool _simMagicalCast;
+    private static bool _simMoving;
+    private static int _simSpecialModeIndex; // 0=Normal, 1=Pyretic, 2=NoMovement, 3=Freezing
+
+    // Cast-ID Lookup
+    private static int _lookupCastId;
+    private static string? _lookupResult;
+
+    // Decision Log (Ring-Buffer, letzte 20 Einträge)
+    private static readonly string[] _decisionLog = new string[20];
+    private static int _decisionLogIndex;
+    private static int _decisionLogCount;
+
+    private static readonly string[] SpecialModeNames = ["Normal", "Pyretic", "NoMovement", "Freezing"];
+
+    private static void LogDecision(string message)
+    {
+        _decisionLog[_decisionLogIndex] = $"[{DateTime.Now:HH:mm:ss}] {message}";
+        _decisionLogIndex = (_decisionLogIndex + 1) % _decisionLog.Length;
+        if (_decisionLogCount < _decisionLog.Length) _decisionLogCount++;
+    }
 
     /// <summary>
     /// Cached BossMod SpecialMode - wird nur 1x pro Frame abgefragt statt in jeder Methode.
@@ -807,10 +840,14 @@ public sealed class SMN_Dynamic : SummonerRotation
             return false;
         }
 
-        bool preferInstants = IsMoving;
+        bool preferInstants = _simEnabled ? _simMoving : IsMoving;
+
+        // Simulation SpecialMode Override
+        string? mode = _simEnabled && _simSpecialModeIndex > 0
+            ? SpecialModeNames[_simSpecialModeIndex]
+            : GetCachedSpecialMode();
 
         // BossMod SpecialMode: überschreibt Bewegungserkennung (gecacht)
-        var mode = GetCachedSpecialMode();
         if (mode != null)
         {
             switch (mode)
@@ -856,17 +893,36 @@ public sealed class SMN_Dynamic : SummonerRotation
     /// </summary>
     private bool IsDamageImminent()
     {
+        // Simulation Override: faked BossMod-Events
+        if (_simEnabled && (_simRaidwideImminent || _simSharedImminent || _simTankbusterImminent))
+        {
+            LogDecision("IsDamageImminent=TRUE (SIM: " +
+                (_simRaidwideImminent ? "Raidwide " : "") +
+                (_simSharedImminent ? "Shared " : "") +
+                (_simTankbusterImminent ? "TB" : "") + ")");
+            return true;
+        }
+
         // BossMod IPC: alle Schadenstypen prüfen
         if (UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
         {
             try
             {
                 if (BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(BossModLookahead) == true)
+                {
+                    LogDecision("IsDamageImminent=TRUE (BossMod: Raidwide)");
                     return true;
+                }
                 if (BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true)
+                {
+                    LogDecision("IsDamageImminent=TRUE (BossMod: Shared)");
                     return true;
+                }
                 if (BossModHints_IPCSubscriber.Hints_IsTankbusterImminent?.Invoke(BossModLookahead) == true)
+                {
+                    LogDecision("IsDamageImminent=TRUE (BossMod: TB)");
                     return true;
+                }
             }
             catch
             {
@@ -876,11 +932,17 @@ public sealed class SMN_Dynamic : SummonerRotation
 
         // RSR Fallback 1: bekannte AOE-Casts oder VFX-Erkennung
         if (DataCenter.IsHostileCastingAOE)
+        {
+            LogDecision("IsDamageImminent=TRUE (RSR: HostileCastingAOE)");
             return true;
+        }
 
         // RSR Fallback 2: jeder magische Cast (fängt Raidwides auf die nicht in der AOE-Liste sind)
         if (DataCenter.IsMagicalDamageIncoming())
+        {
+            LogDecision("IsDamageImminent=TRUE (RSR: MagicalDamageIncoming)");
             return true;
+        }
 
         return false;
     }
@@ -895,6 +957,14 @@ public sealed class SMN_Dynamic : SummonerRotation
     /// </summary>
     private bool ShouldUseAddle()
     {
+        // Simulation Override: faked magical raidwide
+        if (_simEnabled && _simMagicalCast && _simRaidwideImminent)
+        {
+            // Im Sim-Modus Target-Check überspringen (kein echtes Target nötig)
+            LogDecision("ShouldUseAddle=TRUE (SIM: Magical+Raidwide)");
+            return true;
+        }
+
         // Nur bei magischem Schaden (RSR-eigene Erkennung)
         if (!DataCenter.IsMagicalDamageIncoming())
         {
@@ -914,11 +984,17 @@ public sealed class SMN_Dynamic : SummonerRotation
             {
                 bool raidwide = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(AddleLeadTime) == true;
                 if (raidwide)
-                    return true; // Raidwide innerhalb AddleLeadTime: Addle jetzt
+                {
+                    LogDecision("ShouldUseAddle=TRUE (BossMod: Raidwide within AddleLeadTime)");
+                    return true;
+                }
 
                 bool shared = BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(AddleLeadTime) == true;
                 if (shared && !AddlePvE.Cooldown.IsCoolingDown)
-                    return true; // Stack innerhalb AddleLeadTime: nur wenn CD frei
+                {
+                    LogDecision("ShouldUseAddle=TRUE (BossMod: Shared, CD free)");
+                    return true;
+                }
             }
             catch
             {
@@ -932,10 +1008,16 @@ public sealed class SMN_Dynamic : SummonerRotation
 
         bool isRaidwideCast = IsAnyHostileCastingKnownRaidwide();
         if (isRaidwideCast)
+        {
+            LogDecision("ShouldUseAddle=TRUE (RSR: Known Raidwide Cast)");
             return true;
+        }
 
         if (DataCenter.IsHostileCastingAOE && !AddlePvE.Cooldown.IsCoolingDown)
+        {
+            LogDecision("ShouldUseAddle=TRUE (RSR: AOE Cast, CD free)");
             return true;
+        }
 
         return false;
     }
@@ -1042,6 +1124,404 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (EmeraldOutburstPvE.CanUse(out act)) return true;
         if (TopazOutburstPvE.CanUse(out act)) return true;
         return false;
+    }
+
+    #endregion
+
+    #region Diagnostics & Simulation
+
+    public override void DisplayRotationStatus()
+    {
+        if (!ShowDiagnostics)
+        {
+            ImGui.TextWrapped("Enable 'Diagnostics' in rotation config to show real-time decision state.");
+            return;
+        }
+
+        ImGui.TextColored(new System.Numerics.Vector4(1f, 0.8f, 0.2f, 1f), "=== SMN Dynamic Diagnostics ===");
+        ImGui.Separator();
+
+        // ==================== SIMULATION CONTROLS ====================
+        DrawSimulationControls();
+
+        ImGui.Separator();
+
+        // ==================== REACTION PREVIEW ====================
+        DrawReactionPreview();
+
+        ImGui.Separator();
+
+        // ==================== LIVE STATE ====================
+        DrawLiveState();
+
+        ImGui.Separator();
+
+        // ==================== CAST ID LOOKUP ====================
+        DrawCastIdLookup();
+
+        ImGui.Separator();
+
+        // ==================== DECISION LOG ====================
+        DrawDecisionLog();
+    }
+
+    // ----- Simulation Controls -----
+    private void DrawSimulationControls()
+    {
+        // Header mit Warn-Banner wenn aktiv
+        if (_simEnabled)
+        {
+            ImGui.TextColored(new System.Numerics.Vector4(1f, 0.2f, 0.2f, 1f),
+                "!! SIMULATION ACTIVE - Overrides beeinflussen Rotation !!");
+        }
+
+        bool simEnabled = _simEnabled;
+        if (ImGui.Checkbox("Simulation aktivieren", ref simEnabled))
+        {
+            _simEnabled = simEnabled;
+            if (!simEnabled)
+            {
+                // Reset aller Overrides beim Deaktivieren
+                _simRaidwideImminent = false;
+                _simSharedImminent = false;
+                _simTankbusterImminent = false;
+                _simMagicalCast = false;
+                _simMoving = false;
+                _simSpecialModeIndex = 0;
+                LogDecision("Simulation DEAKTIVIERT - alle Overrides reset");
+            }
+            else
+            {
+                LogDecision("Simulation AKTIVIERT");
+            }
+        }
+
+        if (!_simEnabled) return;
+
+        ImGui.Indent(10);
+
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Damage Events:");
+        bool rw = _simRaidwideImminent;
+        if (ImGui.Checkbox("Raidwide Imminent", ref rw)) _simRaidwideImminent = rw;
+        ImGui.SameLine();
+        bool sh = _simSharedImminent;
+        if (ImGui.Checkbox("Shared/Stack", ref sh)) _simSharedImminent = sh;
+        ImGui.SameLine();
+        bool tb = _simTankbusterImminent;
+        if (ImGui.Checkbox("Tankbuster", ref tb)) _simTankbusterImminent = tb;
+
+        bool mag = _simMagicalCast;
+        if (ImGui.Checkbox("Magical Damage (fuer Addle)", ref mag)) _simMagicalCast = mag;
+
+        ImGui.Spacing();
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Movement & Mechanics:");
+        bool mov = _simMoving;
+        if (ImGui.Checkbox("IsMoving Override", ref mov)) _simMoving = mov;
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(120);
+        int specIdx = _simSpecialModeIndex;
+        if (ImGui.Combo("SpecialMode", ref specIdx, SpecialModeNames, SpecialModeNames.Length))
+            _simSpecialModeIndex = specIdx;
+
+        ImGui.Unindent(10);
+    }
+
+    // ----- Reaction Preview -----
+    private void DrawReactionPreview()
+    {
+        ImGui.TextColored(new System.Numerics.Vector4(1f, 0.8f, 0.2f, 1f), "[Reaction Preview]");
+
+        // IsDamageImminent
+        bool damageImm = IsDamageImminent();
+        bool shouldAddle = false;
+        try { shouldAddle = ShouldUseAddle(); } catch { }
+
+        ColoredBool("  IsDamageImminent", damageImm);
+        ColoredBool("  ShouldUseAddle", shouldAddle);
+
+        // Addle Status
+        bool addleOnCD = AddlePvE.Cooldown.IsCoolingDown;
+        bool targetHasAddle = HostileTarget?.HasStatus(false, StatusID.Addle) ?? false;
+        ImGui.Text($"  Addle: {(addleOnCD ? $"CD ({AddlePvE.Cooldown.RecastTimeRemainOneCharge:F1}s)" : "Ready")} | Target Addle: {(targetHasAddle ? "YES" : "No")}");
+
+        // Aegis Status
+        bool aegisReady = !RadiantAegisPvE.Cooldown.IsCoolingDown;
+        ColoredBool("  Aegis wuerde feuern", damageImm && SmartAegis && aegisReady);
+        ImGui.Text($"  Aegis: {(aegisReady ? "Ready" : $"CD ({RadiantAegisPvE.Cooldown.RecastTimeRemainOneCharge:F1}s)")}");
+
+        // Decision Chain Erklärung
+        ImGui.Spacing();
+        ImGui.TextColored(new System.Numerics.Vector4(0.8f, 0.8f, 0.8f, 1f), "  Decision Chain:");
+        if (_simEnabled)
+        {
+            string source = _simEnabled ? "SIM" : "LIVE";
+            if (_simRaidwideImminent || _simSharedImminent || _simTankbusterImminent)
+                ImGui.Text($"    -> IsDamageImminent: {source} Override aktiv");
+            if (_simMagicalCast && _simRaidwideImminent)
+                ImGui.Text($"    -> ShouldUseAddle: {source} Magical+Raidwide");
+        }
+        else
+        {
+            bool bossModOk = UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled;
+            if (bossModOk)
+                ImGui.Text("    -> Quelle: BossMod IPC");
+            else if (DataCenter.IsHostileCastingAOE)
+                ImGui.Text("    -> Quelle: RSR HostileCastingAOE");
+            else if (DataCenter.IsMagicalDamageIncoming())
+                ImGui.Text("    -> Quelle: RSR MagicalDamageIncoming");
+            else
+                ImGui.TextDisabled("    -> Kein Damage erkannt");
+        }
+
+        // Primal Selection Preview
+        ImGui.Spacing();
+        bool moving = _simEnabled ? _simMoving : IsMoving;
+        string? activeMode = _simEnabled && _simSpecialModeIndex > 0
+            ? SpecialModeNames[_simSpecialModeIndex]
+            : GetCachedSpecialMode();
+
+        bool preferInstants = moving;
+        if (activeMode != null)
+        {
+            preferInstants = activeMode switch
+            {
+                "Pyretic" => true,
+                "NoMovement" => false,
+                "Freezing" => true,
+                _ => preferInstants
+            };
+        }
+
+        string primalOrder = preferInstants
+            ? "Titan > Garuda > Ifrit (Instants)"
+            : "Ifrit > Titan > Garuda (Casts)";
+
+        if (M11SIfritLast && IsInM11STrophyPhase())
+            primalOrder = "Titan > Garuda > Ifrit (M11S Trophy)";
+
+        ImGui.Text($"  Primal Order: {primalOrder}");
+        ImGui.Text($"  Moving: {moving} | SpecialMode: {activeMode ?? "Normal"}");
+    }
+
+    // ----- Live State -----
+    private void DrawLiveState()
+    {
+        ImGui.TextColored(new System.Numerics.Vector4(1f, 0.8f, 0.2f, 1f), "[Live State]");
+
+        // Hostile Casts
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Hostile Casts:");
+        if (DataCenter.AllHostileTargets != null)
+        {
+            bool anyCast = false;
+            for (int i = 0, n = DataCenter.AllHostileTargets.Count; i < n; i++)
+            {
+                var h = DataCenter.AllHostileTargets[i];
+                if (h == null || !h.IsCasting || h.TotalCastTime <= 0) continue;
+                anyCast = true;
+                float remaining = h.TotalCastTime - h.CurrentCastTime;
+                uint castId = h.CastActionId;
+                bool inList = OtherConfiguration.HostileCastingArea.Contains(castId);
+                string atkType = GetAttackTypeName(castId);
+                string actionName = GetActionName(castId);
+                var castColor = inList
+                    ? new System.Numerics.Vector4(0.2f, 1f, 0.2f, 1f)
+                    : new System.Numerics.Vector4(1f, 1f, 1f, 1f);
+                ImGui.TextColored(castColor, $"  {castId} {actionName} | {remaining:F1}s | {atkType} | {(inList ? "IN LIST" : "not listed")}");
+            }
+            if (!anyCast) ImGui.TextDisabled("  (keine aktiven Casts)");
+        }
+        else
+        {
+            ImGui.TextDisabled("  (keine Targets)");
+        }
+
+        ImGui.Spacing();
+
+        // BossMod IPC
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "BossMod IPC:");
+        bool bossModOk = UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled;
+        if (bossModOk)
+        {
+            try
+            {
+                bool rw = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(BossModLookahead) == true;
+                bool rwLead = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(AddleLeadTime) == true;
+                bool sh = BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true;
+                bool tb = BossModHints_IPCSubscriber.Hints_IsTankbusterImminent?.Invoke(BossModLookahead) == true;
+                ColoredBool($"  Raidwide ({BossModLookahead:F0}s)", rw);
+                ImGui.SameLine();
+                ColoredBool($"| Addle-Fenster ({AddleLeadTime:F1}s)", rwLead);
+                ColoredBool($"  Shared ({BossModLookahead:F0}s)", sh);
+                ImGui.SameLine();
+                ColoredBool($"| TB ({BossModLookahead:F0}s)", tb);
+                ImGui.Text($"  SpecialMode: {GetCachedSpecialMode() ?? "Normal"}");
+            }
+            catch { ImGui.TextDisabled("  (IPC Fehler)"); }
+        }
+        else
+        {
+            ImGui.TextDisabled($"  Nicht verbunden (UseBossModIPC={UseBossModIPC})");
+        }
+
+        ImGui.Spacing();
+
+        // Fight State
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Fight:");
+        ImGui.Text($"  Territory: {DataCenter.TerritoryID} | InCombat: {InCombat}");
+        ImGui.Text($"  Phase: {(InBahamut ? "Bahamut" : InPhoenix ? "Phoenix" : InSolarBahamut ? "SolarBahamut" : "Primal")} | SummonTime: {SummonTime:F1}s");
+        if (HasFurtherRuin) ImGui.Text("  FurtherRuin: ACTIVE");
+        if (DataCenter.IsInM11S)
+        {
+            bool trophy = IsInM11STrophyPhase();
+            ColoredBool("  M11S TrophyPhase", trophy);
+        }
+        float grotRemaining = DirectedGrotesquerieRemaining;
+        if (grotRemaining > 0)
+        {
+            ImGui.Text($"  M12S Grotesquerie: {grotRemaining:F1}s");
+            ColoredBool("  ShouldPause", ShouldPauseForDirection());
+        }
+    }
+
+    // ----- Cast ID Lookup & Management -----
+    private static void DrawCastIdLookup()
+    {
+        ImGui.TextColored(new System.Numerics.Vector4(1f, 0.8f, 0.2f, 1f), "[Cast ID Lookup]");
+
+        ImGui.SetNextItemWidth(120);
+        ImGui.InputInt("Cast ID", ref _lookupCastId, 0, 0);
+        ImGui.SameLine();
+
+        if (ImGui.Button("Lookup"))
+        {
+            uint id = (uint)_lookupCastId;
+            if (id == 0)
+            {
+                _lookupResult = "Ungueltige ID (0)";
+            }
+            else
+            {
+                string name = GetActionName(id);
+                string atkType = GetAttackTypeName(id);
+                bool inList = OtherConfiguration.HostileCastingArea.Contains(id);
+                _lookupResult = $"{id}: {name} | {atkType} | {(inList ? "IN HostileCastingArea" : "NICHT in Liste")}";
+            }
+        }
+
+        if (_lookupCastId > 0)
+        {
+            uint lookupId = (uint)_lookupCastId;
+            bool inList = OtherConfiguration.HostileCastingArea.Contains(lookupId);
+
+            ImGui.SameLine();
+            if (!inList)
+            {
+                if (ImGui.Button("+ Add to List"))
+                {
+                    OtherConfiguration.HostileCastingArea.Add(lookupId);
+                    OtherConfiguration.Save();
+                    string name = GetActionName(lookupId);
+                    _lookupResult = $"ADDED: {lookupId} ({name})";
+                    LogDecision($"HostileCastingArea + {lookupId} ({name})");
+                }
+            }
+            else
+            {
+                if (ImGui.Button("- Remove from List"))
+                {
+                    OtherConfiguration.HostileCastingArea.Remove(lookupId);
+                    OtherConfiguration.Save();
+                    string name = GetActionName(lookupId);
+                    _lookupResult = $"REMOVED: {lookupId} ({name})";
+                    LogDecision($"HostileCastingArea - {lookupId} ({name})");
+                }
+            }
+        }
+
+        if (_lookupResult != null)
+        {
+            ImGui.Text($"  {_lookupResult}");
+        }
+
+        ImGui.Text($"  HostileCastingArea Eintraege: {OtherConfiguration.HostileCastingArea.Count}");
+    }
+
+    // ----- Decision Log -----
+    private static void DrawDecisionLog()
+    {
+        ImGui.TextColored(new System.Numerics.Vector4(1f, 0.8f, 0.2f, 1f), "[Decision Log]");
+
+        if (_decisionLogCount == 0)
+        {
+            ImGui.TextDisabled("  (noch keine Eintraege - Decisions werden bei Erkennung geloggt)");
+            return;
+        }
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Clear"))
+        {
+            _decisionLogCount = 0;
+            _decisionLogIndex = 0;
+        }
+
+        // Zeige Einträge rückwärts (neuester zuerst)
+        int shown = 0;
+        for (int i = 0; i < _decisionLogCount && shown < 15; i++)
+        {
+            int idx = (_decisionLogIndex - 1 - i + _decisionLog.Length) % _decisionLog.Length;
+            if (_decisionLog[idx] != null)
+            {
+                ImGui.Text($"  {_decisionLog[idx]}");
+                shown++;
+            }
+        }
+    }
+
+    // ----- Helper Methods -----
+
+    private static void ColoredBool(string label, bool value)
+    {
+        var color = value
+            ? new System.Numerics.Vector4(0.2f, 1f, 0.2f, 1f)  // grün
+            : new System.Numerics.Vector4(0.6f, 0.6f, 0.6f, 1f); // grau
+        ImGui.TextColored(color, $"{label}: {(value ? "TRUE" : "FALSE")}");
+    }
+
+    private static string GetActionName(uint actionId)
+    {
+        try
+        {
+            var sheet = Service.GetSheet<Lumina.Excel.Sheets.Action>();
+            if (sheet == null) return "?";
+            var action = sheet.GetRow(actionId);
+            if (action.RowId == 0) return "?";
+            string name = action.Name.ToString();
+            return string.IsNullOrEmpty(name) ? $"(id:{actionId})" : name;
+        }
+        catch { return "?"; }
+    }
+
+    private static string GetAttackTypeName(uint actionId)
+    {
+        try
+        {
+            var sheet = Service.GetSheet<Lumina.Excel.Sheets.Action>();
+            if (sheet == null) return "?";
+            var action = sheet.GetRow(actionId);
+            if (action.RowId == 0) return "?";
+            return action.AttackType.RowId switch
+            {
+                0 => "None(0)",
+                1 => "Slash(1)",
+                2 => "Pierce(2)",
+                3 => "Blunt(3)",
+                5 => "Magic(5)",
+                6 => "Dark(6)",
+                7 => "Phys(7)",
+                _ => $"Unk({action.AttackType.RowId})"
+            };
+        }
+        catch { return "?"; }
     }
 
     #endregion
