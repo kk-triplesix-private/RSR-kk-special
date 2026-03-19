@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Text.Json;
+using ECommons.DalamudServices;
 using RotationSolver.IPC;
 
 namespace RotationSolver.ExtraRotations.Magical;
@@ -81,11 +82,41 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Opener Addle: Use within first N seconds of combat")]
     public float OpenerAddleWindow { get; set; } = 10f;
 
+    [Range(1f, 10f, ConfigUnitType.Seconds)]
+    [RotationConfig(CombatType.PvE, Name = "Addle timing: seconds before cast ends to apply Addle")]
+    public float AddleLeadTime { get; set; } = 3.5f;
+
     #endregion
 
     #region Helper Properties
 
     private static bool HasFurtherRuin => StatusHelper.PlayerHasStatus(true, StatusID.FurtherRuin_2701);
+
+    // Per-Frame Cache für teure Berechnungen (wird jede GCD neu berechnet)
+    private bool _pauseForDirectionCached;
+    private bool _pauseForDirectionValid;
+    private string? _specialModeCache;
+    private bool _specialModeCacheValid;
+
+    /// <summary>
+    /// Cached BossMod SpecialMode - wird nur 1x pro Frame abgefragt statt in jeder Methode.
+    /// </summary>
+    private string? GetCachedSpecialMode()
+    {
+        if (_specialModeCacheValid) return _specialModeCache;
+        _specialModeCacheValid = true;
+        _specialModeCache = null;
+
+        if (!UseSpecialMode || !UseBossModIPC || !BossModHints_IPCSubscriber.IsEnabled)
+            return null;
+
+        try
+        {
+            _specialModeCache = BossModHints_IPCSubscriber.Hints_SpecialMode?.Invoke();
+        }
+        catch { }
+        return _specialModeCache;
+    }
 
     /// <summary>
     /// M12S: Gibt die Restdauer des _Gen_Direction Debuffs (Status ID 3558) zurück.
@@ -107,11 +138,17 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     /// <summary>
     /// M12S: Prüft ob die Rotation wegen Directed Grotesquerie pausiert werden soll.
-    /// Pausiert erst wenn die Restdauer unter DirectionPauseLeadTime fällt (default 1.5s).
-    /// - Wenn BossMod ForbiddenDirections verfügbar: Smart-Modus, nur pausieren wenn Zielrichtung verboten ist
-    /// - Ohne BossMod: Blanket-Pause wenn Debuff kurz vor Ablauf
+    /// Ergebnis wird pro Frame gecacht (5 Aufrufer pro Frame: GeneralGCD, Emergency, Attack, General, Defense).
     /// </summary>
     private bool ShouldPauseForDirection()
+    {
+        if (_pauseForDirectionValid) return _pauseForDirectionCached;
+        _pauseForDirectionValid = true;
+        _pauseForDirectionCached = ComputeShouldPauseForDirection();
+        return _pauseForDirectionCached;
+    }
+
+    private bool ComputeShouldPauseForDirection()
     {
         if (!PauseOnDirectedGrotesquerie)
             return false;
@@ -128,19 +165,13 @@ public sealed class SMN_Dynamic : SummonerRotation
                 var json = BossModHints_IPCSubscriber.Hints_ForbiddenDirections?.Invoke();
                 if (!string.IsNullOrEmpty(json) && json != "[]" && HostileTarget != null && Player != null)
                 {
-                    // Richtung vom Spieler zum Ziel berechnen (BossMod-Konvention: Atan2(dx, dz))
                     var dx = HostileTarget.Position.X - Player.Position.X;
                     var dz = HostileTarget.Position.Z - Player.Position.Z;
                     var dirToTarget = MathF.Atan2(dx, dz);
-
-                    // Prüfe ob diese Richtung in einem verbotenen Bogen liegt
                     return IsDirectionForbidden(dirToTarget, json);
                 }
             }
-            catch
-            {
-                // IPC-Fehler: Fallback auf Blanket-Pause
-            }
+            catch { }
         }
 
         // Fallback: komplett pausieren wenn Debuff kurz vor Ablauf
@@ -170,17 +201,23 @@ public sealed class SMN_Dynamic : SummonerRotation
     /// M11S Trophy Weapon Phase Erkennung.
     /// Trophy Weapon Adds DataId: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2).
     /// Wenn diese Adds existieren, sind wir in einer Trophy-Weapon-Phase (regulär oder Ultimate).
+    /// Scannt Svc.Objects direkt, da die Trophy Weapons nicht targetbar sind und daher
+    /// nicht in AllHostileTargets erscheinen.
     /// </summary>
     private static bool IsInM11STrophyPhase()
     {
-        if (DataCenter.AllHostileTargets == null) return false;
-        for (int i = 0, n = DataCenter.AllHostileTargets.Count; i < n; i++)
+        if (!DataCenter.IsInM11S) return false;
+
+        var objects = Svc.Objects;
+        if (objects == null) return false;
+
+        int count = objects.Length;
+        for (int i = 0; i < count; i++)
         {
-            var h = DataCenter.AllHostileTargets[i];
-            if (h == null) continue;
-            var dataId = h.BaseId;
+            var obj = objects[i];
+            if (obj == null) continue;
             // Trophy Weapon Adds: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2)
-            if (dataId is 0x4AF0 or 0x4AF1 or 0x4AF2)
+            if (obj.BaseId is 0x4AF0 or 0x4AF1 or 0x4AF2)
                 return true;
         }
         return false;
@@ -528,26 +565,23 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (ShouldPauseForDirection())
             return base.EmergencyAbility(nextGCD, out act);
 
-        // Höchste Priorität: Raidwide/Stack erkannt → Addle + Schild SOFORT
-        // EmergencyAbility wird VOR allen anderen oGCDs aufgerufen (höchste Priorität im Framework)
-        bool damageImminent = IsDamageImminent();
-
-        if (damageImminent)
+        // Addle: Entkoppelt von IsDamageImminent - ShouldUseAddle hat eigene Timing-Logik
+        // (BossMod: IsRaidwideImminent(AddleLeadTime), RSR: Cast-Remaining ≤ AddleLeadTime)
+        // So feuert Addle auch wenn IsDamageImminent den Cast nicht als AOE erkennt,
+        // und wird nicht von Aegis verdrängt wenn das Timing noch nicht stimmt.
+        if (AutoAddle && ShouldUseAddle())
         {
-            // Addle zuerst: reduziert den eingehenden Schaden
-            if (AutoAddle && ShouldUseAddle())
-            {
-                if (AddlePvE.CanUse(out act))
-                {
-                    return true;
-                }
-            }
-
-            // Radiant Aegis: Schild aktivieren bevor der Schaden eintrifft
-            if (SmartAegis && !IsLastAction(false, RadiantAegisPvE) && RadiantAegisPvE.CanUse(out act, usedUp: true))
+            if (AddlePvE.CanUse(out act))
             {
                 return true;
             }
+        }
+
+        // Radiant Aegis: Schild bei drohendem Schaden (breiteres Fenster via IsDamageImminent)
+        if (SmartAegis && IsDamageImminent()
+            && !IsLastAction(false, RadiantAegisPvE) && RadiantAegisPvE.CanUse(out act, usedUp: true))
+        {
+            return true;
         }
 
         if (SwiftcastPvE.CanUse(out act))
@@ -592,7 +626,9 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationDesc(ActionID.ResurrectionPvE)]
     protected override bool RaiseGCD(out IAction? act)
     {
-        if ((!InSolarBahamut && SBRaise) || !SBRaise)
+        // SBRaise = true: Raise jederzeit (auch in Solar Bahamut)
+        // SBRaise = false: Raise nur außerhalb von Solar Bahamut
+        if (!InSolarBahamut || SBRaise)
         {
             if (ResurrectionPvE.CanUse(out act))
             {
@@ -604,6 +640,10 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     protected override bool GeneralGCD(out IAction? act)
     {
+        // Per-Frame Caches invalidieren (GeneralGCD ist der erste Aufruf pro Zyklus)
+        _pauseForDirectionValid = false;
+        _specialModeCacheValid = false;
+
         // M12S: Rotation pausieren wenn Directed Grotesquerie aktiv
         if (ShouldPauseForDirection())
         {
@@ -618,27 +658,17 @@ public sealed class SMN_Dynamic : SummonerRotation
         }
 
         // Big summon phase (Bahamut/Phoenix/Solar Bahamut)
-        // FFLogs-Analyse: Alle Top-Spieler gehen direkt 1x Ruin III (Precast) → Solar Bahamut.
-        // Kein zusätzlicher Ruin III Filler vor dem ersten Big Summon.
+        if (SummonBahamutPvE.CanUse(out act))
         {
-            if (SummonBahamutPvE.CanUse(out act))
-            {
-                return true;
-            }
-            if (!SummonBahamutPvE.Info.EnoughLevelAndQuest() && DreadwyrmTrancePvE.CanUse(out act))
-            {
-                return true;
-            }
-
-            if ((HasSearingLight || SearingLightPvE.Cooldown.IsCoolingDown) && SummonBahamutPvE.CanUse(out act))
-            {
-                return true;
-            }
-
-            if (IsBurst && !SearingLightPvE.Cooldown.IsCoolingDown && SummonSolarBahamutPvE.CanUse(out act))
-            {
-                return true;
-            }
+            return true;
+        }
+        if (!SummonBahamutPvE.Info.EnoughLevelAndQuest() && DreadwyrmTrancePvE.CanUse(out act))
+        {
+            return true;
+        }
+        if (IsBurst && !SearingLightPvE.Cooldown.IsCoolingDown && SummonSolarBahamutPvE.CanUse(out act))
+        {
+            return true;
         }
 
         // Garuda: Slipstream
@@ -721,16 +751,11 @@ public sealed class SMN_Dynamic : SummonerRotation
             {
                 bool needInstant = IsMoving;
 
-                // BossMod SpecialMode: NoMovement → Casts OK, Freezing/Pyretic → Instants
-                if (UseSpecialMode && UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
+                // BossMod SpecialMode (gecacht): NoMovement → Casts OK, Freezing/Pyretic → Instants
                 {
-                    try
-                    {
-                        var mode = BossModHints_IPCSubscriber.Hints_SpecialMode?.Invoke();
-                        if (mode == "NoMovement") needInstant = false;
-                        else if (mode == "Freezing" || mode == "Pyretic") needInstant = true;
-                    }
-                    catch { }
+                    var ruinMode = GetCachedSpecialMode();
+                    if (ruinMode == "NoMovement") needInstant = false;
+                    else if (ruinMode is "Freezing" or "Pyretic") needInstant = true;
                 }
 
                 if (needInstant)
@@ -784,36 +809,21 @@ public sealed class SMN_Dynamic : SummonerRotation
 
         bool preferInstants = IsMoving;
 
-        // BossMod SpecialMode: überschreibt Bewegungserkennung
-        if (UseSpecialMode && UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
+        // BossMod SpecialMode: überschreibt Bewegungserkennung (gecacht)
+        var mode = GetCachedSpecialMode();
+        if (mode != null)
         {
-            try
+            switch (mode)
             {
-                var mode = BossModHints_IPCSubscriber.Hints_SpecialMode?.Invoke();
-                if (mode != null)
-                {
-                    switch (mode)
-                    {
-                        case "Pyretic":
-                            // Pyretic: keine Aktionen erlaubt → base handling, aber falls doch:
-                            // Instants bevorzugen damit wir sofort stoppen können
-                            preferInstants = true;
-                            break;
-                        case "NoMovement":
-                            // Kann nicht bewegen → Casts sind kein Problem, Ifrit bevorzugen
-                            preferInstants = false;
-                            break;
-                        case "Freezing":
-                            // Muss sich bewegen → nur Instants
-                            preferInstants = true;
-                            break;
-                        // "Normal", "Misdirection" → Bewegungserkennung beibehalten
-                    }
-                }
-            }
-            catch
-            {
-                // IPC-Fehler: Fallback auf Bewegungserkennung
+                case "Pyretic":
+                    preferInstants = true;
+                    break;
+                case "NoMovement":
+                    preferInstants = false;
+                    break;
+                case "Freezing":
+                    preferInstants = true;
+                    break;
             }
         }
 
@@ -841,10 +851,12 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     /// <summary>
     /// Prüft ob Schaden bevorsteht - nutzt BossMod IPC wenn verfügbar, sonst RSR-eigene Erkennung.
+    /// Breite Erkennung für Aegis: alle Schadenstypen (Raidwide, Stack, Tankbuster).
+    /// RSR-Fallback: bekannte AOE-Casts, VFX-Erkennung UND magische Casts (fängt nicht-gelistete Raidwides auf).
     /// </summary>
     private bool IsDamageImminent()
     {
-        // BossMod IPC: präzise Vorhersage von Raidwides und Stacks
+        // BossMod IPC: alle Schadenstypen prüfen
         if (UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
         {
             try
@@ -853,6 +865,8 @@ public sealed class SMN_Dynamic : SummonerRotation
                     return true;
                 if (BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true)
                     return true;
+                if (BossModHints_IPCSubscriber.Hints_IsTankbusterImminent?.Invoke(BossModLookahead) == true)
+                    return true;
             }
             catch
             {
@@ -860,17 +874,24 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Fallback: RSR-eigene VFX/Cast-basierte Erkennung
-        return DataCenter.IsHostileCastingAOE;
+        // RSR Fallback 1: bekannte AOE-Casts oder VFX-Erkennung
+        if (DataCenter.IsHostileCastingAOE)
+            return true;
+
+        // RSR Fallback 2: jeder magische Cast (fängt Raidwides auf die nicht in der AOE-Liste sind)
+        if (DataCenter.IsMagicalDamageIncoming())
+            return true;
+
+        return false;
     }
 
     /// <summary>
     /// Prüft ob Addle sinnvoll eingesetzt werden kann:
-    /// - Nutzt BossMod IPC für präzise Raidwide-Erkennung wenn verfügbar
     /// - Eingehender Schaden muss MAGICAL sein
     /// - Ziel hat noch kein Addle
-    /// - Bei Raidwides: immer Addle
-    /// - Bei Stacks: nur wenn Addle-CD es erlaubt
+    /// - Timing: Addle erst ~AddleLeadTime Sekunden vor Cast-Ende / Schadenseinschlag
+    /// - BossMod IPC: nutzt AddleLeadTime für präzises Timing
+    /// - RSR Fallback: prüft verbleibende Cast-Zeit
     /// </summary>
     private bool ShouldUseAddle()
     {
@@ -886,18 +907,18 @@ public sealed class SMN_Dynamic : SummonerRotation
             return false;
         }
 
-        // BossMod IPC: präzise Unterscheidung Raidwide vs Stack
+        // BossMod IPC: nutze AddleLeadTime statt BossModLookahead für präzises Timing
         if (UseBossModIPC && BossModHints_IPCSubscriber.IsEnabled)
         {
             try
             {
-                bool raidwide = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(BossModLookahead) == true;
+                bool raidwide = BossModHints_IPCSubscriber.Hints_IsRaidwideImminent?.Invoke(AddleLeadTime) == true;
                 if (raidwide)
-                    return true; // Raidwide: Addle immer
+                    return true; // Raidwide innerhalb AddleLeadTime: Addle jetzt
 
-                bool shared = BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(BossModLookahead) == true;
+                bool shared = BossModHints_IPCSubscriber.Hints_IsSharedImminent?.Invoke(AddleLeadTime) == true;
                 if (shared && !AddlePvE.Cooldown.IsCoolingDown)
-                    return true; // Stack: nur wenn Addle nicht auf CD
+                    return true; // Stack innerhalb AddleLeadTime: nur wenn CD frei
             }
             catch
             {
@@ -905,7 +926,10 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Fallback: RSR-eigene Erkennung
+        // RSR Fallback: Timing-Check über verbleibende Cast-Zeit
+        if (!IsHostileCastRemainingWithin(AddleLeadTime))
+            return false;
+
         bool isRaidwideCast = IsAnyHostileCastingKnownRaidwide();
         if (isRaidwideCast)
             return true;
@@ -913,6 +937,26 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (DataCenter.IsHostileCastingAOE && !AddlePvE.Cooldown.IsCoolingDown)
             return true;
 
+        return false;
+    }
+
+    /// <summary>
+    /// Prüft ob ein feindlicher Cast innerhalb der nächsten N Sekunden endet.
+    /// Wird für Addle-Timing genutzt: Addle erst kurz vor Cast-Ende anwenden.
+    /// </summary>
+    private static bool IsHostileCastRemainingWithin(float seconds)
+    {
+        if (DataCenter.AllHostileTargets == null) return false;
+
+        for (int i = 0, n = DataCenter.AllHostileTargets.Count; i < n; i++)
+        {
+            var hostile = DataCenter.AllHostileTargets[i];
+            if (hostile == null || !hostile.IsCasting || hostile.TotalCastTime <= 0) continue;
+
+            float remaining = hostile.TotalCastTime - hostile.CurrentCastTime;
+            if (remaining > 0 && remaining <= seconds)
+                return true;
+        }
         return false;
     }
 
