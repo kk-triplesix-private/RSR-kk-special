@@ -54,8 +54,8 @@ jobs:
         if: steps.merge.outputs.status == 'success'
         id: version
         run: |
-          # Get latest tag matching x.x.x.x pattern
-          LATEST=$(git tag --list '*.*.*.*' --sort=-version:refname | head -1)
+          # Get latest tag matching x.x.x.x pattern (no v prefix)
+          LATEST=$(git tag --list '[0-9]*.*.*.*' --sort=-version:refname | head -1)
           if [ -z "$LATEST" ]; then
             NEXT="7.4.5.1"
           else
