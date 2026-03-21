@@ -356,15 +356,18 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             var obj = objects[i];
             if (obj == null) continue;
-            switch (obj.BaseId)
+            // Check both BaseId and DataId for compatibility across Dalamud versions
+            uint id = obj.BaseId;
+            if (id == 0) id = obj.DataId;
+            switch (id)
             {
-                case 0x4AF0:
+                case 0x4AF0: // 19184
                     _detectedTrophyWeapon = TrophyWeaponType.Axe;
                     return true;
-                case 0x4AF1:
+                case 0x4AF1: // 19185
                     _detectedTrophyWeapon = TrophyWeaponType.Scythe;
                     return true;
-                case 0x4AF2:
+                case 0x4AF2: // 19186
                     _detectedTrophyWeapon = TrophyWeaponType.Sword;
                     return true;
             }
@@ -1395,6 +1398,8 @@ public sealed class SMN_Dynamic : SummonerRotation
         // Fight State
         ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Fight:");
         ImGui.Text($"  Territory: {DataCenter.TerritoryID} | InCombat: {InCombat}");
+        ImGui.Text($"  IsInM11S: {DataCenter.IsInM11S} (TID={DataCenter.TerritoryID}, expect 1327)");
+        ImGui.Text($"  IsInM12S: {DataCenter.IsInM12S} (TID={DataCenter.TerritoryID}, expect 1325)");
         ImGui.Text($"  Phase: {(InBahamut ? "Bahamut" : InPhoenix ? "Phoenix" : InSolarBahamut ? "SolarBahamut" : "Primal")} | SummonTime: {SummonTime:F1}s");
         if (HasFurtherRuin) ImGui.Text("  FurtherRuin: ACTIVE");
         if (DataCenter.IsInM11S)
@@ -1402,6 +1407,25 @@ public sealed class SMN_Dynamic : SummonerRotation
             bool trophy = IsInM11STrophyPhaseCached();
             ColoredBool("  M11S TrophyPhase", trophy);
             if (trophy) ImGui.Text($"  Trophy Type: {_detectedTrophyWeapon}");
+            ColoredBool("  M11SIfritLast config", M11SIfritLast);
+            ColoredBool("  DynamicEgis config", DynamicEgis);
+            // Debug: show all objects with BaseId in trophy weapon range
+            var objs = Svc.Objects;
+            if (objs != null)
+            {
+                int trophyCount = 0;
+                for (int i = 0; i < objs.Length; i++)
+                {
+                    var o = objs[i];
+                    if (o == null) continue;
+                    if (o.BaseId is 0x4AF0 or 0x4AF1 or 0x4AF2 || o.DataId is 0x4AF0 or 0x4AF1 or 0x4AF2)
+                    {
+                        ImGui.Text($"    Trophy obj: BaseId={o.BaseId:X} DataId={o.DataId:X} Name={o.Name}");
+                        trophyCount++;
+                    }
+                }
+                if (trophyCount == 0) ImGui.TextDisabled("    (no trophy weapons found in scene)");
+            }
         }
         float grotRemaining = DirectedGrotesquerieRemaining;
         if (grotRemaining > 0)
