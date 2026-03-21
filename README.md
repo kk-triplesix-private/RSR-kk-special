@@ -10,23 +10,11 @@ I absolutely love and appreciate the original project — the Combat Reborn team
 
 ### Custom Rotations
 
-13 custom rotation files in `RotationSolver/ExtraRotations/`:
+1 custom rotation files in `RotationSolver/ExtraRotations/`:
 
 | Role | Rotation | Description |
 |------|----------|-------------|
 | **Magical** | **SMN_Dynamic** | Flagship rotation (1,500+ lines) — dynamic egi selection, BossMod IPC integration, smart Addle/Aegis timing, M11S/M12S fight-specific logic, full diagnostics & simulation panel |
-| **Magical** | ChurinSMN | Churin's custom Summoner rotation |
-| **Magical** | BeirutaPCT | Custom Pictomancer rotation |
-| **Magical** | BeirutaRDM | Custom Red Mage rotation |
-| **Magical** | Rabbs_BLM_All_Levels | Rabbs' Black Mage rotation for all levels |
-| **Healer** | BeirutaAST | Custom Astrologian rotation |
-| **Healer** | BeirutaSCH | Custom Scholar rotation |
-| **Melee** | ChurinMNK | Churin's custom Monk rotation |
-| **Melee** | DSRViper | Viper rotation optimized for DSR |
-| **Ranged** | ChurinBRD | Churin's custom Bard rotation |
-| **Ranged** | ChurinDNC | Churin's custom Dancer rotation |
-| **Ranged** | ChurinMCH | Churin's custom Machinist rotation |
-| **Tank** | ChurinDRK | Churin's custom Dark Knight rotation |
 
 ### Rotation Timeline Planner
 
