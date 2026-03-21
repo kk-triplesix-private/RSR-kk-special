@@ -108,14 +108,26 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     /// <summary>
     /// Checks whether Necrotize or Fester should be spent given current conditions.
-    /// Shared logic: big summon → immediate, solar+buff → spend, boss dying → dump, ED coming → avoid overcap.
+    /// Guide: Hold charges during Phoenix (odd minute) for 4x Necrotize under Solar Bahamut buffs.
+    /// Spend immediately during Solar/Bahamut, on boss dying, or before Energy Drain overcap.
     /// </summary>
     private bool ShouldSpendFesterStack(IBaseAction action, bool inBigInvocation, bool inSolarUnique)
     {
+        // Always dump on dying boss
+        if (IsActionTargetBossDying(action)) return true;
+        // Always dump before Energy Drain overcap
+        if (EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(2)) return true;
+
+        // During Phoenix phase (odd minute): HOLD charges for next Solar Bahamut burst
+        // This aligns 4 Necrotize under Searing Light instead of 2
+        if (InPhoenix && !HasSearingLight)
+        {
+            LogDecision("Necrotize: holding for burst (Phoenix phase)");
+            return false;
+        }
+
         if (inBigInvocation) return true;
         if ((inSolarUnique && HasSearingLight) || !SearingLightPvE.EnoughLevel) return true;
-        if (IsActionTargetBossDying(action)) return true;
-        if (EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(2)) return true;
         return false;
     }
 
@@ -460,20 +472,20 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Smart Potion: only use during Searing Light
+        // Smart Potion: prefer Solar Bahamut + Searing Light (opener/2-min windows)
         if (SmartPotion)
         {
-            if (HasSearingLight && InCombat && UseBurstMedicine(out act))
-            {
+            // Best timing: Solar Bahamut with Searing Light active (opener + 2-min loops)
+            if (InSolarBahamut && HasSearingLight && InCombat && UseBurstMedicine(out act))
                 return true;
-            }
+            // Fallback: any Searing Light window
+            if (HasSearingLight && InCombat && UseBurstMedicine(out act))
+                return true;
         }
         else
         {
             if (InCombat && UseBurstMedicine(out act))
-            {
                 return true;
-            }
         }
 
         // Radiant Aegis on cooldown: Charges frei nutzen wenn kein Schaden ansteht
@@ -503,6 +515,10 @@ public sealed class SMN_Dynamic : SummonerRotation
                 return true;
             }
         }
+
+        // Mountain Buster: weave immediately when proc is available (guide: never delay)
+        if (MountainBusterPvE.CanUse(out act))
+            return true;
 
         // Punkt 4: Opener Addle - im Opener als oGCD-Weave während Big Summon
         // Spieler entscheidet per Config ob Opener Addle sinnvoll ist (fight-abhängig)
@@ -544,9 +560,6 @@ public sealed class SMN_Dynamic : SummonerRotation
             if (SearingFlashPvE.CanUse(out act) && (IsActionTargetBossDying(SearingFlashPvE) || summonActiveOrLowLevel))
                 return true;
         }
-
-        if (MountainBusterPvE.CanUse(out act))
-            return true;
 
         if (PainflarePvE.CanUse(out act))
         {
@@ -814,6 +827,16 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (M11SIfritLast && IsInM11STrophyPhaseCached())
         {
             LogDecision("Primal: M11S Trophy → Titan>Garuda>Ifrit");
+            if (TitanTime(out act)) return true;
+            if (GarudaTime(out act)) return true;
+            if (IfritTime(out act)) return true;
+            return false;
+        }
+
+        // Burst window (Searing Light active): Titan first — highest potency under buffs
+        if (HasSearingLight)
+        {
+            LogDecision("Primal: burst → Titan>Garuda>Ifrit (Searing Light)");
             if (TitanTime(out act)) return true;
             if (GarudaTime(out act)) return true;
             if (IfritTime(out act)) return true;
