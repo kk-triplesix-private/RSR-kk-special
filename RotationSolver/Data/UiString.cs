@@ -637,7 +637,7 @@ namespace RotationSolver.Data
         [Description("Disable RSR combat rotation state")]
         Commands_Off,
 
-        [Description("Rotation Solver Reborn Settings v")]
+        [Description("RSR KK's Special Settings v")]
         ConfigWindowHeader,
 
         [Description("This config is job-specific")]
@@ -646,7 +646,7 @@ namespace RotationSolver.Data
         [Description("This option is unavailable with your current job\n \nRoles or jobs needed:\n{0}")]
         NotInJob,
 
-        [Description("Welcome to Rotation Solver Reborn!")]
+        [Description("Welcome to RSR KK's Special!")]
         WelcomeWindow_Header,
 
         [Description("Here's what you missed since you were last here")]

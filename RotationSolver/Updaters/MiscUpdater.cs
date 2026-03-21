@@ -34,7 +34,7 @@ internal static class MiscUpdater
 		{
 			try
 			{
-				_dtrEntry ??= Svc.DtrBar.Get("Rotation Solver Reborn");
+				_dtrEntry ??= Svc.DtrBar.Get("RSR KK's Special");
 			}
 			catch
 			{

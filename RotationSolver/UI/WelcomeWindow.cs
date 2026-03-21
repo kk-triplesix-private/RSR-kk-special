@@ -10,7 +10,7 @@ namespace RotationSolver.UI
     {
         private static readonly HttpClient HttpClient = new();
 
-        public WelcomeWindow() : base($"Welcome to Rotation Solver Reborn!", BaseFlags)
+        public WelcomeWindow() : base($"Welcome to RSR KK's Special!", BaseFlags)
         {
             Size = new Vector2(650, 500);
             SizeCondition = ImGuiCond.FirstUseEver;

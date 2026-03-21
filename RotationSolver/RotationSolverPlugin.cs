@@ -39,7 +39,7 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 	private static FirstStartTutorialWindow? _firstStartTutorialWindow;
 
 	private static readonly List<IDisposable> _dis = [];
-    public static string Name => "Rotation Solver Reborn";
+    public static string Name => "RSR KK's Special";
     internal static readonly List<DrawingHighlightHotbarBase> _drawingElements = [];
 
     public static DalamudLinkPayload OpenLinkPayload { get; private set; } = null!;

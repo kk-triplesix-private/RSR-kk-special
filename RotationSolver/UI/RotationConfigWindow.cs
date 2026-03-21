@@ -370,7 +370,8 @@ public partial class RotationConfigWindow : Window
 
         if (_cachedDiagInfo == null)
         {
-            _ = diagInfo.AppendLine($"Rotation Solver Reborn v{typeof(RotationConfigWindow).Assembly.GetName().Version?.ToString() ?? "?.?.?"}");
+            _ = diagInfo.AppendLine($"RSR KK's Special v{typeof(RotationConfigWindow).Assembly.GetName().Version?.ToString() ?? "?.?.?"}");
+
             _ = diagInfo.AppendLine("Failed to get Dalamud start info.");
         }
         else
@@ -378,7 +379,7 @@ public partial class RotationConfigWindow : Window
 			_ = diagInfo.AppendLine($"OS Type: {_cachedDiagInfo.Platform}");
             _ = diagInfo.AppendLine($"FFXIV Version: {_cachedDiagInfo.GameVersion}");
 			_ = diagInfo.AppendLine($"Dalamud Version: {Svc.PluginInterface.GetDalamudVersion().Version.ToString()}");
-			_ = diagInfo.AppendLine($"Rotation Solver Reborn v{_cachedDiagInfo.RSRVersion}");
+			_ = diagInfo.AppendLine($"RSR KK's Special v{_cachedDiagInfo.RSRVersion}");
             _ = diagInfo.AppendLine($"Dalamud Staging: {DataCenter.DalamudStagingEnabled}");
             _ = diagInfo.AppendLine($"Game Language: {_cachedDiagInfo.Language}");
             _ = diagInfo.AppendLine($"Update Frequency: {Service.Config.MinUpdatingTime}");
@@ -890,7 +891,7 @@ public partial class RotationConfigWindow : Window
 		{
 			return _baseUsageHints[index];
 		}
-		return "Thank you for using Rotation Solver Reborn!";
+		return "Thank you for using RSR KK's Special!";
 	}
 
 	// Hint bar at the top of the body
