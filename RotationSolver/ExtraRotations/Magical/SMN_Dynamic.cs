@@ -330,28 +330,44 @@ public sealed class SMN_Dynamic : SummonerRotation
         return _m11sTrophyCached;
     }
 
+    // Trophy Weapon type tracking for M11S
+    private enum TrophyWeaponType : byte { None, Axe, Scythe, Sword }
+    private TrophyWeaponType _detectedTrophyWeapon;
+
     /// <summary>
     /// M11S Trophy Weapon Phase Erkennung.
     /// Trophy Weapon Adds DataId: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2).
-    /// Wenn diese Adds existieren, sind wir in einer Trophy-Weapon-Phase (regulär oder Ultimate).
-    /// Scannt Svc.Objects direkt, da die Trophy Weapons nicht targetbar sind und daher
-    /// nicht in AllHostileTargets erscheinen.
+    /// Scannt Svc.Objects direkt, da die Trophy Weapons nicht targetbar sind.
+    /// Also tracks which weapon type is present for mechanic-specific adaptation:
+    /// - Axe: shared buster on MT + unmarked spread on non-tanks
+    /// - Scythe: conal on 3 players (2 tanks + random)
+    /// - Sword: cross AOE + light party stacks
     /// </summary>
-    private static bool IsInM11STrophyPhase()
+    private bool IsInM11STrophyPhase()
     {
         if (!DataCenter.IsInM11S) return false;
 
         var objects = Svc.Objects;
         if (objects == null) return false;
 
+        _detectedTrophyWeapon = TrophyWeaponType.None;
         int count = objects.Length;
         for (int i = 0; i < count; i++)
         {
             var obj = objects[i];
             if (obj == null) continue;
-            // Trophy Weapon Adds: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2)
-            if (obj.BaseId is 0x4AF0 or 0x4AF1 or 0x4AF2)
-                return true;
+            switch (obj.BaseId)
+            {
+                case 0x4AF0:
+                    _detectedTrophyWeapon = TrophyWeaponType.Axe;
+                    return true;
+                case 0x4AF1:
+                    _detectedTrophyWeapon = TrophyWeaponType.Scythe;
+                    return true;
+                case 0x4AF2:
+                    _detectedTrophyWeapon = TrophyWeaponType.Sword;
+                    return true;
+            }
         }
         return false;
     }
@@ -826,7 +842,7 @@ public sealed class SMN_Dynamic : SummonerRotation
         // M11S Trophy Phase: Ifrit immer zuletzt (viel Bewegung in dieser Phase)
         if (M11SIfritLast && IsInM11STrophyPhaseCached())
         {
-            LogDecision("Primal: M11S Trophy → Titan>Garuda>Ifrit");
+            LogDecision($"Primal: M11S Trophy ({_detectedTrophyWeapon}) → Titan>Garuda>Ifrit");
             if (TitanTime(out act)) return true;
             if (GarudaTime(out act)) return true;
             if (IfritTime(out act)) return true;
@@ -1385,6 +1401,7 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             bool trophy = IsInM11STrophyPhaseCached();
             ColoredBool("  M11S TrophyPhase", trophy);
+            if (trophy) ImGui.Text($"  Trophy Type: {_detectedTrophyWeapon}");
         }
         float grotRemaining = DirectedGrotesquerieRemaining;
         if (grotRemaining > 0)
