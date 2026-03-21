@@ -293,17 +293,17 @@ public sealed class SGE_Dynamic : SageRotation
     {
         if (UseEukrasianDosisInCountdown)
         {
-            // Apply Eukrasia ~3s before pull, DoT auto-fires on next GCD
-            if (remainTime <= 3f + CountDownAhead && !HasEukrasia)
-            {
-                if (EukrasiaPvE.CanUse(out var act)) return act;
-            }
-            // Eukrasian Dosis at ~1.5s
+            // Opener: Toxikon II at ~1.5s (instant, long application delay → DoT lands faster)
             if (HasEukrasia && remainTime <= 1.8f + CountDownAhead)
             {
                 if (EukrasianDosisIiiPvE.CanUse(out var act)) return act;
                 if (EukrasianDosisIiPvE.CanUse(out var act2)) return act2;
                 if (EukrasianDosisPvE.CanUse(out var act3)) return act3;
+            }
+            // Apply Eukrasia ~3s before pull
+            if (remainTime <= 3f + CountDownAhead && !HasEukrasia)
+            {
+                if (EukrasiaPvE.CanUse(out var act)) return act;
             }
         }
         return base.CountDownAction(remainTime);
@@ -317,11 +317,20 @@ public sealed class SGE_Dynamic : SageRotation
     {
         act = null;
 
-        // Zoe Emergency: When any party member critically low, Zoe + next heal GCD is 50% stronger
-        if (ZoeEmergencyEnabled && !StatusHelper.PlayerHasStatus(true, StatusID.Zoe))
+        // Zoe: Best paired with Pneuma (damage-neutral 900p AoE heal).
+        // Emergency fallback: any heal GCD when party member critically low.
+        if (ZoeEmergencyEnabled && !StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
         {
+            // Priority 1: Zoe + Pneuma (optimal — no DPS loss, 900p AoE heal)
+            if (nextGCD.IsTheSameTo(false, PneumaPvE))
+            {
+                LogDecision("Zoe: amplifying Pneuma (900p AoE heal)");
+                return true;
+            }
+
+            // Priority 2: Zoe + any heal GCD when HP critically low (emergency)
             float lowestHp = GetLowestPartyMemberHp();
-            if (lowestHp < ZoeEmergencyThreshold && ZoePvE.CanUse(out act))
+            if (lowestHp < ZoeEmergencyThreshold)
             {
                 LogDecision($"Zoe Emergency: lowest HP={lowestHp:P0}");
                 return true;
@@ -371,20 +380,26 @@ public sealed class SGE_Dynamic : SageRotation
             return true;
         }
 
-        // Rhizomata: generate Addersgall when empty
-        if (Addersgall == 0 && RhizomataPvE.CanUse(out act))
+        // Rhizomata: generate Addersgall when low (≤1), not just empty
+        if (Addersgall <= 1 && RhizomataPvE.CanUse(out act))
         {
-            LogDecision("Rhizomata: Addersgall=0");
+            LogDecision($"Rhizomata: Addersgall={Addersgall}");
             return true;
         }
 
-        // Soteria: boost Kardia heals when Kardion target is hurt
-        if (InCombat && SoteriaPvE.CanUse(out act))
+        // Soteria: boost Kardia heals only when Kardion target is actually taking damage
+        if (InCombat && IsAnyPartyMemberBelow(0.80f) && SoteriaPvE.CanUse(out act))
+        {
+            LogDecision("Soteria: Kardion target hurt");
             return true;
+        }
 
-        // Philosophia: AoE heal buff during sustained damage
-        if (InCombat && PartyMembersAverHP < 0.7f && PhilosophiaPvE.CanUse(out act))
+        // Philosophia: proactive with raidwide OR reactive on sustained damage
+        if (InCombat && (IsRaidwideImminent() || PartyMembersAverHP < 0.7f) && PhilosophiaPvE.CanUse(out act))
+        {
+            LogDecision("Philosophia: party needs sustained healing");
             return true;
+        }
 
         return base.GeneralAbility(nextGCD, out act);
     }
@@ -417,10 +432,11 @@ public sealed class SGE_Dynamic : SageRotation
                 return true;
             }
 
-            // Holos: AoE shield + heal (120s CD)
-            if (HolosPvE.CanUse(out act))
+            // Holos: AoE shield + heal + 10% mit (120s CD)
+            // Only use when party HP < 90% to not waste the 300p heal component
+            if (PartyMembersAverHP < 0.9f && HolosPvE.CanUse(out act))
             {
-                LogDecision($"Holos: {(raidwide ? "raidwide" : "stack")} imminent");
+                LogDecision($"Holos: {(raidwide ? "raidwide" : "stack")} imminent, HP={PartyMembersAverHP:P0}");
                 return true;
             }
         }
@@ -453,24 +469,20 @@ public sealed class SGE_Dynamic : SageRotation
         return base.DefenseSingleAbility(nextGCD, out act);
     }
 
-    [RotationDesc(ActionID.IxocholePvE, ActionID.KeracholePvE, ActionID.PhysisIiPvE, ActionID.HolosPvE)]
+    [RotationDesc(ActionID.PhysisIiPvE, ActionID.KeracholePvE, ActionID.IxocholePvE, ActionID.HolosPvE, ActionID.PepsisPvE)]
     protected override bool HealAreaAbility(IAction nextGCD, out IAction? act)
     {
         act = null;
 
-        // Ixochole: direct AoE heal (1 Addersgall) - when party HP critical
-        if (IxocholePvE.CanUse(out act))
-            return true;
-
-        // Kerachole: regen + mitigation if not already active
-        if (KeracholePvE.CanUse(out act))
-            return true;
-
-        // Physis II: HoT (no cost). If SmartPhysis, only use when raidwide imminent or party low
+        // Physis II FIRST: 10% healing buff snapshots onto all subsequent heals this window.
+        // Must come before Kerachole/Ixochole to amplify them.
         if (SmartPhysis)
         {
             if ((IsRaidwideImminent() || PartyMembersAverHP < 0.7f) && PhysisIiPvE.CanUse(out act))
+            {
+                LogDecision("Physis II: amplifying subsequent heals");
                 return true;
+            }
             if (!PhysisIiPvE.EnoughLevel && PhysisPvE.CanUse(out act))
                 return true;
         }
@@ -480,14 +492,29 @@ public sealed class SGE_Dynamic : SageRotation
             if (!PhysisIiPvE.EnoughLevel && PhysisPvE.CanUse(out act)) return true;
         }
 
-        // Holos: emergency AoE shield + heal
-        if (PartyMembersAverHP < 0.5f && HolosPvE.CanUse(out act))
+        // Kerachole: regen + 10% mitigation (Addersgall) — best value AoE oGCD
+        if (KeracholePvE.CanUse(out act))
+            return true;
+
+        // Ixochole: direct AoE heal (Addersgall) — when party needs immediate HP
+        if (IxocholePvE.CanUse(out act))
+            return true;
+
+        // Pepsis: convert existing E.Prognosis shields into healing (450p/350p)
+        if (StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis) && PepsisPvE.CanUse(out act))
+        {
+            LogDecision("Pepsis: converting shields to heals");
+            return true;
+        }
+
+        // Holos: emergency AoE shield + heal + 10% mit (don't waste heal component at full HP)
+        if (PartyMembersAverHP < 0.65f && HolosPvE.CanUse(out act))
             return true;
 
         return base.HealAreaAbility(nextGCD, out act);
     }
 
-    [RotationDesc(ActionID.TaurocholePvE, ActionID.DruocholePvE, ActionID.SoteriaPvE, ActionID.KrasisPvE)]
+    [RotationDesc(ActionID.KrasisPvE, ActionID.TaurocholePvE, ActionID.DruocholePvE, ActionID.SoteriaPvE)]
     protected override bool HealSingleAbility(IAction nextGCD, out IAction? act)
     {
         act = null;
@@ -497,12 +524,20 @@ public sealed class SGE_Dynamic : SageRotation
         {
             if (ZoePvE.CanUse(out act))
             {
-                LogDecision($"Zoe: amplifying next ST heal");
+                LogDecision("Zoe: amplifying next ST heal");
                 return true;
             }
         }
 
-        // Taurochole: primary ST heal + 10% mit (1 Addersgall)
+        // Krasis FIRST: 20% healing received buff on target — snapshots onto Taurochole/Druochole.
+        // Must come before the actual heal to amplify it.
+        if (KrasisPvE.CanUse(out act))
+        {
+            LogDecision("Krasis: 20% heal buff before oGCD heal");
+            return true;
+        }
+
+        // Taurochole: primary ST heal + 10% mit (1 Addersgall) — now amplified by Krasis
         if (TaurocholePvE.CanUse(out act))
             return true;
 
@@ -510,11 +545,7 @@ public sealed class SGE_Dynamic : SageRotation
         if (DruocholePvE.CanUse(out act))
             return true;
 
-        // Krasis: 20% healing received boost (free)
-        if (KrasisPvE.CanUse(out act))
-            return true;
-
-        // Soteria: boost Kardia heals
+        // Soteria: boost Kardia heals (50% stronger Kardion ticks)
         if (SoteriaPvE.CanUse(out act))
             return true;
 
@@ -563,12 +594,14 @@ public sealed class SGE_Dynamic : SageRotation
 
         // === DPS Priority ===
 
-        // Phlegma: dump before overcapping charges
+        // Phlegma: dump at 2 charges (prevent overcap), use during movement, or during burst windows
         if (DpsOptimization)
         {
-            if (PhlegmaIiiPvE.CanUse(out act, usedUp: IsMoving)) return true;
-            if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: IsMoving)) return true;
-            if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: IsMoving)) return true;
+            // usedUp=true forces usage when charges would overcap; also use when moving (instant cast)
+            bool shouldDump = IsMoving || IsBurst;
+            if (PhlegmaIiiPvE.CanUse(out act, usedUp: shouldDump)) return true;
+            if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: shouldDump)) return true;
+            if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: shouldDump)) return true;
         }
 
         // Pneuma: damage + AoE heal (120s CD)
