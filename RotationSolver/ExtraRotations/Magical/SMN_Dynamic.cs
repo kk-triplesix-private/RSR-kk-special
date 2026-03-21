@@ -96,11 +96,49 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     private static bool HasFurtherRuin => StatusHelper.PlayerHasStatus(true, StatusID.FurtherRuin_2701);
 
+    /// <summary>
+    /// Returns true if the given action's target is a boss that is dying.
+    /// Consolidates the repeated IsBossFromTTK/IsBossFromIcon/IsDying check.
+    /// </summary>
+    private static bool IsActionTargetBossDying(IBaseAction action)
+    {
+        var target = action.Target.Target;
+        return (target.IsBossFromTTK() || target.IsBossFromIcon()) && target.IsDying();
+    }
+
+    /// <summary>
+    /// Checks whether Necrotize or Fester should be spent given current conditions.
+    /// Shared logic: big summon → immediate, solar+buff → spend, boss dying → dump, ED coming → avoid overcap.
+    /// </summary>
+    private bool ShouldSpendFesterStack(IBaseAction action, bool inBigInvocation, bool inSolarUnique)
+    {
+        if (inBigInvocation) return true;
+        if ((inSolarUnique && HasSearingLight) || !SearingLightPvE.EnoughLevel) return true;
+        if (IsActionTargetBossDying(action)) return true;
+        if (EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(2)) return true;
+        return false;
+    }
+
+    // SpecialMode string constants — avoid magic strings in comparisons
+    private static class SpecialModes
+    {
+        public const string Normal = "Normal";
+        public const string Pyretic = "Pyretic";
+        public const string NoMovement = "NoMovement";
+        public const string Freezing = "Freezing";
+    }
+
     // Per-Frame Cache für teure Berechnungen (wird jede GCD neu berechnet)
     private bool _pauseForDirectionCached;
     private bool _pauseForDirectionValid;
     private string? _specialModeCache;
     private bool _specialModeCacheValid;
+    private bool _m11sTrophyCached;
+    private bool _m11sTrophyValid;
+
+    // ForbiddenDirections JSON cache
+    private (float Center, float HalfWidth)[]? _forbiddenArcsCached;
+    private string? _forbiddenArcsJson;
 
     // === Simulation State ===
     // Ermöglicht das Testen defensiver Reaktionen ohne echte Boss-Angriffe.
@@ -117,12 +155,19 @@ public sealed class SMN_Dynamic : SummonerRotation
     private static int _lookupCastId;
     private static string? _lookupResult;
 
-    // Decision Log (Ring-Buffer, letzte 20 Einträge)
-    private static readonly string[] _decisionLog = new string[20];
+    // Decision Log (Ring-Buffer, letzte 40 Einträge)
+    private static readonly string[] _decisionLog = new string[40];
     private static int _decisionLogIndex;
     private static int _decisionLogCount;
 
-    private static readonly string[] SpecialModeNames = ["Normal", "Pyretic", "NoMovement", "Freezing"];
+    // IPC error throttle
+    private DateTime _lastIpcErrorLog = DateTime.MinValue;
+
+    private static readonly string[] SpecialModeNames = [SpecialModes.Normal, SpecialModes.Pyretic, SpecialModes.NoMovement, SpecialModes.Freezing];
+
+    // Lumina lookup caches (static game data, never changes at runtime)
+    private static readonly Dictionary<uint, string> _actionNameCache = new();
+    private static readonly Dictionary<uint, string> _attackTypeCache = new();
 
     private static void LogDecision(string message)
     {
@@ -147,7 +192,14 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             _specialModeCache = BossModHints_IPCSubscriber.Hints_SpecialMode?.Invoke();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            if ((DateTime.Now - _lastIpcErrorLog).TotalSeconds > 10)
+            {
+                _lastIpcErrorLog = DateTime.Now;
+                LogDecision($"IPC error in GetCachedSpecialMode: {ex.Message}");
+            }
+        }
         return _specialModeCache;
     }
 
@@ -201,10 +253,20 @@ public sealed class SMN_Dynamic : SummonerRotation
                     var dx = HostileTarget.Position.X - Player.Position.X;
                     var dz = HostileTarget.Position.Z - Player.Position.Z;
                     var dirToTarget = MathF.Atan2(dx, dz);
-                    return IsDirectionForbidden(dirToTarget, json);
+                    var arcs = ParseForbiddenDirections(json);
+                    var forbidden = IsDirectionForbidden(dirToTarget, arcs);
+                    if (forbidden) LogDecision($"Direction forbidden, remaining={remaining:F1}s");
+                    return forbidden;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                if ((DateTime.Now - _lastIpcErrorLog).TotalSeconds > 10)
+                {
+                    _lastIpcErrorLog = DateTime.Now;
+                    LogDecision($"IPC error in ForbiddenDirections: {ex.Message}");
+                }
+            }
         }
 
         // Fallback: komplett pausieren wenn Debuff kurz vor Ablauf
@@ -212,22 +274,48 @@ public sealed class SMN_Dynamic : SummonerRotation
     }
 
     /// <summary>
-    /// Prüft ob eine Blickrichtung (in Radians) in einem der verbotenen Bögen liegt.
+    /// Parses forbidden direction arcs from JSON, caching the result.
+    /// Only re-parses when the JSON string changes.
     /// </summary>
-    private static bool IsDirectionForbidden(float directionRad, string forbiddenDirectionsJson)
+    private (float Center, float HalfWidth)[] ParseForbiddenDirections(string json)
     {
-        using var doc = JsonDocument.Parse(forbiddenDirectionsJson);
+        if (json == _forbiddenArcsJson && _forbiddenArcsCached != null)
+            return _forbiddenArcsCached;
+
+        _forbiddenArcsJson = json;
+        using var doc = JsonDocument.Parse(json);
+        var list = new List<(float, float)>();
         foreach (var entry in doc.RootElement.EnumerateArray())
         {
-            var center = entry.GetProperty("Center").GetSingle();
-            var halfWidth = entry.GetProperty("HalfWidth").GetSingle();
+            list.Add((entry.GetProperty("Center").GetSingle(), entry.GetProperty("HalfWidth").GetSingle()));
+        }
+        _forbiddenArcsCached = list.ToArray();
+        return _forbiddenArcsCached;
+    }
 
-            // Differenz normalisieren auf [-π, π]
-            var diff = MathF.IEEERemainder(directionRad - center, 2f * MathF.PI);
-            if (MathF.Abs(diff) < halfWidth)
+    /// <summary>
+    /// Prüft ob eine Blickrichtung (in Radians) in einem der verbotenen Bögen liegt.
+    /// </summary>
+    private static bool IsDirectionForbidden(float directionRad, (float Center, float HalfWidth)[] arcs)
+    {
+        for (int i = 0; i < arcs.Length; i++)
+        {
+            var diff = MathF.IEEERemainder(directionRad - arcs[i].Center, 2f * MathF.PI);
+            if (MathF.Abs(diff) < arcs[i].HalfWidth)
                 return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Cached M11S Trophy Phase check — scans all objects but only once per frame.
+    /// </summary>
+    private bool IsInM11STrophyPhaseCached()
+    {
+        if (_m11sTrophyValid) return _m11sTrophyCached;
+        _m11sTrophyValid = true;
+        _m11sTrophyCached = IsInM11STrophyPhase();
+        return _m11sTrophyCached;
     }
 
     /// <summary>
@@ -346,9 +434,12 @@ public sealed class SMN_Dynamic : SummonerRotation
             bool bigSummonEnding = (InBahamut || InPhoenix || InSolarBahamut) && SummonTime <= GCDTime(1) + 0.5f;
             bool statusExpiring = StatusHelper.PlayerWillStatusEndGCD(2, 0, true, StatusID.RefulgentLux);
             bool notInBigSummon = !InBahamut && !InPhoenix && !InSolarBahamut;
+            // Outside big summon: only use if no competing aetherflow oGCDs are imminent
+            bool safeToUseLux = notInBigSummon && (!HasAetherflowStacks || !EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(1));
 
-            if (bigSummonEnding || statusExpiring || notInBigSummon)
+            if (bigSummonEnding || statusExpiring || safeToUseLux)
             {
+                LogDecision($"LuxSolaris: {(bigSummonEnding ? "endingSummon" : statusExpiring ? "statusExpiring" : "filler")}");
                 return true;
             }
         }
@@ -401,13 +492,14 @@ public sealed class SMN_Dynamic : SummonerRotation
             return base.AttackAbility(nextGCD, out act);
 
         bool inBigInvocation = !SummonBahamutPvE.EnoughLevel || InBahamut || InPhoenix || InSolarBahamut;
-        bool inSolarUnique = DataCenter.PlayerSyncedLevel() == 100 ? !InBahamut && !InPhoenix && InSolarBahamut : InBahamut && !InPhoenix;
+        bool inSolarUnique = SummonSolarBahamutPvE.EnoughLevel ? !InBahamut && !InPhoenix && InSolarBahamut : InBahamut && !InPhoenix;
         bool burstInSolar = (SummonSolarBahamutPvE.EnoughLevel && InSolarBahamut) || (!SummonSolarBahamutPvE.EnoughLevel && InBahamut) || !SummonBahamutPvE.EnoughLevel;
 
         if (burstInSolar)
         {
             if (SearingLightPvE.CanUse(out act))
             {
+                LogDecision($"SearingLight: burst in {(InSolarBahamut ? "Solar" : InBahamut ? "Bahamut" : "preBahamut")}");
                 return true;
             }
         }
@@ -425,171 +517,56 @@ public sealed class SMN_Dynamic : SummonerRotation
 
         if (inBigInvocation)
         {
-            if (EnergySiphonPvE.CanUse(out act))
-            {
-                if ((EnergySiphonPvE.Target.Target.IsBossFromTTK() || EnergySiphonPvE.Target.Target.IsBossFromIcon()) && EnergySiphonPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            bool summonActiveOrLowLevel = SummonTime > 0f || !SummonBahamutPvE.EnoughLevel;
 
-            if (EnergyDrainPvE.CanUse(out act))
-            {
-                if ((EnergyDrainPvE.Target.Target.IsBossFromTTK() || EnergyDrainPvE.Target.Target.IsBossFromIcon()) && EnergyDrainPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (EnergySiphonPvE.CanUse(out act) && (IsActionTargetBossDying(EnergySiphonPvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (EnkindleBahamutPvE.CanUse(out act))
-            {
-                if ((EnkindleBahamutPvE.Target.Target.IsBossFromTTK() || EnkindleBahamutPvE.Target.Target.IsBossFromIcon()) && EnkindleBahamutPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (EnergyDrainPvE.CanUse(out act) && (IsActionTargetBossDying(EnergyDrainPvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (EnkindleSolarBahamutPvE.CanUse(out act))
-            {
-                if ((EnkindleSolarBahamutPvE.Target.Target.IsBossFromTTK() || EnkindleSolarBahamutPvE.Target.Target.IsBossFromIcon()) && EnkindleSolarBahamutPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (EnkindleBahamutPvE.CanUse(out act) && (IsActionTargetBossDying(EnkindleBahamutPvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (EnkindlePhoenixPvE.CanUse(out act))
-            {
-                if ((EnkindlePhoenixPvE.Target.Target.IsBossFromTTK() || EnkindlePhoenixPvE.Target.Target.IsBossFromIcon()) && EnkindlePhoenixPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (EnkindleSolarBahamutPvE.CanUse(out act) && (IsActionTargetBossDying(EnkindleSolarBahamutPvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (DeathflarePvE.CanUse(out act))
-            {
-                if ((DeathflarePvE.Target.Target.IsBossFromTTK() || DeathflarePvE.Target.Target.IsBossFromIcon()) && DeathflarePvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (EnkindlePhoenixPvE.CanUse(out act) && (IsActionTargetBossDying(EnkindlePhoenixPvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (SunflarePvE.CanUse(out act))
-            {
-                if ((SunflarePvE.Target.Target.IsBossFromTTK() || SunflarePvE.Target.Target.IsBossFromIcon()) && SunflarePvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (DeathflarePvE.CanUse(out act) && (IsActionTargetBossDying(DeathflarePvE) || summonActiveOrLowLevel))
+                return true;
 
-            if (SearingFlashPvE.CanUse(out act))
-            {
-                if ((SearingFlashPvE.Target.Target.IsBossFromTTK() || SearingFlashPvE.Target.Target.IsBossFromIcon()) && SearingFlashPvE.Target.Target.IsDying())
-                {
-                    return true;
-                }
-                if (SummonTime > 0f || !SummonBahamutPvE.EnoughLevel)
-                {
-                    return true;
-                }
-            }
+            if (SunflarePvE.CanUse(out act) && (IsActionTargetBossDying(SunflarePvE) || summonActiveOrLowLevel))
+                return true;
+
+            // Searing Flash inside big summon: fire during active summon or boss dying
+            if (SearingFlashPvE.CanUse(out act) && (IsActionTargetBossDying(SearingFlashPvE) || summonActiveOrLowLevel))
+                return true;
         }
 
         if (MountainBusterPvE.CanUse(out act))
-        {
             return true;
-        }
 
         if (PainflarePvE.CanUse(out act))
         {
             if ((inSolarUnique && HasSearingLight) || !SearingLightPvE.EnoughLevel)
-            {
                 return true;
-            }
-            if ((PainflarePvE.Target.Target.IsBossFromTTK() || PainflarePvE.Target.Target.IsBossFromIcon()) && PainflarePvE.Target.Target.IsDying())
-            {
+            if (IsActionTargetBossDying(PainflarePvE))
                 return true;
-            }
         }
 
-        // Punkt 5+6: Necrotize/Fester aggressiver ausgeben
-        // FFLogs: Top-Spieler double-weaven 2x Necrotize nach Energy Drain in jedem Big Summon,
-        // nicht nur in Solar Bahamut. Stacks sofort verbrauchen wenn in Big Summon Phase.
-        if (NecrotizePvE.CanUse(out act))
-        {
-            // Während Big Summon: immer sofort ausgeben (double-weave mit anderen oGCDs)
-            if (inBigInvocation)
-            {
-                return true;
-            }
-            if ((inSolarUnique && HasSearingLight) || !SearingLightPvE.EnoughLevel)
-            {
-                return true;
-            }
-            if ((NecrotizePvE.Target.Target.IsBossFromTTK() || NecrotizePvE.Target.Target.IsBossFromIcon()) && NecrotizePvE.Target.Target.IsDying())
-            {
-                return true;
-            }
-            if (EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(2))
-            {
-                return true;
-            }
-        }
+        // Necrotize/Fester: aggressiver ausgeben in Big Summon Phase
+        // FFLogs: Top-Spieler double-weaven 2x Necrotize nach Energy Drain in jedem Big Summon.
+        if (NecrotizePvE.CanUse(out act) && ShouldSpendFesterStack(NecrotizePvE, inBigInvocation, inSolarUnique))
+            return true;
 
-        if (FesterPvE.CanUse(out act))
-        {
-            if (inBigInvocation)
-            {
-                return true;
-            }
-            if ((inSolarUnique && HasSearingLight) || !SearingLightPvE.EnoughLevel)
-            {
-                return true;
-            }
-            if ((FesterPvE.Target.Target.IsBossFromTTK() || FesterPvE.Target.Target.IsBossFromIcon()) && FesterPvE.Target.Target.IsDying())
-            {
-                return true;
-            }
-            if (EnergyDrainPvE.Cooldown.WillHaveOneChargeGCD(2))
-            {
-                return true;
-            }
-        }
+        if (FesterPvE.CanUse(out act) && ShouldSpendFesterStack(FesterPvE, inBigInvocation, inSolarUnique))
+            return true;
 
-        if (SearingFlashPvE.CanUse(out act))
-        {
-            if ((SearingFlashPvE.Target.Target.IsBossFromTTK() || SearingFlashPvE.Target.Target.IsBossFromIcon()) && SearingFlashPvE.Target.Target.IsDying())
-            {
-                return true;
-            }
-        }
+        // Searing Flash outside big summon: only dump on dying boss (safety net)
+        if (SearingFlashPvE.CanUse(out act) && IsActionTargetBossDying(SearingFlashPvE))
+            return true;
         return base.AttackAbility(nextGCD, out act);
     }
 
@@ -676,10 +653,12 @@ public sealed class SMN_Dynamic : SummonerRotation
         // Per-Frame Caches invalidieren (GeneralGCD ist der erste Aufruf pro Zyklus)
         _pauseForDirectionValid = false;
         _specialModeCacheValid = false;
+        _m11sTrophyValid = false;
 
         // M12S: Rotation pausieren wenn Directed Grotesquerie aktiv
         if (ShouldPauseForDirection())
         {
+            LogDecision("Paused: Directed Grotesquerie");
             act = null;
             return false;
         }
@@ -787,8 +766,8 @@ public sealed class SMN_Dynamic : SummonerRotation
                 // BossMod SpecialMode (gecacht): NoMovement → Casts OK, Freezing/Pyretic → Instants
                 {
                     var ruinMode = GetCachedSpecialMode();
-                    if (ruinMode == "NoMovement") needInstant = false;
-                    else if (ruinMode is "Freezing" or "Pyretic") needInstant = true;
+                    if (ruinMode == SpecialModes.NoMovement) needInstant = false;
+                    else if (ruinMode is SpecialModes.Freezing or SpecialModes.Pyretic) needInstant = true;
                 }
 
                 if (needInstant)
@@ -832,8 +811,9 @@ public sealed class SMN_Dynamic : SummonerRotation
         act = null;
 
         // M11S Trophy Phase: Ifrit immer zuletzt (viel Bewegung in dieser Phase)
-        if (M11SIfritLast && IsInM11STrophyPhase())
+        if (M11SIfritLast && IsInM11STrophyPhaseCached())
         {
+            LogDecision("Primal: M11S Trophy → Titan>Garuda>Ifrit");
             if (TitanTime(out act)) return true;
             if (GarudaTime(out act)) return true;
             if (IfritTime(out act)) return true;
@@ -852,17 +832,17 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             switch (mode)
             {
-                case "Pyretic":
+                case SpecialModes.Pyretic:
+                case SpecialModes.Freezing:
                     preferInstants = true;
                     break;
-                case "NoMovement":
+                case SpecialModes.NoMovement:
                     preferInstants = false;
-                    break;
-                case "Freezing":
-                    preferInstants = true;
                     break;
             }
         }
+
+        LogDecision($"Primal: {(preferInstants ? "instants" : "casts")}, mode={mode ?? SpecialModes.Normal}");
 
         if (preferInstants)
         {
@@ -924,9 +904,13 @@ public sealed class SMN_Dynamic : SummonerRotation
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // IPC-Fehler: Fallback auf RSR-Erkennung
+                if ((DateTime.Now - _lastIpcErrorLog).TotalSeconds > 10)
+                {
+                    _lastIpcErrorLog = DateTime.Now;
+                    LogDecision($"IPC error in IsDamageImminent: {ex.Message}");
+                }
             }
         }
 
@@ -996,9 +980,13 @@ public sealed class SMN_Dynamic : SummonerRotation
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Fallback auf RSR-Erkennung
+                if ((DateTime.Now - _lastIpcErrorLog).TotalSeconds > 10)
+                {
+                    _lastIpcErrorLog = DateTime.Now;
+                    LogDecision($"IPC error in ShouldUseAddle: {ex.Message}");
+                }
             }
         }
 
@@ -1285,9 +1273,9 @@ public sealed class SMN_Dynamic : SummonerRotation
         {
             preferInstants = activeMode switch
             {
-                "Pyretic" => true,
-                "NoMovement" => false,
-                "Freezing" => true,
+                SpecialModes.Pyretic => true,
+                SpecialModes.NoMovement => false,
+                SpecialModes.Freezing => true,
                 _ => preferInstants
             };
         }
@@ -1296,11 +1284,11 @@ public sealed class SMN_Dynamic : SummonerRotation
             ? "Titan > Garuda > Ifrit (Instants)"
             : "Ifrit > Titan > Garuda (Casts)";
 
-        if (M11SIfritLast && IsInM11STrophyPhase())
+        if (M11SIfritLast && IsInM11STrophyPhaseCached())
             primalOrder = "Titan > Garuda > Ifrit (M11S Trophy)";
 
         ImGui.Text($"  Primal Order: {primalOrder}");
-        ImGui.Text($"  Moving: {moving} | SpecialMode: {activeMode ?? "Normal"}");
+        ImGui.Text($"  Moving: {moving} | SpecialMode: {activeMode ?? SpecialModes.Normal}");
     }
 
     // ----- Live State -----
@@ -1372,7 +1360,7 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (HasFurtherRuin) ImGui.Text("  FurtherRuin: ACTIVE");
         if (DataCenter.IsInM11S)
         {
-            bool trophy = IsInM11STrophyPhase();
+            bool trophy = IsInM11STrophyPhaseCached();
             ColoredBool("  M11S TrophyPhase", trophy);
         }
         float grotRemaining = DirectedGrotesquerieRemaining;
@@ -1489,6 +1477,9 @@ public sealed class SMN_Dynamic : SummonerRotation
 
     private static string GetActionName(uint actionId)
     {
+        if (_actionNameCache.TryGetValue(actionId, out var cached))
+            return cached;
+
         try
         {
             var sheet = Service.GetSheet<Lumina.Excel.Sheets.Action>();
@@ -1496,20 +1487,25 @@ public sealed class SMN_Dynamic : SummonerRotation
             var action = sheet.GetRow(actionId);
             if (action.RowId == 0) return "?";
             string name = action.Name.ToString();
-            return string.IsNullOrEmpty(name) ? $"(id:{actionId})" : name;
+            var result = string.IsNullOrEmpty(name) ? $"(id:{actionId})" : name;
+            _actionNameCache[actionId] = result;
+            return result;
         }
         catch { return "?"; }
     }
 
     private static string GetAttackTypeName(uint actionId)
     {
+        if (_attackTypeCache.TryGetValue(actionId, out var cached))
+            return cached;
+
         try
         {
             var sheet = Service.GetSheet<Lumina.Excel.Sheets.Action>();
             if (sheet == null) return "?";
             var action = sheet.GetRow(actionId);
             if (action.RowId == 0) return "?";
-            return action.AttackType.RowId switch
+            var result = action.AttackType.RowId switch
             {
                 0 => "None(0)",
                 1 => "Slash(1)",
@@ -1520,6 +1516,8 @@ public sealed class SMN_Dynamic : SummonerRotation
                 7 => "Phys(7)",
                 _ => $"Unk({action.AttackType.RowId})"
             };
+            _attackTypeCache[actionId] = result;
+            return result;
         }
         catch { return "?"; }
     }
