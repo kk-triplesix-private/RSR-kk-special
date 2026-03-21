@@ -1,67 +1,68 @@
+# RSR KK's Special
 
-# [![](https://raw.githubusercontent.com/FFXIV-CombatReborn/RebornAssets/main/IconAssets/RSR_Icon.png)](https://github.com/FFXIV-CombatReborn/RotationSolverReborn)
+A private fork of [RotationSolverReborn](https://github.com/FFXIV-CombatReborn/RotationSolverReborn) by the FFXIV Combat Reborn team.
 
-**RotationSolverReborn**
+I absolutely love and appreciate the original project — the Combat Reborn team has done an incredible job building and maintaining RSR. This fork exists solely because I needed a few very specific customizations for my own personal use.
 
-![Github Latest Releases](https://img.shields.io/github/downloads/FFXIV-CombatReborn/RotationSolverReborn/latest/total.svg?style=for-the-badge)
-![Github License](https://img.shields.io/github/license/FFXIV-CombatReborn/RotationSolverReborn.svg?label=License&style=for-the-badge)
-[![](https://dcbadge.limes.pink/api/server/p54TZMPnC9)](https://discord.gg/p54TZMPnC9)
+---
 
-This tool is designed to enhance your gameplay experience by performing your rotation as optimally as possible, including heals, interrupts, mitigations, and MP management.
+## What's Different
 
-## Features
+### Custom Rotations
 
-- **Dynamic Rotation Guidance aka Training Mode**: Offers real-time suggestions for skill rotations, tailored to your current in-game situation.
-- **Customizable Settings**: Allows users to adjust the rotations based on personal preference, encounter type, and specific boss mechanics.
-- **Comprehensive Database**: Includes an extensive database of class abilities to ensure accurate and effective rotation.
-- **User-Friendly Interface**: Features a clean and intuitive interface, making it easy for players of all levels to navigate and use the plugin effectively.
-- **Regular Updates**: The plugin is regularly updated to reflect the latest game patches, class changes, and user feedback, ensuring it remains relevant and useful.
+13 custom rotation files in `RotationSolver/ExtraRotations/`:
 
-## Installing
-- Enter `/xlsettings` in the chat window and go to the Experimental tab in the opening window.
-- **Skip below the DevPlugins section to the Custom Plugin Repositories section.**
-- Copy and paste the repo.json link into the first free text input field.
-```
-https://raw.githubusercontent.com/FFXIV-CombatReborn/CombatRebornRepo/main/pluginmaster.json
-```
-- Click on the + button and make sure the checkmark beside the new field is set afterwards.
-- **Click on the Save-icon in the bottom right.**
+| Role | Rotation | Description |
+|------|----------|-------------|
+| **Magical** | **SMN_Dynamic** | Flagship rotation (1,500+ lines) — dynamic egi selection, BossMod IPC integration, smart Addle/Aegis timing, M11S/M12S fight-specific logic, full diagnostics & simulation panel |
+| **Magical** | ChurinSMN | Churin's custom Summoner rotation |
+| **Magical** | BeirutaPCT | Custom Pictomancer rotation |
+| **Magical** | BeirutaRDM | Custom Red Mage rotation |
+| **Magical** | Rabbs_BLM_All_Levels | Rabbs' Black Mage rotation for all levels |
+| **Healer** | BeirutaAST | Custom Astrologian rotation |
+| **Healer** | BeirutaSCH | Custom Scholar rotation |
+| **Melee** | ChurinMNK | Churin's custom Monk rotation |
+| **Melee** | DSRViper | Viper rotation optimized for DSR |
+| **Ranged** | ChurinBRD | Churin's custom Bard rotation |
+| **Ranged** | ChurinDNC | Churin's custom Dancer rotation |
+| **Ranged** | ChurinMCH | Churin's custom Machinist rotation |
+| **Tank** | ChurinDRK | Churin's custom Dark Knight rotation |
 
-Following these steps, you should be able to see all contained plugins in the Available Plugins tab in the Dalamud Plugin Installer.
-No Plugins will be installed, you have just made them available. You can now select which of these plugins you actually want to install.
+### Rotation Timeline Planner
 
-- CN users
-```
-https://raw.githubusercontent.com/FFXIV-CombatReborn/RotationSolverReborn/refs/heads/main/pluginmasterCN.json
-```
-- KR users
-```
-https://raw.githubusercontent.com/FFXIV-CombatReborn/RotationSolverReborn/refs/heads/main/pluginmasterKR.json
-```
+A full rotation planning system integrated with BossMod encounter data:
 
-## Want to contribute?
+- Action palette with GCD/oGCD actions
+- BossMod encounter dropdown with auto-loaded phase timings and mechanics
+- Drag & drop actions onto a visual timeline with slot snapping
+- Precast timer with configurable prepull zone
+- Cast bars showing skill activation timing
+- Mechanic connection lines linking oGCDs to upcoming raidwides/tankbusters
 
-- Create a fork
-- Make your changes
-- Test the changes (Combat rotation changes should be tested vs [Stone, Sky, Sea tests](https://ffxiv.consolegameswiki.com/wiki/Stone,_Sky,_Sea) in game in each expansion)
-- Create a PR and point it to main
+### BossMod IPC Integration
 
-## Links
+Deep integration with [BossModReborn](https://github.com/FFXIV-CombatReborn/BossmodReborn) for intelligent rotation decisions:
 
-The rotations definitions are [here](https://github.com/FFXIV-CombatReborn/RotationSolverReborn/tree/main/RotationSolver/RebornRotations).
+- Raidwide/tankbuster/stack damage prediction for proactive mitigation
+- SpecialMode detection (Pyretic, NoMovement, Freezing) for movement-aware ability selection
+- ForbiddenDirections for mechanic-safe rotation pausing (e.g. M12S Directed Grotesquerie)
 
-## Latest version of RSR for each FFXIV version
-7.21
-https://github.com/FFXIV-CombatReborn/RotationSolverReborn/releases/tag/7.2.1.65
+### UI Modernization
 
-7.25
-https://github.com/FFXIV-CombatReborn/RotationSolverReborn/releases/tag/7.2.5.122
+- Dark elegant theme with teal accents (RSRStyle.cs)
+- Glassmorphism styling with config toggle
+- Consistent dark theme across all windows
 
-7.30
-https://github.com/FFXIV-CombatReborn/RotationSolverReborn/releases/tag/7.3.0.59
+### Automated Upstream Sync
 
-7.31
-https://github.com/FFXIV-CombatReborn/RotationSolverReborn/releases/tag/7.3.1.28
+- Syncs with the original repo every 2 hours automatically
+- Preserves all local changes on conflict (merge strategy: ours)
+- Auto-increments version tags
 
-7.35
-https://github.com/FFXIV-CombatReborn/RotationSolverReborn/releases/tag/7.3.5.27
+---
+
+## Credits & Thanks
+
+Huge thanks to the **FFXIV Combat Reborn team** for creating and maintaining the original [RotationSolverReborn](https://github.com/FFXIV-CombatReborn/RotationSolverReborn). Their work is the foundation this fork is built on.
+
+Original repository: https://github.com/FFXIV-CombatReborn/RotationSolverReborn
