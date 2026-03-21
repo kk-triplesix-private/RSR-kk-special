@@ -3,7 +3,7 @@
   "Name": "RSR (KK's Special)",
   "InternalName": "RotationSolver",
   "RepoUrl": "https://github.com/kk-triplesix/RotationSolverRebornPrivate",
-  "Description": "Analyses combat information every frame and finds the best action.\n\nThis means almost all the information available in one frame in combat, including the status of all players in the party, the status of any hostile targets, skill cooldowns, the MP and HP of characters, the location of characters, casting status of the hostile target, combo, combat duration, player level, etc.\nThen, it will highlight the best action on the hot bar, or help you to click on it.\nIt is designed for `general combat`, not for savage or ultimate. Use it carefully.",
+  "Description": "Private fork of RotationSolverReborn with custom rotations, BossMod IPC integration, rotation planner, and UI modernization.",
   "ApplicableVersion": "any",
   "DalamudApiLevel": 14,
   "TestingDalamudApiLevel": 14,
@@ -24,6 +24,6 @@
   "LoadPriority": 0,
   "IsTestingExclusive": false,
   "IconUrl": "https://raw.githubusercontent.com/FFXIV-CombatReborn/RebornAssets/main/IconAssets/RSR_Icon.png",
-  "Punchline": "Analyses combat information every frame and finds the best action.",
+  "Punchline": "KK's custom rotation solver with BossMod integration.",
   "AcceptsFeedback": true
 }
