@@ -63,13 +63,7 @@ public class BLM_DefaultPVP : BlackMageRotation
     #region GCDs
     protected override bool GeneralGCD(out IAction? action)
     {
-        if (XenoglossyPvP.CanUse(out action, usedUp: true)
-            && (Player?.GetHealthRatio() < XenoglossyLowHP || Player?.GetHealthRatio() > XenoglossyHighHP))
-        {
-            return true;
-        }
-
-        if (FlareStarPvP.CanUse(out action))
+		if (FlareStarPvP.CanUse(out action))
         {
             return true;
         }
@@ -79,7 +73,23 @@ public class BLM_DefaultPVP : BlackMageRotation
             return true;
         }
 
-        if (ParadoxPvP.CanUse(out action))
+		if (FlarePvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (FreezePvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (XenoglossyPvP.CanUse(out action, usedUp: true)
+			&& (Player?.GetHealthRatio() < XenoglossyLowHP || Player?.GetHealthRatio() > XenoglossyHighHP))
+		{
+			return true;
+		}
+
+		if (ParadoxPvP.CanUse(out action))
         {
             return true;
         }

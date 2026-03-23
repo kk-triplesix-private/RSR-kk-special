@@ -2802,10 +2802,10 @@ public partial class RotationConfigWindow : Window
 
                 RSRStyle.ThemedSeparator();
 
-                int ttk = config.TimeToKill;
+                float ttk = config.TimeToKill;
                 ImGui.SetNextItemWidth(Scale * 150);
-                if (ImGui.DragInt($"{UiString.ConfigWindow_Actions_TTK.GetDescription()}##{a}",
-                    ref ttk, 0.1f, 0, 120, $"{ttk:F2}{ConfigUnitType.Seconds.ToSymbol()}"))
+                if (ImGui.DragFloat($"{UiString.ConfigWindow_Actions_TTK.GetDescription()}##{a}",
+                    ref ttk, 0.1f, 0, 120, $"%.1f{ConfigUnitType.Seconds.ToSymbol()}"))
                 {
                     config.TimeToKill = ttk;
                 }
@@ -4169,7 +4169,8 @@ public partial class RotationConfigWindow : Window
             ImGui.Text($"CanBeRaised: {battleChara.CanBeRaised()}");
             ImGui.Text($"HP: {battleChara.CurrentHp} / {battleChara.MaxHp}");
             ImGui.Text($"HealthRatio: {battleChara.GetHealthRatio()}");
-            ImGui.Spacing();
+			ImGui.Text($"HitboxRadius: {battleChara.HitboxRadius}");
+			ImGui.Spacing();
             ImGui.Text($"NamePlate Icon ID: {battleChara.GetNamePlateIcon()}");
             ImGui.Text($"Event Type: {battleChara.GetEventType()}");
             ImGui.Text($"TargetCharaCondition: {battleChara.TargetCharaCondition()}");
