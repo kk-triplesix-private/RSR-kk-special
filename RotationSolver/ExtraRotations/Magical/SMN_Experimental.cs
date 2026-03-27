@@ -26,9 +26,6 @@ public sealed class SMN_Experimental : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Smart Radiant Aegis: Use on any incoming damage (raidwide/stack/AoE)")]
     public bool SmartAegis { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Solar Bahamut)")]
-    public bool SmartPotion { get; set; } = true;
-
     [RotationConfig(CombatType.PvE, Name = "Use GCDs to heal (ignored if healers are alive)")]
     public bool GCDHeal { get; set; } = false;
 
@@ -868,16 +865,9 @@ public sealed class SMN_Experimental : SummonerRotation
             if (RekindlePvE.CanUse(out act, targetOverride: TargetType.LowHP)) return true;
         }
 
-        // Smart Potion: nur während Solar Bahamut (2-min Burst Window)
-        if (SmartPotion)
-        {
-            if (InSolarBahamut && InCombat && UseBurstMedicine(out act))
-                return true;
-        }
-        else
-        {
-            if (InCombat && UseBurstMedicine(out act)) return true;
-        }
+        // Potion: wie Standard-Rota, bei Searing Light (= vor/während Solar Bahamut)
+        if (HasSearingLight && InCombat && UseBurstMedicine(out act))
+            return true;
 
         if (AegisOnCooldown && InCombat && !IsLastAction(false, RadiantAegisPvE)
             && RadiantAegisPvE.CanUse(out act, usedUp: true))
