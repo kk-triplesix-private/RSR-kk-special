@@ -130,48 +130,6 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
     private const int DotOffsetMobs = 1;
     private const int MinimumFairyGaugeForLinkPriority = 70;
 
-    private static float EstimateRemainingSeconds(dynamic cooldown, float maxProbeSeconds, float stepSeconds = 0.5f)
-{
-    if (cooldown.HasOneCharge) return 0f;
-
-    for (float t = 0f; t <= maxProbeSeconds; t += stepSeconds)
-    {
-        if (cooldown.WillHaveOneCharge(t))
-            return t;
-    }
-
-    return -1f;
-}
-
-private float SummonSeraphRem()
-{
-    if (!SummonSeraphPvE.EnoughLevel) return -1f;
-    return EstimateRemainingSeconds(SummonSeraphPvE.Cooldown, 180f, 0.5f);
-}
-
-private float DissipationRem()
-{
-    if (!DissipationPvE.EnoughLevel) return -1f;
-    return EstimateRemainingSeconds(DissipationPvE.Cooldown, 180f, 0.5f);
-}
-private bool CurrentTargetInLast5sOfChainStratagem
-{
-    get
-    {
-        if (CurrentTarget == null)
-            return false;
-
-        return CurrentTarget.HasStatus(true, StatusID.ChainStratagem) &&
-               CurrentTarget.WillStatusEnd(5f, true, StatusID.ChainStratagem);
-    }
-}
-private bool ShouldUseSummonEos()
-{
-    float summonSeraphRem = SummonSeraphRem();
-    float dissipationRem = DissipationRem();
-
-    return summonSeraphRem < 90f || dissipationRem < 140f;
-}
     private const bool UseDissipationDuringBurst = true;
     private const bool EnableBallparkTtkEstimator = true;
 
