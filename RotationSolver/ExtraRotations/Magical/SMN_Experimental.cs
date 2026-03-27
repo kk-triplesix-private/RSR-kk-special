@@ -650,20 +650,22 @@ public sealed class SMN_Experimental : SummonerRotation
 
     private enum TrophyWeaponType : byte { None, Axe, Scythe, Sword }
     private TrophyWeaponType _detectedTrophyWeapon;
-    private bool _m11sTrophyCastSeen;
+    private float _m11sTrophyCastTime = -1f;
+    private const float TrophyCastBridgeWindow = 8f;
 
     private bool IsInM11STrophyPhase()
     {
         if (!DataCenter.IsInM11S)
         {
-            _m11sTrophyCastSeen = false;
+            _m11sTrophyCastTime = -1f;
             _detectedTrophyWeapon = TrophyWeaponType.None;
             return false;
         }
 
-        if (DataCenter.CombatTimeRaw == 0)
+        float combatTime = DataCenter.CombatTimeRaw;
+        if (combatTime == 0)
         {
-            _m11sTrophyCastSeen = false;
+            _m11sTrophyCastTime = -1f;
             _detectedTrophyWeapon = TrophyWeaponType.None;
             return false;
         }
@@ -682,7 +684,7 @@ public sealed class SMN_Experimental : SummonerRotation
                     {
                         case 46028: // Trophy Weapons (erste Phase)
                         case 46102: // Trophy Weapons (Ultimate)
-                            _m11sTrophyCastSeen = true;
+                            _m11sTrophyCastTime = combatTime;
                             return true;
                         case 46037: // Raw Steel Trophy
                         case 46038:
@@ -707,19 +709,20 @@ public sealed class SMN_Experimental : SummonerRotation
                     if (id == 0) id = obj.DataId;
                     switch (id)
                     {
-                        case 0x4AF0: _detectedTrophyWeapon = TrophyWeaponType.Axe; _m11sTrophyCastSeen = false; return true;
-                        case 0x4AF1: _detectedTrophyWeapon = TrophyWeaponType.Scythe; _m11sTrophyCastSeen = false; return true;
-                        case 0x4AF2: _detectedTrophyWeapon = TrophyWeaponType.Sword; _m11sTrophyCastSeen = false; return true;
+                        case 0x4AF0: _detectedTrophyWeapon = TrophyWeaponType.Axe; _m11sTrophyCastTime = -1f; return true;
+                        case 0x4AF1: _detectedTrophyWeapon = TrophyWeaponType.Scythe; _m11sTrophyCastTime = -1f; return true;
+                        case 0x4AF2: _detectedTrophyWeapon = TrophyWeaponType.Sword; _m11sTrophyCastTime = -1f; return true;
                     }
                 }
             }
         }
         catch (AccessViolationException) { }
 
-        // Schritt 3: Lücke überbrücken (Cast fertig, Adds noch nicht gespawnt)
-        if (_m11sTrophyCastSeen)
+        // Schritt 3: Lücke überbrücken, verfällt nach TrophyCastBridgeWindow Sekunden
+        if (_m11sTrophyCastTime >= 0f && (combatTime - _m11sTrophyCastTime) < TrophyCastBridgeWindow)
             return true;
 
+        _m11sTrophyCastTime = -1f;
         return false;
     }
 

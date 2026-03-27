@@ -330,7 +330,8 @@ public sealed class SMN_Dynamic : SummonerRotation
     // Trophy Weapon type tracking for M11S
     private enum TrophyWeaponType : byte { None, Axe, Scythe, Sword }
     private TrophyWeaponType _detectedTrophyWeapon;
-    private bool _m11sTrophyCastSeen; // Sticky flag: boss hat Trophy Weapons gecastet, Adds noch nicht gespawnt
+    private float _m11sTrophyCastTime = -1f; // Zeitstempel (CombatTimeRaw) wann Trophy Weapons Cast erkannt wurde, -1 = inaktiv
+    private const float TrophyCastBridgeWindow = 8f; // Max Sekunden die der Bridge-Flag aktiv bleibt
 
     /// <summary>
     /// M11S Trophy Weapon Phase Erkennung.
@@ -344,14 +345,15 @@ public sealed class SMN_Dynamic : SummonerRotation
     {
         if (!DataCenter.IsInM11S)
         {
-            _m11sTrophyCastSeen = false;
+            _m11sTrophyCastTime = -1f;
             _detectedTrophyWeapon = TrophyWeaponType.None;
             return false;
         }
 
-        if (DataCenter.CombatTimeRaw == 0)
+        float combatTime = DataCenter.CombatTimeRaw;
+        if (combatTime == 0)
         {
-            _m11sTrophyCastSeen = false;
+            _m11sTrophyCastTime = -1f;
             _detectedTrophyWeapon = TrophyWeaponType.None;
             return false;
         }
@@ -370,7 +372,7 @@ public sealed class SMN_Dynamic : SummonerRotation
                     {
                         case 46028: // Trophy Weapons (erste Phase)
                         case 46102: // Trophy Weapons (Ultimate)
-                            _m11sTrophyCastSeen = true;
+                            _m11sTrophyCastTime = combatTime;
                             return true;
                         case 46037: // Raw Steel Trophy
                         case 46038:
@@ -397,15 +399,15 @@ public sealed class SMN_Dynamic : SummonerRotation
                     {
                         case 0x4AF0: // 19184
                             _detectedTrophyWeapon = TrophyWeaponType.Axe;
-                            _m11sTrophyCastSeen = false;
+                            _m11sTrophyCastTime = -1f;
                             return true;
                         case 0x4AF1: // 19185
                             _detectedTrophyWeapon = TrophyWeaponType.Scythe;
-                            _m11sTrophyCastSeen = false;
+                            _m11sTrophyCastTime = -1f;
                             return true;
                         case 0x4AF2: // 19186
                             _detectedTrophyWeapon = TrophyWeaponType.Sword;
-                            _m11sTrophyCastSeen = false;
+                            _m11sTrophyCastTime = -1f;
                             return true;
                     }
                 }
@@ -414,9 +416,11 @@ public sealed class SMN_Dynamic : SummonerRotation
         catch (AccessViolationException) { }
 
         // Schritt 3: Lücke überbrücken (Cast fertig, Adds noch nicht gespawnt)
-        if (_m11sTrophyCastSeen)
+        // Verfällt automatisch nach TrophyCastBridgeWindow Sekunden
+        if (_m11sTrophyCastTime >= 0f && (combatTime - _m11sTrophyCastTime) < TrophyCastBridgeWindow)
             return true;
 
+        _m11sTrophyCastTime = -1f;
         return false;
     }
 
