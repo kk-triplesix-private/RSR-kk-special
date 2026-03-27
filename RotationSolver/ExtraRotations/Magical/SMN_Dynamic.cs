@@ -22,7 +22,7 @@ public sealed class SMN_Dynamic : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Smart Radiant Aegis: Use on any incoming damage (raidwide/stack/AoE)")]
     public bool SmartAegis { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Searing Light)")]
+    [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Solar Bahamut)")]
     public bool SmartPotion { get; set; } = true;
 
     [RotationConfig(CombatType.PvE, Name = "Use GCDs to heal (ignored if healers are alive)")]
@@ -333,45 +333,93 @@ public sealed class SMN_Dynamic : SummonerRotation
     // Trophy Weapon type tracking for M11S
     private enum TrophyWeaponType : byte { None, Axe, Scythe, Sword }
     private TrophyWeaponType _detectedTrophyWeapon;
+    private bool _m11sTrophyCastSeen; // Sticky flag: boss hat Trophy Weapons gecastet, Adds noch nicht gespawnt
 
     /// <summary>
     /// M11S Trophy Weapon Phase Erkennung.
-    /// Trophy Weapon Adds DataId: Axe (0x4AF0), Scythe (0x4AF1), Sword (0x4AF2).
-    /// Scannt Svc.Objects direkt, da die Trophy Weapons nicht targetbar sind.
-    /// Also tracks which weapon type is present for mechanic-specific adaptation:
-    /// - Axe: shared buster on MT + unmarked spread on non-tanks
-    /// - Scythe: conal on 3 players (2 tanks + random)
-    /// - Sword: cross AOE + light party stacks
+    /// Erkennt die Phase über drei Wege (frühester zuerst):
+    /// 1. Boss castet "Trophy Weapons" (46028/46102) → setzt sticky Flag
+    /// 2. Boss castet "Raw Steel Trophy" (46037/46038/46114/46115)
+    /// 3. Trophy Weapon Adds in Svc.Objects (DataId 0x4AF0/0x4AF1/0x4AF2)
+    /// Das sticky Flag überbrückt die Lücke zwischen Cast-Ende und Add-Spawn.
     /// </summary>
     private bool IsInM11STrophyPhase()
     {
-        if (!DataCenter.IsInM11S) return false;
-
-        var objects = Svc.Objects;
-        if (objects == null) return false;
-
-        _detectedTrophyWeapon = TrophyWeaponType.None;
-        int count = objects.Length;
-        for (int i = 0; i < count; i++)
+        if (!DataCenter.IsInM11S)
         {
-            var obj = objects[i];
-            if (obj == null) continue;
-            // Check both BaseId and DataId for compatibility across Dalamud versions
-            uint id = obj.BaseId;
-            if (id == 0) id = obj.DataId;
-            switch (id)
+            _m11sTrophyCastSeen = false;
+            _detectedTrophyWeapon = TrophyWeaponType.None;
+            return false;
+        }
+
+        if (DataCenter.CombatTimeRaw == 0)
+        {
+            _m11sTrophyCastSeen = false;
+            _detectedTrophyWeapon = TrophyWeaponType.None;
+            return false;
+        }
+
+        try
+        {
+            // Schritt 1: Boss-Cast Erkennung (frühester Trigger, ~3s vor Add-Spawn)
+            var hostiles = DataCenter.AllHostileTargets;
+            if (hostiles != null)
             {
-                case 0x4AF0: // 19184
-                    _detectedTrophyWeapon = TrophyWeaponType.Axe;
-                    return true;
-                case 0x4AF1: // 19185
-                    _detectedTrophyWeapon = TrophyWeaponType.Scythe;
-                    return true;
-                case 0x4AF2: // 19186
-                    _detectedTrophyWeapon = TrophyWeaponType.Sword;
-                    return true;
+                for (int i = 0, n = hostiles.Count; i < n; i++)
+                {
+                    var h = hostiles[i];
+                    if (h == null || !h.IsCasting) continue;
+                    switch (h.CastActionId)
+                    {
+                        case 46028: // Trophy Weapons (erste Phase)
+                        case 46102: // Trophy Weapons (Ultimate)
+                            _m11sTrophyCastSeen = true;
+                            return true;
+                        case 46037: // Raw Steel Trophy
+                        case 46038:
+                        case 46114:
+                        case 46115:
+                            return true;
+                    }
+                }
+            }
+
+            // Schritt 2: Trophy Weapon Adds in der Szene
+            var objects = Svc.Objects;
+            if (objects != null)
+            {
+                _detectedTrophyWeapon = TrophyWeaponType.None;
+                int count = objects.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    var obj = objects[i];
+                    if (obj == null) continue;
+                    uint id = obj.BaseId;
+                    if (id == 0) id = obj.DataId;
+                    switch (id)
+                    {
+                        case 0x4AF0: // 19184
+                            _detectedTrophyWeapon = TrophyWeaponType.Axe;
+                            _m11sTrophyCastSeen = false;
+                            return true;
+                        case 0x4AF1: // 19185
+                            _detectedTrophyWeapon = TrophyWeaponType.Scythe;
+                            _m11sTrophyCastSeen = false;
+                            return true;
+                        case 0x4AF2: // 19186
+                            _detectedTrophyWeapon = TrophyWeaponType.Sword;
+                            _m11sTrophyCastSeen = false;
+                            return true;
+                    }
+                }
             }
         }
+        catch (AccessViolationException) { }
+
+        // Schritt 3: Lücke überbrücken (Cast fertig, Adds noch nicht gespawnt)
+        if (_m11sTrophyCastSeen)
+            return true;
+
         return false;
     }
 
@@ -491,14 +539,10 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Smart Potion: prefer Solar Bahamut + Searing Light (opener/2-min windows)
+        // Smart Potion: nur während Solar Bahamut (2-min Burst Window)
         if (SmartPotion)
         {
-            // Best timing: Solar Bahamut with Searing Light active (opener + 2-min loops)
-            if (InSolarBahamut && HasSearingLight && InCombat && UseBurstMedicine(out act))
-                return true;
-            // Fallback: any Searing Light window
-            if (HasSearingLight && InCombat && UseBurstMedicine(out act))
+            if (InSolarBahamut && InCombat && UseBurstMedicine(out act))
                 return true;
         }
         else

@@ -26,7 +26,7 @@ public sealed class SMN_Experimental : SummonerRotation
     [RotationConfig(CombatType.PvE, Name = "Smart Radiant Aegis: Use on any incoming damage (raidwide/stack/AoE)")]
     public bool SmartAegis { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Searing Light)")]
+    [RotationConfig(CombatType.PvE, Name = "Smart Potion (only use during Solar Bahamut)")]
     public bool SmartPotion { get; set; } = true;
 
     [RotationConfig(CombatType.PvE, Name = "Use GCDs to heal (ignored if healers are alive)")]
@@ -121,9 +121,6 @@ public sealed class SMN_Experimental : SummonerRotation
 
     [RotationConfig(CombatType.PvE, Name = "[NEW] Pool Fester/Necrotize: Hold charges outside buff windows for burst alignment")]
     public bool PoolFesterForBuffs { get; set; } = true;
-
-    [RotationConfig(CombatType.PvE, Name = "[NEW] Buff-aware Potions: Only use potions when party buffs are active")]
-    public bool BuffAwarePotions { get; set; } = true;
 
     #endregion
 
@@ -656,28 +653,76 @@ public sealed class SMN_Experimental : SummonerRotation
 
     private enum TrophyWeaponType : byte { None, Axe, Scythe, Sword }
     private TrophyWeaponType _detectedTrophyWeapon;
+    private bool _m11sTrophyCastSeen;
 
     private bool IsInM11STrophyPhase()
     {
-        if (!DataCenter.IsInM11S) return false;
-        var objects = Svc.Objects;
-        if (objects == null) return false;
-
-        _detectedTrophyWeapon = TrophyWeaponType.None;
-        int count = objects.Length;
-        for (int i = 0; i < count; i++)
+        if (!DataCenter.IsInM11S)
         {
-            var obj = objects[i];
-            if (obj == null) continue;
-            uint id = obj.BaseId;
-            if (id == 0) id = obj.DataId;
-            switch (id)
+            _m11sTrophyCastSeen = false;
+            _detectedTrophyWeapon = TrophyWeaponType.None;
+            return false;
+        }
+
+        if (DataCenter.CombatTimeRaw == 0)
+        {
+            _m11sTrophyCastSeen = false;
+            _detectedTrophyWeapon = TrophyWeaponType.None;
+            return false;
+        }
+
+        try
+        {
+            // Schritt 1: Boss-Cast Erkennung (frühester Trigger)
+            var hostiles = DataCenter.AllHostileTargets;
+            if (hostiles != null)
             {
-                case 0x4AF0: _detectedTrophyWeapon = TrophyWeaponType.Axe; return true;
-                case 0x4AF1: _detectedTrophyWeapon = TrophyWeaponType.Scythe; return true;
-                case 0x4AF2: _detectedTrophyWeapon = TrophyWeaponType.Sword; return true;
+                for (int i = 0, n = hostiles.Count; i < n; i++)
+                {
+                    var h = hostiles[i];
+                    if (h == null || !h.IsCasting) continue;
+                    switch (h.CastActionId)
+                    {
+                        case 46028: // Trophy Weapons (erste Phase)
+                        case 46102: // Trophy Weapons (Ultimate)
+                            _m11sTrophyCastSeen = true;
+                            return true;
+                        case 46037: // Raw Steel Trophy
+                        case 46038:
+                        case 46114:
+                        case 46115:
+                            return true;
+                    }
+                }
+            }
+
+            // Schritt 2: Trophy Weapon Adds
+            var objects = Svc.Objects;
+            if (objects != null)
+            {
+                _detectedTrophyWeapon = TrophyWeaponType.None;
+                int count = objects.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    var obj = objects[i];
+                    if (obj == null) continue;
+                    uint id = obj.BaseId;
+                    if (id == 0) id = obj.DataId;
+                    switch (id)
+                    {
+                        case 0x4AF0: _detectedTrophyWeapon = TrophyWeaponType.Axe; _m11sTrophyCastSeen = false; return true;
+                        case 0x4AF1: _detectedTrophyWeapon = TrophyWeaponType.Scythe; _m11sTrophyCastSeen = false; return true;
+                        case 0x4AF2: _detectedTrophyWeapon = TrophyWeaponType.Sword; _m11sTrophyCastSeen = false; return true;
+                    }
+                }
             }
         }
+        catch (AccessViolationException) { }
+
+        // Schritt 3: Lücke überbrücken (Cast fertig, Adds noch nicht gespawnt)
+        if (_m11sTrophyCastSeen)
+            return true;
+
         return false;
     }
 
@@ -823,25 +868,11 @@ public sealed class SMN_Experimental : SummonerRotation
             if (RekindlePvE.CanUse(out act, targetOverride: TargetType.LowHP)) return true;
         }
 
-        // ENHANCED Smart Potion: considers party buff window
+        // Smart Potion: nur während Solar Bahamut (2-min Burst Window)
         if (SmartPotion)
         {
-            if (BuffAwarePotions && UsePartyBuffTracking)
-            {
-                // Best: Solar Bahamut + party buffs active
-                if (InSolarBahamut && IsInPartyBurstWindow && InCombat && UseBurstMedicine(out act))
-                    return true;
-                // Good: any burst window with Searing Light
-                if (HasSearingLight && IsInPartyBurstWindow && InCombat && UseBurstMedicine(out act))
-                    return true;
-            }
-            else
-            {
-                if (InSolarBahamut && HasSearingLight && InCombat && UseBurstMedicine(out act))
-                    return true;
-                if (HasSearingLight && InCombat && UseBurstMedicine(out act))
-                    return true;
-            }
+            if (InSolarBahamut && InCombat && UseBurstMedicine(out act))
+                return true;
         }
         else
         {
