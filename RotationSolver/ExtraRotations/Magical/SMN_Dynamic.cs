@@ -1435,8 +1435,8 @@ public sealed class SMN_Dynamic : SummonerRotation
         // Fight State
         ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Fight:");
         ImGui.Text($"  Territory: {DataCenter.TerritoryID} | InCombat: {InCombat}");
-        ImGui.Text($"  IsInM11S: {DataCenter.IsInM11S} (TID={DataCenter.TerritoryID}, expect 1327)");
-        ImGui.Text($"  IsInM12S: {DataCenter.IsInM12S} (TID={DataCenter.TerritoryID}, expect 1325)");
+        ImGui.Text($"  IsInM11S: {DataCenter.IsInM11S} (TID={DataCenter.TerritoryID}, expect 1325)");
+        ImGui.Text($"  IsInM12S: {DataCenter.IsInM12S} (TID={DataCenter.TerritoryID}, expect 1327)");
         ImGui.Text($"  Phase: {(InBahamut ? "Bahamut" : InPhoenix ? "Phoenix" : InSolarBahamut ? "SolarBahamut" : "Primal")} | SummonTime: {SummonTime:F1}s");
         if (HasFurtherRuin) ImGui.Text("  FurtherRuin: ACTIVE");
         if (DataCenter.IsInM11S)
