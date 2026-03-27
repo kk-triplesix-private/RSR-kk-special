@@ -536,10 +536,6 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Potion: wie Standard-Rota, bei Searing Light (= vor/während Solar Bahamut)
-        if (HasSearingLight && InCombat && UseBurstMedicine(out act))
-            return true;
-
         // Radiant Aegis on cooldown: Charges frei nutzen wenn kein Schaden ansteht
         if (AegisOnCooldown && InCombat && !IsLastAction(false, RadiantAegisPvE)
             && RadiantAegisPvE.CanUse(out act, usedUp: true))
@@ -558,6 +554,10 @@ public sealed class SMN_Dynamic : SummonerRotation
         bool inBigInvocation = !SummonBahamutPvE.EnoughLevel || InBahamut || InPhoenix || InSolarBahamut;
         bool inSolarUnique = SummonSolarBahamutPvE.EnoughLevel ? !InBahamut && !InPhoenix && InSolarBahamut : InBahamut && !InPhoenix;
         bool burstInSolar = (SummonSolarBahamutPvE.EnoughLevel && InSolarBahamut) || (!SummonSolarBahamutPvE.EnoughLevel && InBahamut) || !SummonBahamutPvE.EnoughLevel;
+
+        // Pot VOR Solar Bahamut: wenn Solar Bahamut der nächste GCD ist
+        if (nextGCD.IsTheSameTo(true, SummonSolarBahamutPvE) && InCombat && UseBurstMedicine(out act))
+            return true;
 
         if (burstInSolar)
         {
