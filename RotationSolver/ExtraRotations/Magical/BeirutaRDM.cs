@@ -719,6 +719,10 @@ public sealed class BeirutaRDM : RedMageRotation
                     if (!HasSwift && SwiftcastPvE.CanUse(out act, usedUp: true, skipCastingCheck: true))
                         return true;
                 }
+                else if (AccelerationPvE.CanUse(out act, usedUp: usedUp))
+                {
+                    return true;
+                }
             }
         }
 
