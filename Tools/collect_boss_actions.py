@@ -572,6 +572,962 @@ ENCOUNTERS = {
         "type": "extreme", "expansion": "DT",
         "anchors": ["Coronation", "Royal Domain", "Aethertithe", "Dimensional Distortion", "Abyssal Embrace"]
     },
+
+    # ========================================================================
+    # ARR DUNGEONS (2.x)
+    # ========================================================================
+    "Sastasha": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Slime Bubble", "Tail Screw"]
+    },
+    "Tam-Tara-Deepcroft": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Condemnation", "Void Fire II"]
+    },
+    "Copperbell-Mines": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Grand Slam", "Colossal Slam"]
+    },
+    "Halatali": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Fire II", "Double Sever", "Firewall"]
+    },
+    "Thousand-Maws": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Silkscreen", "Deadly Thrust", "Sticky Web"]
+    },
+    "Haukke-Manor": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Void Fire III", "Dark Mist", "Void Thunder III", "Lady's Candle"]
+    },
+    "Brayflox-Longstop": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Dragon Breath", "Toxic Vomit", "Inflammable Fumes"]
+    },
+    "Stone-Vigil": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Sheet of Ice", "Cauterize", "Swinge"]
+    },
+    "Cutters-Cry": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Dragon's Voice", "Ram's Voice", "Cold Breath"]
+    },
+    "Dzemael-Darkhold": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Desolation", "Corrupted Crystal"]
+    },
+    "Aurum-Vale": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Glower", "100-tonze Swing", "100-tonze Swipe", "Eye of the Beholder"]
+    },
+    "Wanderers-Palace": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Everybody's Grudge", "Scourge of Nym"]
+    },
+    "Castrum-Meridianum": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Ceruleum Vent", "Magitek Cannon"]
+    },
+    "Praetorium": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Aetheroplasm", "Ultima"]
+    },
+    "Amdapor-Keep": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Repel", "Murder Hole", "Meteor"]
+    },
+    "Pharos-Sirius": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Lunatic Voice", "Song of Torment", "Acid Rain"]
+    },
+    "Copperbell-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Plaincracker", "Crystal Needle"]
+    },
+    "Haukke-Manor-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Void Fire IV", "Dark Mist", "Beguiling Mist"]
+    },
+    "Brayflox-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Ceruleum Vent", "Self-destruct", "Gobmachine Thunderclap"]
+    },
+    "Halatali-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Shockwave", "Ecliptic Meteor"]
+    },
+    "Lost-City-Amdapor": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Mega Holy", "Dark Arrivisme", "Shadow Flare", "Void Fire IV"]
+    },
+    "Hullbreaker-Isle": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Grand Slam", "Tidal Roar", "Hydroshot"]
+    },
+    "Tam-Tara-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Void Fire II", "Meteor Impact", "Dark Mist"]
+    },
+    "Stone-Vigil-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Swinge", "Sheet of Ice"]
+    },
+    "Snowcloak": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Heavensward Roar", "Lunar Cry", "Cold Wave"]
+    },
+    "Sastasha-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Tail Screw", "Brine Breath", "Grotto Geyser"]
+    },
+    "Sunken-Temple-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Doom of the Living", "Mow"]
+    },
+    "Wanderers-Palace-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Massive Burst", "Scorched Earth"]
+    },
+    "Keeper-of-the-Lake": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Ceruleum Vent", "Magitek Ray", "Rotoswipe"]
+    },
+    "Amdapor-Keep-HM": {
+        "type": "dungeon", "expansion": "ARR",
+        "anchors": ["Mega Holy", "Dark Mist", "Shadow Eruption"]
+    },
+
+    # ========================================================================
+    # HW DUNGEONS (3.x)
+    # ========================================================================
+    "Dusk-Vigil": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Frozen Mist", "Cauterize", "Tombstone"]
+    },
+    "Sohm-Al": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Deadly Thrust", "Fireball", "Levinbolt"]
+    },
+    "The-Aery": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Absolute Zero", "Holy Breath", "Levinbolt", "Cauterize"]
+    },
+    "The-Vault": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Holy Shield Bash", "Heavenly Slash", "Holiest of Holy", "Brightsphere", "Sacred Cross"]
+    },
+    "Great-Gubal-Library": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Disclosure", "Deep Darkness", "Sea of Flames", "Frightful Roar"]
+    },
+    "Aetherochemical-Research": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Blizzard Sphere", "Fire Sphere", "Height of Chaos", "Universal Manipulation", "Dark Orb"]
+    },
+    "Neverreap": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Hot Charge", "Winding Current"]
+    },
+    "Fractal-Continuum": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Seed of the Rivers", "Rapid Sever", "Sanctification"]
+    },
+    "Saint-Mociannes": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Sap Shower", "Vine Probe"]
+    },
+    "Pharos-Sirius-HM": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Ghastly Shriek", "Song of Torment"]
+    },
+    "Antitower": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Mega Graviton", "Equilibrium", "Rod"]
+    },
+    "Lost-City-Amdapor-HM": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Mega Holy", "Entropify"]
+    },
+    "Sohr-Khai": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Ancient Circle", "Shockwave", "Death Sentence"]
+    },
+    "Hullbreaker-Isle-HM": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Tidal Roar", "Hydroshot"]
+    },
+    "Xelphatol": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["On High", "Swiftfeather", "Wind Blast"]
+    },
+    "Great-Gubal-Library-HM": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Triclip", "Ecliptic Meteor"]
+    },
+    "Sohm-Al-HM": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Deadly Thrust", "Fireball", "Hot Charge"]
+    },
+    "Baelsars-Wall": {
+        "type": "dungeon", "expansion": "HW",
+        "anchors": ["Magitek Claw", "Magitek Ray", "Dynamic Sensory Jammer"]
+    },
+
+    # ========================================================================
+    # SB DUNGEONS (4.x)
+    # ========================================================================
+    "Sirensong-Sea": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Void Fire III", "Shadow Split", "Black Pain"]
+    },
+    "Shisui-Violet-Tides": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Thick Fog", "Silken Spray", "Amethyst Light"]
+    },
+    "Bardams-Mettle": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Travail", "Tremblor", "Bardam's Ring"]
+    },
+    "Doma-Castle": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Hexadrone", "Magitek Missiles", "Doman Steel"]
+    },
+    "Castrum-Abania": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Magitek Cannon", "Aetheroplasm", "Diffractive Laser"]
+    },
+    "Ala-Mhigo": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Aetherochemical Grenado", "Art of the Storm", "Art of the Swell"]
+    },
+    "Kugane-Castle": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Clearout", "Juji Shuriken", "Issen"]
+    },
+    "Temple-of-the-Fist": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Fierce Storm", "Wide Blaster"]
+    },
+    "Drowned-City-Skalla": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Torpedo", "Hydro Pull", "Protolithic Puncture"]
+    },
+    "Hells-Lid": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Swoop", "Bomb Toss", "Plummet"]
+    },
+    "Fractal-Continuum-HM": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Sanctification", "Seed of the Rivers"]
+    },
+    "Swallows-Compass": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Tengu Yawn", "Bitter Barbs", "Short End"]
+    },
+    "The-Burn": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Crystal Needle", "Head Butt", "Quake"]
+    },
+    "Saint-Mociannes-HM": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Sap Shower", "Vine Probe"]
+    },
+    "Ghimlyt-Dark": {
+        "type": "dungeon", "expansion": "SB",
+        "anchors": ["Ceruleum Vent", "Magitek Ray", "Freezing Missile"]
+    },
+
+    # ========================================================================
+    # ShB DUNGEONS (5.x)
+    # ========================================================================
+    "Holminster-Switch": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["The Path of Light", "Thumbscrew", "Wooden Horse", "Heretic's Fork"]
+    },
+    "Dohn-Mheg": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Candy Cane", "Virtuosic Capriccio", "Funambulist's Fantasia"]
+    },
+    "Qitana-Ravel": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Stonefist", "Sun Toss", "Lozatl's Scorn", "Wrath of the Ronka"]
+    },
+    "Malikahs-Well": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Intestinal Crank", "Efface", "Head Toss", "Tremblor"]
+    },
+    "Mt-Gulg": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Cyclone Wing", "Sacrament of Penance", "Catechism"]
+    },
+    "Amaurot": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Meteor Rain", "Therion Charge", "Shadow Wreck", "Apokalypsis"]
+    },
+    "The-Twinning": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Augurium", "Rail Cannon", "Artificial Gravity"]
+    },
+    "Akademia-Anyder": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Lash", "Arbor Storm", "Extensible Tendrils"]
+    },
+    "Grand-Cosmos": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Tribulation", "Black Bolt", "Dark Well", "Otherworldly Heat"]
+    },
+    "Anamnesis-Anyder": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Fetid Fang", "Luminous Ray", "Inscrutability"]
+    },
+    "Heroes-Gauntlet": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Spectral Gust", "Spectral Dream", "Spectral Whirlwind"]
+    },
+    "Matoyas-Relict": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Crypt Dust", "Muddy Puddles", "Bog Bomb"]
+    },
+    "Paglthan": {
+        "type": "dungeon", "expansion": "ShB",
+        "anchors": ["Fireball", "Touchdown", "Spike Flail"]
+    },
+
+    # ========================================================================
+    # EW DUNGEONS (6.x)
+    # ========================================================================
+    "Tower-of-Zot": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Manusya Bio", "Manusya Blizzard III", "Manusya Fire III", "Manusya Thunder III", "Delta Attack", "Dhrupad"]
+    },
+    "Tower-of-Babil": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Ground and Pound", "Magitek Chakram", "Magitek Explosive", "Magitek Ray"]
+    },
+    "Vanaspati": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Note of Despair", "Gnaw", "Total Wreck"]
+    },
+    "Ktisis-Hyperboreia": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Skull Dasher", "Frigid Stomp", "Hermetica"]
+    },
+    "Aitiascope": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Scream of the Fallen", "Dark Flame"]
+    },
+    "Dead-Ends": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Mega Holy", "Dead Star", "In Death, Life"]
+    },
+    "Smileton": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Tempered Smite", "Uptown Funk", "Smiley Face"]
+    },
+    "Stigma-Dreamscape": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Atomic Flame", "Rush", "Mustard Bomb"]
+    },
+    "Alzadaals-Legacy": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Big Wave", "Billowing Bolts", "Bonebreaker"]
+    },
+    "Fell-Court-Troia": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Void Gravity", "Antipodal Assault", "Beatific Scorn"]
+    },
+    "Lapis-Manalis": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Frost Breath", "Albion's Embrace", "Icebreaker"]
+    },
+    "Aetherfont": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Explosive Theorem", "Octoburst"]
+    },
+    "Lunar-Subterrane": {
+        "type": "dungeon", "expansion": "EW",
+        "anchors": ["Dark Impact", "Lunar Kiss", "Dark Eruption"]
+    },
+
+    # ========================================================================
+    # DT DUNGEONS (7.x)
+    # ========================================================================
+    "Ihuykatumu": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Decay", "Stone Flail"]
+    },
+    "Worqor-Zormor": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Fluff Breeze", "Sparking Fissure"]
+    },
+    "Skydeep-Cenote": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Land Wave", "Abyssal Tide"]
+    },
+    "Vanguard": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Electrowave", "Enhanced Mobility"]
+    },
+    "Origenics": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Electrolance", "Synthetic Blades", "Bio Bomb"]
+    },
+    "Alexandria": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Supercharged Lasers", "Interference", "Overexposure"]
+    },
+    "Strayborough-Deadwalk": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["His Dark Majesty", "Falling Nightmare"]
+    },
+    "Tender-Valley": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Twisting Dive", "Plummet"]
+    },
+    "Yuweyawata-Field-Station": {
+        "type": "dungeon", "expansion": "DT",
+        "anchors": ["Thunderstrike", "Electric Burst"]
+    },
+
+    # ========================================================================
+    # ARR NORMAL TRIALS (2.x)
+    # ========================================================================
+    "Ifrit-Normal": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Hellfire", "Eruption", "Radiant Plume", "Incinerate", "Vulcan Burst"]
+    },
+    "Titan-Normal": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Earthen Fury", "Weight of the Land", "Geocrush", "Rock Buster", "Landslide", "Tumult"]
+    },
+    "Garuda-Normal": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Aerial Blast", "Mistral Song", "Slipstream", "Wicked Wheel", "Downburst"]
+    },
+    "Cape-Westwind": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Magitek Missiles"]
+    },
+    "Thornmarch": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Memento Moogle", "Pom Holy"]
+    },
+    "Steps-of-Faith": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Cauterize", "Fireball"]
+    },
+    "Chrysalis": {
+        "type": "trial", "expansion": "ARR",
+        "anchors": ["Blighted Bouquet", "Dark Eruption", "Spark of Darkness"]
+    },
+
+    # ========================================================================
+    # HW NORMAL TRIALS (3.x)
+    # ========================================================================
+    "Bismarck-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Breach Blast", "Sharp Gust"]
+    },
+    "Ravana-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Bloody Fuller", "Blinding Blade", "Liberation", "Final Liberation"]
+    },
+    "Thordan-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Ascalon's Might", "Lightning Storm", "Ancient Quaga", "Knights of the Round"]
+    },
+    "Sephirot-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Ein Sof", "Chesed", "Pillar of Mercy", "Fiendish Rage"]
+    },
+    "Nidhogg-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Akh Morn", "Hot Wing", "Hot Tail", "Cauterize"]
+    },
+    "Sophia-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Thunder II", "Thunder III", "Aero III", "Cintamani", "Execute"]
+    },
+    "Zurvan-Normal": {
+        "type": "trial", "expansion": "HW",
+        "anchors": ["Flare Star", "Southern Cross", "Tail End", "Ahura Mazda"]
+    },
+
+    # ========================================================================
+    # SB NORMAL TRIALS (4.x)
+    # ========================================================================
+    "Susano-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Assail", "Rasen Kaikyo", "Ukehi", "Stormsplitter"]
+    },
+    "Lakshmi-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Pull of Light", "Stotram", "The Pall of Light", "Alluring Arm"]
+    },
+    "Shinryu-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Tidal Wave", "Protostar", "Akh Morn", "Dark Matter"]
+    },
+    "Tsukuyomi-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Reprimand", "Nightfall", "Nightbloom"]
+    },
+    "Byakko-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Storm Pulse", "Heavenly Strike", "State of Shock"]
+    },
+    "Suzaku-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Screams of the Damned", "Scarlet Fever"]
+    },
+    "Seiryu-Normal": {
+        "type": "trial", "expansion": "SB",
+        "anchors": ["Serpent Ascending", "Coursing River", "Forbidden Arts"]
+    },
+
+    # ========================================================================
+    # ShB NORMAL TRIALS (5.x)
+    # ========================================================================
+    "Titania-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Bright Sabbath", "Phantom Rune", "Mist Rune", "Being Mortal"]
+    },
+    "Innocence-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Shadowreaver", "Righteous Bolt", "Daybreak"]
+    },
+    "Hades-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Ravenous Assault", "Shadow Spread", "Bad Faith", "Gigantomachy"]
+    },
+    "WoL-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Terror Unleashed", "Absolute Holy", "Elddragon Dive"]
+    },
+    "Ruby-Weapon-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Optimized Ultima", "Stamp", "Ruby Ray"]
+    },
+    "Emerald-Weapon-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Emerald Beam", "Divide Et Impera", "Optimized Ultima"]
+    },
+    "Diamond-Weapon-Normal": {
+        "type": "trial", "expansion": "ShB",
+        "anchors": ["Diamond Rain", "Adamant Purge", "Photon Burst"]
+    },
+
+    # ========================================================================
+    # EW NORMAL TRIALS (6.x)
+    # ========================================================================
+    "Zodiark-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Kokytos", "Styx", "Ania", "Exoterikos"]
+    },
+    "Hydaelyn-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Heros's Radiance", "Mousa's Scorn", "Highest Holy", "Crystallize"]
+    },
+    "Endsinger-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Elegeia Unforgotten", "Elegeia", "Hubris", "Telos"]
+    },
+    "Barbariccia-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Void Aero IV", "Savage Barbery", "Knuckle Drum"]
+    },
+    "Rubicante-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Inferno", "Shattering Heat", "Blazing Rapture"]
+    },
+    "Golbez-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Terrastorm", "Black Fang", "Binding Cold", "Void Meteor"]
+    },
+    "Zeromus-Normal": {
+        "type": "trial", "expansion": "EW",
+        "anchors": ["Abyssal Nox", "Sable Thread", "Big Bang", "Flare"]
+    },
+
+    # ========================================================================
+    # DT NORMAL TRIALS (7.x)
+    # ========================================================================
+    "Valigarmanda-Normal": {
+        "type": "trial", "expansion": "DT",
+        "anchors": ["Susurrant Breath", "Skyruin", "Hail of Feathers"]
+    },
+    "ZoraalJa-Normal": {
+        "type": "trial", "expansion": "DT",
+        "anchors": ["Dawn of an Age", "Actualize", "Regicidal Rage"]
+    },
+    "Sphene-Normal": {
+        "type": "trial", "expansion": "DT",
+        "anchors": ["Coronation", "Prosecution of War", "Absolute Authority"]
+    },
+
+    # ========================================================================
+    # ARR NORMAL RAIDS - COILS (2.x)
+    # ========================================================================
+    "T1N-Caduceus": {
+        "type": "normal_raid", "expansion": "ARR",
+        "anchors": ["Hood Swing", "Regorge", "Steel Scales"]
+    },
+    "T2N-ADS": {
+        "type": "normal_raid", "expansion": "ARR",
+        "anchors": ["High Voltage", "Repelling Cannons"]
+    },
+    "T4-Dreadnought": {
+        "type": "normal_raid", "expansion": "ARR",
+        "anchors": ["Rotoswipe", "Gravity Thrust"]
+    },
+
+    # ========================================================================
+    # HW NORMAL RAIDS - ALEXANDER (3.x)
+    # ========================================================================
+    "A1N-Oppressor": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Hydrothermal Missile", "Photon Spaser", "Resin Bomb"]
+    },
+    "A2N-Gobwalker": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Bomb's Away", "Gobstraight"]
+    },
+    "A3N-LivingLiquid": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Cascade", "Protean Wave", "Sluice", "Splash"]
+    },
+    "A4N-Manipulator": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Mortal Revolution", "Perpetual Ray", "Carnage Zero"]
+    },
+    "A5N-Faust": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Boost", "Shock Therapy"]
+    },
+    "A6N-MultiPhase": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Enumeration", "Ultra Flash", "Mega Beam"]
+    },
+    "A7N-Quickthinx": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Sizzlespark", "Sizzlebeam"]
+    },
+    "A8N-BruteJustice": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Apocalyptic Ray", "Super Jump", "J Storm"]
+    },
+    "A9N-Refurbisher": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Scrapline", "Stockpile"]
+    },
+    "A10N-Lamebrix": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Goblin Rush", "Gobrush Rushgob"]
+    },
+    "A11N-CruiseChaser": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Optical Sight", "Whirlwind", "Photon"]
+    },
+    "A12N-AlexPrime": {
+        "type": "normal_raid", "expansion": "HW",
+        "anchors": ["Mega Holy", "Gravitational Anomaly", "Sacrament", "Divine Spear"]
+    },
+
+    # ========================================================================
+    # SB NORMAL RAIDS - OMEGA (4.x)
+    # ========================================================================
+    "O1N-AlteRoite": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Wyrm Tail", "Twin Bolt", "Charybdis", "Roar"]
+    },
+    "O2N-Catastrophe": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Gravitational Wave", "Earthquake", "Antilight"]
+    },
+    "O3N-Halicarnassus": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["The Queen's Waltz", "Ribbit", "The Playing Field"]
+    },
+    "O4N-Exdeath": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Vacuum Wave", "Black Hole", "Delta Attack", "Flare"]
+    },
+    "O5N-PhantomTrain": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Diabolical Whistle", "Doom Strike", "Head On"]
+    },
+    "O6N-Chadarnook": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Flash Fire", "Demonic Stone", "Poltergeist"]
+    },
+    "O7N-Guardian": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Atomic Ray", "Arm and Hammer", "Magitek Ray"]
+    },
+    "O8N-Kefka": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Hyperdrive", "Light of Judgment", "Thrumming Thunder"]
+    },
+    "O9N-Chaos": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Chaotic Dispersion", "Bowels of Agony", "Blaze", "Tsunami"]
+    },
+    "O10N-Midgardsormr": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Protostar", "Thunderstorm", "Tail End"]
+    },
+    "O11N-OmegaMF": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Ion Efflux", "Mustard Bomb", "Laser Shower"]
+    },
+    "O12N-Omega": {
+        "type": "normal_raid", "expansion": "SB",
+        "anchors": ["Cosmo Memory", "Patch", "Archive Peripheral"]
+    },
+
+    # ========================================================================
+    # ShB NORMAL RAIDS - EDEN (5.x)
+    # ========================================================================
+    "E1N-EdenPrime": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Eden's Gravity", "Spear of Paradise", "Vice and Virtue"]
+    },
+    "E2N-Voidwalker": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Shadowflame", "Entropy", "Punishing Ray"]
+    },
+    "E3N-Leviathan": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Tidal Wave", "Temporary Current", "Tidal Rage"]
+    },
+    "E4N-Titan": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Stonecrusher", "Weight of the Land", "Voice of the Land", "Geocrush"]
+    },
+    "E5N-Ramuh": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Judgment Volts", "Crippling Blow", "Stepped Leader"]
+    },
+    "E6N-GarudaIfrit": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Hands of Hell", "Instant Incineration", "Vacuum Slice"]
+    },
+    "E7N-IdolOfDarkness": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Empty Wave", "Words of Night"]
+    },
+    "E8N-Shiva": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Diamond Frost", "Heavenly Strike", "Absolute Zero"]
+    },
+    "E9N-CloudOfDarkness": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Ground-razing Particle Beam", "Zero-form Particle Beam"]
+    },
+    "E10N-Shadowkeeper": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Deepshadow Nova", "Shadow's Edge", "Giga Slash"]
+    },
+    "E11N-Fatebreaker": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Burnt Strike", "Bound of Faith", "Burnished Glory"]
+    },
+    "E12N-EdenPromise": {
+        "type": "normal_raid", "expansion": "ShB",
+        "anchors": ["Maleficium", "Shockwave Pulsar", "Diamond Dust"]
+    },
+
+    # ========================================================================
+    # EW NORMAL RAIDS - PANDAEMONIUM (6.x)
+    # ========================================================================
+    "P1N-Erichthonios": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Warder's Wrath", "Heavy Hand", "Pitiless Flail", "Shining Cells"]
+    },
+    "P2N-Hippokampos": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Sewage Deluge", "Murky Depths", "Coherence", "Shockwave"]
+    },
+    "P3N-Phoinix": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Experimental Fireplume", "Heat of Condemnation", "Dead Rebirth"]
+    },
+    "P4N-Hesperos": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Decollation", "Elegant Evisceration", "Bloodrake", "Pinax"]
+    },
+    "P5N-ProtoCarbuncle": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Ruby Glow", "Sonic Howl", "Topaz Cluster"]
+    },
+    "P6N-Hegemone": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Hemitheos's Dark IV", "Choros Ixou", "Synergy"]
+    },
+    "P7N-Agdistis": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Bough of Attis", "Spark of Life", "Forbidden Fruit"]
+    },
+    "P8N-Hephaistos": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Genesis of Flame", "Volcanic Torches", "Flameviper"]
+    },
+    "P9N-Kokytos": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Gluttony's Augur", "Ravening", "Ascendant Fist"]
+    },
+    "P10N-Pandaemonium": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Pandaemoniac Meltdown", "Soul Grasp", "Wicked Step"]
+    },
+    "P11N-Themis": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["Eunomia", "Jury Overruling", "Upheld Overruling"]
+    },
+    "P12N-Athena": {
+        "type": "normal_raid", "expansion": "EW",
+        "anchors": ["On the Soul", "Glaukopis", "Trinity of Souls", "Ultima"]
+    },
+
+    # ========================================================================
+    # DT NORMAL RAIDS - AAC (7.x)
+    # ========================================================================
+    "M1N-BlackCat": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Mouser", "Biscuit Maker", "Bloody Scratch", "One-two Paw"]
+    },
+    "M2N-HoneyBLovely": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Call Me Honey", "Bee Sting", "Honey Beeline", "Blinding Love"]
+    },
+    "M3N-BruteBomber": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Brutish Swing", "Knuckle Sandwich", "Octuple Lariat"]
+    },
+    "M4N-WickedThunder": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Wicked Thunder", "Wrath of Zeus", "Wicked Bolt"]
+    },
+    "M5N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Frosting Fracas", "Chill Cauldron"]
+    },
+    "M6N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Mousse Mural", "Pâtissière's Art"]
+    },
+    "M7N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Chilling Chirp", "Peck and Poison"]
+    },
+    "M8N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Extraplanar Pursuit", "Howling Blade"]
+    },
+    "M9N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Crown of Arcadia", "Charybdistopia"]
+    },
+    "M10N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Overrun", "Trample"]
+    },
+    "M11N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["Dance of Domination", "Meteorain", "Flatliner"]
+    },
+    "M12N": {
+        "type": "normal_raid", "expansion": "DT",
+        "anchors": ["The Fixer", "Splattershed", "Unmitigated Explosion"]
+    },
+
+    # ========================================================================
+    # ARR ALLIANCE RAIDS - CRYSTAL TOWER (2.x)
+    # ========================================================================
+    "Labyrinth-of-Ancients": {
+        "type": "alliance", "expansion": "ARR",
+        "anchors": ["Ancient Flare", "Ballistic Missile", "Iron Giant Swing", "Curse of the Mummy"]
+    },
+    "Syrcus-Tower": {
+        "type": "alliance", "expansion": "ARR",
+        "anchors": ["Ancient Quaga", "Curtain Call", "Shockwave", "Daybreak"]
+    },
+    "World-of-Darkness": {
+        "type": "alliance", "expansion": "ARR",
+        "anchors": ["Flood of Darkness", "Mega Death", "Flare Star", "Particle Beam"]
+    },
+
+    # ========================================================================
+    # HW ALLIANCE RAIDS - VOID ARK (3.x)
+    # ========================================================================
+    "Void-Ark": {
+        "type": "alliance", "expansion": "HW",
+        "anchors": ["Mega Death", "Mortal Revolution", "Body Slam"]
+    },
+    "Weeping-City-of-Mhach": {
+        "type": "alliance", "expansion": "HW",
+        "anchors": ["Materialize", "Shadow Burst", "Dark Eruption", "Flare Star"]
+    },
+    "Dun-Scaith": {
+        "type": "alliance", "expansion": "HW",
+        "anchors": ["Fire IV", "Blizzard IV", "Scathach's Connla", "Shadow Links"]
+    },
+
+    # ========================================================================
+    # SB ALLIANCE RAIDS - IVALICE (4.x)
+    # ========================================================================
+    "Royal-City-of-Rabanastre": {
+        "type": "alliance", "expansion": "SB",
+        "anchors": ["Command Tower", "Landwaster", "Crush Helm", "Divine Judgment"]
+    },
+    "Ridorana-Lighthouse": {
+        "type": "alliance", "expansion": "SB",
+        "anchors": ["Shockwave", "Tsunami", "Solar Storm", "Construct Destroy"]
+    },
+    "Orbonne-Monastery": {
+        "type": "alliance", "expansion": "SB",
+        "anchors": ["Crush Weapon", "Hallowed Bolt", "Ultima", "Shadowblade", "T.G. Holy Sword"]
+    },
+
+    # ========================================================================
+    # ShB ALLIANCE RAIDS - YORHA (5.x)
+    # ========================================================================
+    "Copied-Factory": {
+        "type": "alliance", "expansion": "ShB",
+        "anchors": ["Clanging Blow", "Energy Assault", "Laser Turret", "Total Annihilation Maneuver"]
+    },
+    "Puppets-Bunker": {
+        "type": "alliance", "expansion": "ShB",
+        "anchors": ["Centrifugal Slice", "Energy Barrage", "Laser Shower", "Fire All Weapons"]
+    },
+    "Tower-at-Paradigms-Breach": {
+        "type": "alliance", "expansion": "ShB",
+        "anchors": ["Anti-personnel Missile", "Shockwave", "Guided Missile", "Diffuse Energy"]
+    },
+
+    # ========================================================================
+    # EW ALLIANCE RAIDS - MYTHS OF THE REALM (6.x)
+    # ========================================================================
+    "Aglaia": {
+        "type": "alliance", "expansion": "EW",
+        "anchors": ["Byregot's Strike", "Levinforge", "Rhalgr's Beacon", "Destructive Bolt", "Lightning Reign", "Hand of the Destroyer"]
+    },
+    "Euphrosyne": {
+        "type": "alliance", "expansion": "EW",
+        "anchors": ["Quintessence", "Love's Light", "Matron's Breath", "Hydrostasis", "Spring Crystal"]
+    },
+    "Thaleia": {
+        "type": "alliance", "expansion": "EW",
+        "anchors": ["Rheognosis", "Geocentrism", "Glaukopis", "Hieroglyphika", "Whorl of the Mind"]
+    },
+
+    # ========================================================================
+    # DT ALLIANCE RAIDS (7.x)
+    # ========================================================================
+    "Jeuno-First-Walk": {
+        "type": "alliance", "expansion": "DT",
+        "anchors": ["Scrapline", "Megalithe", "Banishga IV", "Provenance Watcher"]
+    },
 }
 
 
