@@ -584,12 +584,13 @@ public sealed class SGE_Dynamic : SageRotation
             if (EukrasianDyskrasiaPvE.CanUse(out act)) return true;
         }
 
-        // Apply Eukrasia for DoT refresh (RSR handles DoT tracking via IsRestrictedDOT)
-        if (EukrasianDosisIiiPvE.EnoughLevel && EukrasiaPvE.CanUse(out act))
+        // Apply Eukrasia for DoT refresh — only when DoT is missing or expiring
+        // CanUse checks TargetStatusProvide + IsRestrictedDOT to verify the DoT actually needs refreshing
+        if (EukrasianDosisIiiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
-        if (!EukrasianDosisIiiPvE.EnoughLevel && EukrasianDosisIiPvE.EnoughLevel && EukrasiaPvE.CanUse(out act))
+        if (!EukrasianDosisIiiPvE.EnoughLevel && EukrasianDosisIiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
-        if (!EukrasianDosisIiPvE.EnoughLevel && EukrasianDosisPvE.EnoughLevel && EukrasiaPvE.CanUse(out act))
+        if (!EukrasianDosisIiPvE.EnoughLevel && EukrasianDosisPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
 
         // === DPS Priority ===
