@@ -1126,12 +1126,23 @@ public sealed class BeirutaRDM : RedMageRotation
                 return true;
         }
 
+    if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
         return false;
+
+    if (AccelerateEndingSoon)
+    {
+        if (ShouldUseImpactAsAccelExpirySaver() && ImpactPvE.CanUse(out act))
+            return true;
+
+        if (TrySelectTwoAimingGap11(out act))
+            return true;
     }
 
-    private bool TryProcGCD(out IAction? act)
+    if (CanInstantCast && !CanVerEither)
     {
-        act = null;
+        if (ScatterPvE.CanUse(out act)) return true;
+        if (TrySelectTwoAimingGap11(out act)) return true;
+    }
 
         if (!IsAnyMeleeComboInProgress() && ManaStacks != 3 && HasValidTarget && CanVerBoth && !IsMoving && !HasInstantBuffToSpend)
         {
@@ -1139,68 +1150,36 @@ public sealed class BeirutaRDM : RedMageRotation
             {
                 case "VerFire":
                     if (VerfirePvE.CanUse(out act)) return true;
-                    if (VerstonePvE.CanUse(out act)) return true;
                     break;
 
                 case "VerStone":
                     if (VerstonePvE.CanUse(out act)) return true;
-                    if (VerfirePvE.CanUse(out act)) return true;
                     break;
 
                 default:
                     if (WhiteMana < BlackMana)
                     {
                         if (VerstonePvE.CanUse(out act)) return true;
-                        if (VerfirePvE.CanUse(out act)) return true;
                     }
                     else
                     {
                         if (VerfirePvE.CanUse(out act)) return true;
-                        if (VerstonePvE.CanUse(out act)) return true;
                     }
                     break;
             }
         }
-
-        if (VerstonePvE.EnoughLevel && !HasInstantBuffToSpend)
+        else
         {
-            if (CanVerBoth)
-            {
-                switch (VerEndsFirst)
-                {
-                    case "VerFire":
-                        if (VerfirePvE.CanUse(out act)) return true;
-                        break;
-
-                    case "VerStone":
-                        if (VerstonePvE.CanUse(out act)) return true;
-                        break;
-
-                    case "Equal":
-                        if (WhiteMana < BlackMana)
-                        {
-                            if (VerstonePvE.CanUse(out act)) return true;
-                        }
-                        else
-                        {
-                            if (VerfirePvE.CanUse(out act)) return true;
-                        }
-                        break;
-                }
-            }
-            else
-            {
-                if (VerfirePvE.CanUse(out act)) return true;
-                if (VerstonePvE.CanUse(out act)) return true;
-            }
+            if (VerfirePvE.CanUse(out act)) return true;
+            if (VerstonePvE.CanUse(out act)) return true;
         }
-
-        if (!VerstonePvE.EnoughLevel && !HasInstantBuffToSpend && VerfirePvE.CanUse(out act))
-            return true;
-
-        return false;
     }
 
+    if (!VerstonePvE.EnoughLevel && !HasInstantBuffToSpend && VerfirePvE.CanUse(out act))
+        return true;
+
+    return false;
+}
     private bool TryRepriseGCD(out IAction? act)
     {
         act = null;
@@ -1245,6 +1224,13 @@ public sealed class BeirutaRDM : RedMageRotation
     }
 
     private bool TryFallbackGCD(out IAction? act)
+{
+    act = null;
+
+    if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
+        return false;
+
+    if (MoveThresholdMetForRescue && HasValidTarget && ManaStacks != 3 && !HasAnyInstantTool)
     {
         act = null;
 
@@ -1279,6 +1265,32 @@ public sealed class BeirutaRDM : RedMageRotation
 
         return false;
     }
+
+    if (!CanInstantCast && !CanVerEither)
+    {
+        if (ShouldUseFallbackAoeSpells())
+        {
+            if (WhiteMana < BlackMana)
+            {
+                if (VeraeroIiPvE.CanUse(out act)) return true;
+                if (VerthunderIiPvE.CanUse(out act)) return true;
+            }
+            else
+            {
+                if (VerthunderIiPvE.CanUse(out act)) return true;
+                if (VeraeroIiPvE.CanUse(out act)) return true;
+            }
+        }
+
+        if (!HasInstantBuffToSpend && JoltPvE.CanUse(out act))
+            return true;
+    }
+
+    if (UseVercure && !InCombat && VercurePvE.CanUse(out act))
+        return true;
+
+    return false;
+}
     #endregion
 
     public override bool CanHealSingleSpell
