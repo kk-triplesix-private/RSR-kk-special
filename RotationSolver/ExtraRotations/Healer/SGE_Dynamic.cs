@@ -46,6 +46,12 @@ public sealed class SGE_Dynamic : SageRotation
     [RotationConfig(CombatType.PvE, Name = "Zoe Emergency HP threshold")]
     public float ZoeEmergencyThreshold { get; set; } = 0.30f;
 
+    [RotationConfig(CombatType.PvE, Name = "Proactive Zoe: Amplify heals before raidwides/tankbusters and in boss fights")]
+    public bool ZoeProactive { get; set; } = true;
+
+    [RotationConfig(CombatType.PvE, Name = "Proactive Boss Healing: Cycle HoTs, shields & mitigation during boss fights")]
+    public bool ProactiveBossHealing { get; set; } = true;
+
     [RotationConfig(CombatType.PvE, Name = "Smart Kardia: Auto-apply to tank, re-apply after death")]
     public bool SmartKardia { get; set; } = true;
 
@@ -169,6 +175,13 @@ public sealed class SGE_Dynamic : SageRotation
             }
         }
         return lowest;
+    }
+
+    /// <summary>Returns true if the current hostile target is a boss (icon-based detection).</summary>
+    private bool IsBossFight()
+    {
+        var target = HostileTarget;
+        return target != null && target.IsBossFromIcon();
     }
 
     #endregion
@@ -317,24 +330,54 @@ public sealed class SGE_Dynamic : SageRotation
     {
         act = null;
 
-        // Zoe: Best paired with Pneuma (damage-neutral 900p AoE heal).
-        // Emergency fallback: any heal GCD when party member critically low.
-        if (ZoeEmergencyEnabled && !StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
+        // Zoe: Proactive + Emergency usage
+        if (!StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
         {
-            // Priority 1: Zoe + Pneuma (optimal — no DPS loss, 900p AoE heal)
+            // Priority 1: Zoe + Pneuma — always great (no DPS loss, 900p AoE heal)
             if (nextGCD.IsTheSameTo(false, PneumaPvE))
             {
-                LogDecision("Zoe: amplifying Pneuma (900p AoE heal)");
+                LogDecision("Zoe: amplifying Pneuma");
                 return true;
             }
 
-            // Priority 2: Zoe + any heal GCD when HP critically low (emergency)
-            float lowestHp = GetLowestPartyMemberHp();
-            if (lowestHp < ZoeEmergencyThreshold)
+            // Priority 2: Proactive Zoe before raidwide — amplify AoE heal/shield GCDs
+            if (ZoeProactive && IsRaidwideImminent()
+                && nextGCD.IsTheSameTo(false, EukrasianPrognosisIiPvE, EukrasianPrognosisPvE, PrognosisPvE))
             {
-                LogDecision($"Zoe Emergency: lowest HP={lowestHp:P0}");
+                LogDecision("Zoe: amplifying AoE heal for raidwide");
                 return true;
             }
+
+            // Priority 3: Proactive Zoe before tankbuster — amplify ST heal/shield GCDs
+            if (ZoeProactive && IsTankbusterImminent()
+                && nextGCD.IsTheSameTo(false, EukrasianDiagnosisPvE, DiagnosisPvE))
+            {
+                LogDecision("Zoe: amplifying ST heal for tankbuster");
+                return true;
+            }
+
+            // Priority 4: Boss fight — amplify any significant heal GCD when party not topped
+            if (ZoeProactive && IsBossFight() && PartyMembersAverHP < 0.85f
+                && nextGCD.IsTheSameTo(false, PneumaPvE, PrognosisPvE,
+                    EukrasianPrognosisIiPvE, EukrasianPrognosisPvE,
+                    EukrasianDiagnosisPvE, DiagnosisPvE))
+            {
+                LogDecision($"Zoe: proactive boss fight heal (party HP={PartyMembersAverHP:P0})");
+                return true;
+            }
+
+            // Priority 5: Emergency — any heal GCD when HP critically low
+            if (ZoeEmergencyEnabled)
+            {
+                float lowestHp = GetLowestPartyMemberHp();
+                if (lowestHp < ZoeEmergencyThreshold)
+                {
+                    LogDecision($"Zoe Emergency: lowest HP={lowestHp:P0}");
+                    return true;
+                }
+            }
+
+            act = null; // Reset if no Zoe condition was met
         }
 
         // Swiftcast on Raise
@@ -387,11 +430,15 @@ public sealed class SGE_Dynamic : SageRotation
             return true;
         }
 
-        // Soteria: boost Kardia heals only when Kardion target is actually taking damage
-        if (InCombat && IsAnyPartyMemberBelow(0.80f) && SoteriaPvE.CanUse(out act))
+        // Soteria: boost Kardia heals — proactive in boss fights, reactive otherwise
+        if (InCombat && SoteriaPvE.CanUse(out act))
         {
-            LogDecision("Soteria: Kardion target hurt");
-            return true;
+            bool bossFight = IsBossFight();
+            if ((bossFight && ProactiveBossHealing) || IsAnyPartyMemberBelow(0.80f))
+            {
+                LogDecision(bossFight ? "Soteria: proactive boss fight Kardia boost" : "Soteria: Kardion target hurt");
+                return true;
+            }
         }
 
         // Philosophia: proactive with raidwide OR reactive on sustained damage
@@ -399,6 +446,29 @@ public sealed class SGE_Dynamic : SageRotation
         {
             LogDecision("Philosophia: party needs sustained healing");
             return true;
+        }
+
+        // Proactive boss fight healing: cycle HoTs and mitigation
+        if (ProactiveBossHealing && InCombat && IsBossFight())
+        {
+            // Physis II: free HoT + 10% healing buff — use proactively when party not full
+            if (PartyMembersAverHP < 0.95f && PhysisIiPvE.CanUse(out act))
+            {
+                LogDecision($"Physis II: proactive boss HoT (party HP={PartyMembersAverHP:P0})");
+                return true;
+            }
+            if (!PhysisIiPvE.EnoughLevel && PartyMembersAverHP < 0.95f && PhysisPvE.CanUse(out act))
+            {
+                LogDecision("Physis: proactive boss HoT");
+                return true;
+            }
+
+            // Kerachole: regen + 10% mit — proactively cycle when Addersgall >= 2 to avoid waste
+            if (Addersgall >= 2 && KeracholePvE.CanUse(out act))
+            {
+                LogDecision($"Kerachole: proactive boss regen + mit (Addersgall={Addersgall})");
+                return true;
+            }
         }
 
         return base.GeneralAbility(nextGCD, out act);
@@ -415,28 +485,32 @@ public sealed class SGE_Dynamic : SageRotation
 
         bool raidwide = SmartShieldsRaidwide && IsRaidwideImminent();
         bool stack = SmartShieldsStack && IsStackImminent();
+        bool bossMitigation = ProactiveBossHealing && IsBossFight();
 
-        if (raidwide || stack)
+        if (raidwide || stack || bossMitigation)
         {
             // Kerachole: 10% mitigation + regen, best value (1 Addersgall)
             if (KeracholePvE.CanUse(out act))
             {
-                LogDecision($"Kerachole: {(raidwide ? "raidwide" : "stack")} imminent");
+                LogDecision(raidwide ? "Kerachole: raidwide imminent"
+                    : stack ? "Kerachole: stack imminent"
+                    : "Kerachole: proactive boss mitigation");
                 return true;
             }
 
-            // Panhaima: multi-hit shields (120s CD)
-            if (PanhaimaPvE.CanUse(out act))
+            // Panhaima: multi-hit shields (120s CD) — save for confirmed damage events
+            if ((raidwide || stack) && PanhaimaPvE.CanUse(out act))
             {
                 LogDecision($"Panhaima: {(raidwide ? "raidwide" : "stack")} imminent");
                 return true;
             }
 
             // Holos: AoE shield + heal + 10% mit (120s CD)
-            // Only use when party HP < 90% to not waste the 300p heal component
             if (PartyMembersAverHP < 0.9f && HolosPvE.CanUse(out act))
             {
-                LogDecision($"Holos: {(raidwide ? "raidwide" : "stack")} imminent, HP={PartyMembersAverHP:P0}");
+                LogDecision(raidwide || stack
+                    ? $"Holos: {(raidwide ? "raidwide" : "stack")} imminent, HP={PartyMembersAverHP:P0}"
+                    : $"Holos: proactive boss mitigation, HP={PartyMembersAverHP:P0}");
                 return true;
             }
         }
@@ -449,19 +523,22 @@ public sealed class SGE_Dynamic : SageRotation
     {
         act = null;
 
-        if (SmartShieldsTankbuster && IsTankbusterImminent())
+        bool tankbuster = SmartShieldsTankbuster && IsTankbusterImminent();
+        bool bossMitigation = ProactiveBossHealing && IsBossFight();
+
+        if (tankbuster || bossMitigation)
         {
-            // Haima: strongest ST shield (120s CD)
+            // Haima: strongest ST shield (120s CD) — proactive on tank in boss fights
             if (HaimaPvE.CanUse(out act))
             {
-                LogDecision("Haima: tankbuster imminent");
+                LogDecision(tankbuster ? "Haima: tankbuster imminent" : "Haima: proactive boss tank shield");
                 return true;
             }
 
             // Taurochole: heal + 10% mit (1 Addersgall)
             if (TaurocholePvE.CanUse(out act))
             {
-                LogDecision("Taurochole: tankbuster imminent");
+                LogDecision(tankbuster ? "Taurochole: tankbuster imminent" : "Taurochole: proactive boss tank mit");
                 return true;
             }
         }
@@ -469,10 +546,25 @@ public sealed class SGE_Dynamic : SageRotation
         return base.DefenseSingleAbility(nextGCD, out act);
     }
 
-    [RotationDesc(ActionID.PhysisIiPvE, ActionID.KeracholePvE, ActionID.IxocholePvE, ActionID.HolosPvE, ActionID.PepsisPvE)]
+    [RotationDesc(ActionID.ZoePvE, ActionID.PhysisIiPvE, ActionID.KeracholePvE, ActionID.IxocholePvE, ActionID.HolosPvE, ActionID.PepsisPvE)]
     protected override bool HealAreaAbility(IAction nextGCD, out IAction? act)
     {
         act = null;
+
+        // Zoe: amplify AoE heals — proactive before raidwides and in boss fights
+        if (!StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
+        {
+            if (ZoeProactive && (IsRaidwideImminent() || IsStackImminent()))
+            {
+                LogDecision("Zoe: amplifying AoE heal for incoming damage");
+                return true;
+            }
+            if (ZoeProactive && IsBossFight() && PartyMembersAverHP < 0.75f)
+            {
+                LogDecision($"Zoe: proactive AoE heal amplification (party HP={PartyMembersAverHP:P0})");
+                return true;
+            }
+        }
 
         // Physis II FIRST: 10% healing buff snapshots onto all subsequent heals this window.
         // Must come before Kerachole/Ixochole to amplify them.
@@ -514,19 +606,36 @@ public sealed class SGE_Dynamic : SageRotation
         return base.HealAreaAbility(nextGCD, out act);
     }
 
-    [RotationDesc(ActionID.KrasisPvE, ActionID.TaurocholePvE, ActionID.DruocholePvE, ActionID.SoteriaPvE)]
+    [RotationDesc(ActionID.ZoePvE, ActionID.KrasisPvE, ActionID.TaurocholePvE, ActionID.DruocholePvE, ActionID.SoteriaPvE)]
     protected override bool HealSingleAbility(IAction nextGCD, out IAction? act)
     {
         act = null;
 
-        // Zoe amplifier: if Zoe not active but target is very low, apply Zoe for next heal
-        if (ZoeEmergencyEnabled && !StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && IsAnyPartyMemberBelow(ZoeEmergencyThreshold))
+        // Zoe: amplify ST heals — proactive for tankbusters and boss fights
+        if (!StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
         {
-            if (ZoePvE.CanUse(out act))
+            // Proactive: amplify heal before incoming tankbuster
+            if (ZoeProactive && IsTankbusterImminent())
             {
-                LogDecision("Zoe: amplifying next ST heal");
+                LogDecision("Zoe: amplifying heal for incoming tankbuster");
                 return true;
             }
+
+            // Proactive: boss fight, someone needs healing (HealSingleAbility was called = someone is hurt)
+            if (ZoeProactive && IsBossFight() && IsAnyPartyMemberBelow(0.60f))
+            {
+                LogDecision("Zoe: proactive boss fight ST heal amplification");
+                return true;
+            }
+
+            // Emergency: any member critically low
+            if (ZoeEmergencyEnabled && IsAnyPartyMemberBelow(ZoeEmergencyThreshold))
+            {
+                LogDecision("Zoe: amplifying next ST heal (emergency)");
+                return true;
+            }
+
+            act = null; // Reset if no Zoe condition met
         }
 
         // Krasis FIRST: 20% healing received buff on target — snapshots onto Taurochole/Druochole.
@@ -829,6 +938,15 @@ public sealed class SGE_Dynamic : SageRotation
         }
 
         // Combat
+        // Boss Fight & Proactive State
+        ImGui.Spacing();
+        ImGui.TextColored(new System.Numerics.Vector4(0.6f, 0.8f, 1f, 1f), "Proactive:");
+        ColoredBool("  Boss Fight", IsBossFight());
+        ImGui.SameLine();
+        ColoredBool("| Proactive Boss Healing", ProactiveBossHealing);
+        ImGui.SameLine();
+        ColoredBool("| Proactive Zoe", ZoeProactive);
+
         ImGui.Spacing();
         ImGui.Text($"  Territory: {DataCenter.TerritoryID} | InCombat: {InCombat}");
     }
