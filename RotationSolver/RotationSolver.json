@@ -2,7 +2,7 @@
   "Author": "kk-triplesix",
   "Name": "RSR (KK's Special)",
   "InternalName": "RotationSolver",
-  "RepoUrl": "https://github.com/kk-triplesix/RotationSolverRebornPrivate",
+  "RepoUrl": "https://github.com/kk-triplesix-private/RSR-kk-special",
   "Description": "Private fork of RotationSolverReborn with custom rotations, BossMod IPC integration, rotation planner, and UI modernization.",
   "ApplicableVersion": "any",
   "DalamudApiLevel": 14,
