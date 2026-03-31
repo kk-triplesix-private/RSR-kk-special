@@ -1126,12 +1126,23 @@ public sealed class BeirutaRDM : RedMageRotation
                 return true;
         }
 
+    if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
         return false;
+
+    if (AccelerateEndingSoon)
+    {
+        if (ShouldUseImpactAsAccelExpirySaver() && ImpactPvE.CanUse(out act))
+            return true;
+
+        if (TrySelectTwoAimingGap11(out act))
+            return true;
     }
 
-    private bool TryProcGCD(out IAction? act)
+    if (CanInstantCast && !CanVerEither)
     {
-        act = null;
+        if (ScatterPvE.CanUse(out act)) return true;
+        if (TrySelectTwoAimingGap11(out act)) return true;
+    }
 
         if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
             return false;
@@ -1180,11 +1191,6 @@ public sealed class BeirutaRDM : RedMageRotation
             if (VerfirePvE.CanUse(out act)) return true;
             if (VerstonePvE.CanUse(out act)) return true;
         }
-
-        if (!VerstonePvE.EnoughLevel && !HasInstantBuffToSpend && VerfirePvE.CanUse(out act))
-            return true;
-
-        return false;
     }
     private bool TryRepriseGCD(out IAction? act)
     {
