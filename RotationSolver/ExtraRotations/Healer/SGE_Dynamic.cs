@@ -866,19 +866,53 @@ public sealed class SGE_Dynamic : SageRotation
             return false;
         }
 
+        // === INSTANT GCD PRIORITY WHEN DAMAGE IMMINENT ===
+        // oGCDs (Kerachole, Panhaima, etc.) can only weave AFTER the current GCD finishes.
+        // Casted GCDs (Dosis=1.5s, Pneuma=1.5s) delay the oGCD weave window.
+        // When damage is imminent, use INSTANT GCDs to open the weave window immediately.
+        bool damageUrgent = IsDamageImminent() || IsPanicMode() || IsSustainedPull();
+        if (damageUrgent)
+        {
+            // If Eukrasia active, fire the instant E.Dosis/E.Dyskrasia (they're instant after Eukrasia)
+            if (HasEukrasia)
+            {
+                if (EukrasianDosisIiiPvE.CanUse(out act)) return true;
+                if (EukrasianDosisIiPvE.CanUse(out act)) return true;
+                if (EukrasianDosisPvE.CanUse(out act)) return true;
+                if (EukrasianDyskrasiaPvE.CanUse(out act)) return true;
+            }
+
+            // Phlegma: instant, highest potency — best choice for fast weaving
+            if (PhlegmaIiiPvE.CanUse(out act, usedUp: true)) return true;
+            if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: true)) return true;
+            if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: true)) return true;
+
+            // Toxikon: instant, damage-neutral
+            if (Addersting >= 1)
+            {
+                if (ToxikonIiPvE.CanUse(out act)) return true;
+                if (!ToxikonIiPvE.EnoughLevel && ToxikonPvE.CanUse(out act)) return true;
+            }
+
+            // Dyskrasia: instant AoE (always available, even on 1 target it enables fast weaving)
+            if (DyskrasiaIiPvE.CanUse(out act)) return true;
+            if (!DyskrasiaIiPvE.EnoughLevel && DyskrasiaPvE.CanUse(out act)) return true;
+
+            // No instant GCD available — fall through to normal priority (casted GCDs)
+            LogDecision("Damage imminent but no instant GCD available, using casted GCD");
+        }
+
         // === Eukrasian DoT uptime ===
-        // If Eukrasia is already active, fire the DoT
+        // If Eukrasia is already active, fire the DoT (instant after Eukrasia)
         if (HasEukrasia)
         {
             if (EukrasianDosisIiiPvE.CanUse(out act)) return true;
             if (EukrasianDosisIiPvE.CanUse(out act)) return true;
             if (EukrasianDosisPvE.CanUse(out act)) return true;
-            // Eukrasia active but no DoT action available — use for AoE DoT or shield
             if (EukrasianDyskrasiaPvE.CanUse(out act)) return true;
         }
 
         // Apply Eukrasia for DoT refresh — only when DoT is missing or expiring
-        // CanUse checks TargetStatusProvide + IsRestrictedDOT to verify the DoT actually needs refreshing
         if (EukrasianDosisIiiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
         if (!EukrasianDosisIiiPvE.EnoughLevel && EukrasianDosisIiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
@@ -888,10 +922,9 @@ public sealed class SGE_Dynamic : SageRotation
 
         // === DPS Priority ===
 
-        // Phlegma: highest potency GCD — never sit on 2 charges (timer stops, wasted DPS)
+        // Phlegma: highest potency GCD — never sit on 2 charges
         if (DpsOptimization)
         {
-            // usedUp=true: dump when charges would overcap, moving, or in burst windows
             bool shouldDump = IsMoving || IsBurst;
             if (PhlegmaIiiPvE.CanUse(out act, usedUp: shouldDump)) return true;
             if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: shouldDump)) return true;
@@ -899,14 +932,12 @@ public sealed class SGE_Dynamic : SageRotation
         }
         else
         {
-            // Even without DPS optimization, use Phlegma to prevent overcap
             if (PhlegmaIiiPvE.CanUse(out act, usedUp: true)) return true;
             if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: true)) return true;
             if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: true)) return true;
         }
 
         // Pneuma: damage + 600p AoE heal (damage-neutral = free heal)
-        // Use proactively: always good when party is not full or damage is incoming
         if (PneumaPvE.CanUse(out act))
         {
             if (PartyMembersAverHP < 0.90f || IsGroupDamageImminent() || IsPanicMode())
