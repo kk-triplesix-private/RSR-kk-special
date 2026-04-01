@@ -937,7 +937,6 @@ public sealed class BeirutaRDM : RedMageRotation
         if (TryRepriseGCD(out act)) return true;
         if (TryGrandImpactGCD(out act)) return true;
         if (TryLongCastTwoGCD(out act)) return true;
-        if (TryProcGCD(out act)) return true;
         if (TryFallbackGCD(out act)) return true;
 
         return base.GeneralGCD(out act);
@@ -1144,41 +1143,8 @@ public sealed class BeirutaRDM : RedMageRotation
                 return true;
         }
 
-    if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
-        return false;
-
-    if (AccelerateEndingSoon)
-    {
-        if (ShouldUseImpactAsAccelExpirySaver() && ImpactPvE.CanUse(out act))
-            return true;
-
-        if (TrySelectTwoAimingGap11(out act))
-            return true;
-    }
-
-    if (CanInstantCast && !CanVerEither)
-    {
-        if (ScatterPvE.CanUse(out act)) return true;
-        if (TrySelectTwoAimingGap11(out act)) return true;
-    }
-
         if (IsAnyMeleeComboInProgress() || InFinisherChain() || ManaStacks == 3)
             return false;
-
-        if (AccelerateEndingSoon)
-        {
-            if (ShouldUseImpactAsAccelExpirySaver() && ImpactPvE.CanUse(out act))
-                return true;
-
-            if (TrySelectTwoAimingGap11(out act))
-                return true;
-        }
-
-        if (CanInstantCast && !CanVerEither)
-        {
-            if (ScatterPvE.CanUse(out act)) return true;
-            if (TrySelectTwoAimingGap11(out act)) return true;
-        }
 
         if (!IsAnyMeleeComboInProgress() && ManaStacks != 3 && HasValidTarget && CanVerBoth && !IsMoving && !HasInstantBuffToSpend)
         {
@@ -1209,7 +1175,10 @@ public sealed class BeirutaRDM : RedMageRotation
             if (VerfirePvE.CanUse(out act)) return true;
             if (VerstonePvE.CanUse(out act)) return true;
         }
+
+        return false;
     }
+
     private bool TryRepriseGCD(out IAction? act)
     {
         act = null;
