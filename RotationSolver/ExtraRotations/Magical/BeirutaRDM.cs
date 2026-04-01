@@ -743,6 +743,9 @@ public sealed class BeirutaRDM : RedMageRotation
         if (CanUseManaficationNow(gateMelee) && ManaficationPvE.CanUse(out act))
             return true;
 
+        if (CanUseManaficationNow(gateMelee) && ManaficationPvE.CanUse(out act))
+            return true;
+
         bool emboldenAllowed = !IsOpen && IsBurst && InCombat && (AnyonesMeleeRule ? InMeleeRange3 : HasHostilesInRange);
         if (emboldenAllowed && EmboldenPvE.CanUse(out act))
         {
@@ -1182,6 +1185,11 @@ public sealed class BeirutaRDM : RedMageRotation
         return false;
     }
 
+    if (!VerstonePvE.EnoughLevel && !HasInstantBuffToSpend && VerfirePvE.CanUse(out act))
+        return true;
+
+    return false;
+}
     private bool TryRepriseGCD(out IAction? act)
     {
         act = null;
