@@ -197,6 +197,14 @@ public sealed class SGE_Dynamic : SageRotation
         return GetLowestPartyMemberHp() < 0.40f;
     }
 
+    /// <summary>Sustained pull: tank taking continuous damage in trash (wall-to-wall pulls).
+    /// Triggers proactive mitigation cycling between panic (40%) and normal thresholds.</summary>
+    private bool IsSustainedPull()
+    {
+        if (!InCombat || IsBossFight()) return false;
+        return GetLowestPartyMemberHp() < 0.75f;
+    }
+
     #endregion
 
     #region Defense Helpers (BossMod IPC + RSR Fallback)
@@ -502,85 +510,106 @@ public sealed class SGE_Dynamic : SageRotation
             return true;
         }
 
-        // Soteria: boost Kardia heals
-        // Boss: proactive / Non-boss: when party member hurt / Panic: immediately
+        // Soteria: boost Kardia heals (+50% for 4 procs, free)
+        // Boss: always / Sustained pull: always / Normal: when someone hurt
         if (InCombat && SoteriaPvE.CanUse(out act))
         {
             bool bossFight = IsBossFight();
             bool panic = IsPanicMode();
-            if ((bossFight && ProactiveBossHealing) || panic || IsAnyPartyMemberBelow(0.88f))
+            bool sustained = IsSustainedPull();
+            if ((bossFight && ProactiveBossHealing) || panic || sustained || IsAnyPartyMemberBelow(0.88f))
             {
-                LogDecision(panic ? "Soteria: PANIC pull Kardia boost"
+                LogDecision(panic ? "Soteria: PANIC Kardia boost"
+                    : sustained ? "Soteria: sustained pull Kardia boost"
                     : bossFight ? "Soteria: proactive Kardia boost"
                     : "Soteria: party member hurt");
                 return true;
             }
         }
 
-        // Krasis: +20% healing received — use before other heals to amplify them
+        // Krasis: +20% healing received on tank — amplifies all subsequent heals
+        // Use in: panic, sustained pulls, TB, boss with damage
         if (InCombat && KrasisPvE.CanUse(out act))
         {
             bool panic = IsPanicMode();
-            if (panic || IsTankbusterImminent() || (ProactiveBossHealing && IsBossFight() && IsAnyPartyMemberBelow(0.85f)))
+            bool sustained = IsSustainedPull();
+            if (panic || sustained || IsTankbusterImminent()
+                || (ProactiveBossHealing && IsBossFight() && IsAnyPartyMemberBelow(0.85f)))
             {
-                LogDecision(panic ? "Krasis: PANIC amplify heals" : "Krasis: amplify incoming heals on tank");
+                LogDecision(panic ? "Krasis: PANIC amplify"
+                    : sustained ? "Krasis: sustained pull amplify"
+                    : "Krasis: amplify incoming heals on tank");
                 return true;
             }
         }
 
-        // Philosophia: proactive with group damage, boss fights, panic/big pulls, or sustained damage
+        // Philosophia: sustained healing via damage GCDs
+        // Boss: proactive / Sustained/Panic pulls: always / Otherwise: low HP
         if (InCombat && PhilosophiaPvE.CanUse(out act))
         {
             bool panic = IsPanicMode();
-            if (IsGroupDamageImminent() || panic || PartyMembersAverHP < 0.75f
+            bool sustained = IsSustainedPull();
+            if (IsGroupDamageImminent() || panic || sustained || PartyMembersAverHP < 0.75f
                 || (ProactiveBossHealing && IsBossFight() && PartyMembersAverHP < 0.90f))
             {
-                LogDecision(panic ? $"Philosophia: PANIC pull regen (HP={PartyMembersAverHP:P0})"
-                    : $"Philosophia: proactive regen (party HP={PartyMembersAverHP:P0})");
+                LogDecision(panic ? $"Philosophia: PANIC pull (HP={PartyMembersAverHP:P0})"
+                    : sustained ? $"Philosophia: sustained pull regen (HP={PartyMembersAverHP:P0})"
+                    : $"Philosophia: proactive regen (HP={PartyMembersAverHP:P0})");
                 return true;
             }
         }
 
-        // Proactive HoTs: keep regens rolling in combat
+        // Proactive HoTs/Shields/Mitigation cycling
         if (ProactiveBossHealing && InCombat)
         {
             bool bossFight = IsBossFight();
             bool panic = IsPanicMode();
+            bool sustained = IsSustainedPull();
 
-            // Physis II: free HoT + 10% healing buff
-            // Boss: any chip damage / Non-boss: moderate damage / Panic: immediately
+            // Physis II: free HoT + 10% healing received buff (60s CD)
+            // Boss: any chip / Sustained pull: always / Normal non-boss: moderate damage
             if (PhysisIiPvE.CanUse(out act))
             {
-                if (panic || (bossFight && PartyMembersAverHP < 0.95f)
+                if (panic || sustained || (bossFight && PartyMembersAverHP < 0.95f)
                     || (!bossFight && PartyMembersAverHP < 0.88f))
                 {
-                    LogDecision(panic ? "Physis II: PANIC pull HoT"
-                        : $"Physis II: proactive HoT (party HP={PartyMembersAverHP:P0})");
+                    LogDecision(panic ? "Physis II: PANIC HoT"
+                        : sustained ? "Physis II: sustained pull HoT"
+                        : $"Physis II: proactive HoT (HP={PartyMembersAverHP:P0})");
                     return true;
                 }
             }
             if (!PhysisIiPvE.EnoughLevel && PhysisPvE.CanUse(out act))
             {
-                if (panic || (bossFight && PartyMembersAverHP < 0.95f)
+                if (panic || sustained || (bossFight && PartyMembersAverHP < 0.95f)
                     || (!bossFight && PartyMembersAverHP < 0.88f))
                 {
-                    LogDecision(panic ? "Physis: PANIC pull HoT" : "Physis: proactive HoT");
+                    LogDecision(panic ? "Physis: PANIC HoT" : "Physis: proactive HoT");
                     return true;
                 }
             }
 
-            // Kerachole: regen + 10% mit
-            // Boss: Addersgall >= 1 when taking damage / Non-boss: >= 2 / Panic: any
+            // Kerachole: 10% mit + regen (30s CD, 1 Addersgall) — keep rolling every 30s in pulls
+            // Boss: Addersgall >= 1 when taking damage / Sustained: >= 1 / Normal: >= 2
             if (KeracholePvE.CanUse(out act))
             {
                 if (panic
-                    || (bossFight && Addersgall >= 1 && PartyMembersAverHP < 0.90f)
+                    || ((bossFight || sustained) && Addersgall >= 1 && PartyMembersAverHP < 0.92f)
                     || (Addersgall >= 2 && PartyMembersAverHP < 0.92f))
                 {
-                    LogDecision(panic ? $"Kerachole: PANIC pull mit + regen"
-                        : $"Kerachole: proactive regen + mit (Addersgall={Addersgall}, HP={PartyMembersAverHP:P0})");
+                    LogDecision(panic ? "Kerachole: PANIC mit + regen"
+                        : sustained ? $"Kerachole: sustained pull cycling (Addersgall={Addersgall})"
+                        : $"Kerachole: proactive (Addersgall={Addersgall}, HP={PartyMembersAverHP:P0})");
                     return true;
                 }
+            }
+
+            // Haima on tank: proactive in sustained pulls (1800p shield value, 120s CD)
+            // Only in sustained/panic — don't waste on light damage
+            if ((panic || sustained) && HaimaPvE.CanUse(out act))
+            {
+                LogDecision(panic ? "Haima: PANIC tank shield" : "Haima: sustained pull tank shield");
+                return true;
             }
         }
 
@@ -603,11 +632,12 @@ public sealed class SGE_Dynamic : SageRotation
         bool confirmedDamage = raidwide || stack || prey || marker;
         bool bossMitigation = ProactiveBossHealing && IsBossFight();
         bool panic = IsPanicMode();
+        bool sustained = IsSustainedPull();
 
-        if (confirmedDamage || bossMitigation || panic)
+        if (confirmedDamage || bossMitigation || panic || sustained)
         {
             string reason = panic ? "PANIC" : raidwide ? "raidwide" : stack ? "stack"
-                : prey ? "prey" : marker ? "marker" : "boss";
+                : prey ? "prey" : marker ? "marker" : sustained ? "sustained pull" : "boss";
 
             // Kerachole: 10% mitigation + regen, best value (1 Addersgall) — always first
             if (KeracholePvE.CanUse(out act))
@@ -638,8 +668,8 @@ public sealed class SGE_Dynamic : SageRotation
                 }
             }
 
-            // Panhaima: multi-hit shields (120s CD) — for raidwide/stack or panic pulls
-            if ((raidwide || stack || panic) && PanhaimaPvE.CanUse(out act))
+            // Panhaima: multi-hit shields (120s CD) — for raidwide/stack/sustained/panic
+            if ((raidwide || stack || panic || sustained) && PanhaimaPvE.CanUse(out act))
             {
                 LogDecision($"Panhaima: {reason}");
                 return true;
@@ -648,7 +678,7 @@ public sealed class SGE_Dynamic : SageRotation
             // Holos: AoE shield + heal + 10% mit (120s CD)
             if (HolosPvE.CanUse(out act))
             {
-                if (confirmedDamage || panic)
+                if (confirmedDamage || panic || sustained)
                 {
                     LogDecision($"Holos: {reason}");
                     return true;
@@ -673,11 +703,12 @@ public sealed class SGE_Dynamic : SageRotation
         bool prey = SmartShieldsStack && IsPreyImminent();
         bool bossMitigation = ProactiveBossHealing && IsBossFight();
         bool panic = IsPanicMode();
+        bool sustained = IsSustainedPull();
 
-        if (tankbuster || prey || bossMitigation || panic)
+        if (tankbuster || prey || bossMitigation || panic || sustained)
         {
             string reason = panic ? "PANIC pull" : tankbuster ? "tankbuster"
-                : prey ? "prey" : "boss";
+                : prey ? "prey" : sustained ? "sustained pull" : "boss";
 
             // Haima: strongest ST shield (120s CD)
             if (HaimaPvE.CanUse(out act))
@@ -1053,7 +1084,8 @@ public sealed class SGE_Dynamic : SageRotation
         ColoredBool("  Stack Imminent", IsStackImminent());
         ColoredBool("  Prey Imminent", IsPreyImminent());
         ColoredBool("  Marker/Spread Imminent", IsMarkerImminent());
-        ColoredBool("  PANIC Mode (big pull)", IsPanicMode());
+        ColoredBool("  Sustained Pull (tank < 75%)", IsSustainedPull());
+        ColoredBool("  PANIC Mode (tank < 40%)", IsPanicMode());
 
         ImGui.Spacing();
         float lowestHp = GetLowestPartyMemberHp();
