@@ -471,9 +471,9 @@ public sealed class SGE_Dynamic : SageRotation
             return true;
 
         // Smart Addersgall: dump before overcap
-        if (SmartAddersgall && Addersgall >= 2 && AddersgallTime < 5000f)
+        // At 3 = timer stopped, wasting generation. At 2 with timer running low = about to overcap
+        if (SmartAddersgall && (Addersgall == 3 || (Addersgall >= 2 && AddersgallTime < 8000f)))
         {
-            // Use Druochole on anyone taking damage to prevent Addersgall waste
             if (DruocholePvE.CanUse(out act))
             {
                 LogDecision($"Addersgall dump: {Addersgall}/3, timer={AddersgallTime / 1000f:F1}s");
@@ -517,7 +517,18 @@ public sealed class SGE_Dynamic : SageRotation
             }
         }
 
-        // Philosophia: proactive with group damage, boss fights, panic, or sustained damage
+        // Krasis: +20% healing received — use before other heals to amplify them
+        if (InCombat && KrasisPvE.CanUse(out act))
+        {
+            bool panic = IsPanicMode();
+            if (panic || IsTankbusterImminent() || (ProactiveBossHealing && IsBossFight() && IsAnyPartyMemberBelow(0.85f)))
+            {
+                LogDecision(panic ? "Krasis: PANIC amplify heals" : "Krasis: amplify incoming heals on tank");
+                return true;
+            }
+        }
+
+        // Philosophia: proactive with group damage, boss fights, panic/big pulls, or sustained damage
         if (InCombat && PhilosophiaPvE.CanUse(out act))
         {
             bool panic = IsPanicMode();
@@ -605,7 +616,14 @@ public sealed class SGE_Dynamic : SageRotation
                 return true;
             }
 
-            // Physis II: regen + 10% healing received buff — proactive before damage or panic
+            // Krasis: +20% healing received — amplifies Physis II regen ticks and subsequent heals
+            if ((confirmedDamage || panic) && KrasisPvE.CanUse(out act))
+            {
+                LogDecision($"Krasis: amplify before {reason}");
+                return true;
+            }
+
+            // Physis II: regen + 10% healing received buff — snapshots Krasis amplification
             if ((confirmedDamage || panic) && SmartPhysis)
             {
                 if (PhysisIiPvE.CanUse(out act))
@@ -839,18 +857,30 @@ public sealed class SGE_Dynamic : SageRotation
 
         // === DPS Priority ===
 
-        // Phlegma: dump at 2 charges (prevent overcap), use during movement, or during burst windows
+        // Phlegma: highest potency GCD — never sit on 2 charges (timer stops, wasted DPS)
         if (DpsOptimization)
         {
-            // usedUp=true forces usage when charges would overcap; also use when moving (instant cast)
+            // usedUp=true: dump when charges would overcap, moving, or in burst windows
             bool shouldDump = IsMoving || IsBurst;
             if (PhlegmaIiiPvE.CanUse(out act, usedUp: shouldDump)) return true;
             if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: shouldDump)) return true;
             if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: shouldDump)) return true;
         }
+        else
+        {
+            // Even without DPS optimization, use Phlegma to prevent overcap
+            if (PhlegmaIiiPvE.CanUse(out act, usedUp: true)) return true;
+            if (!PhlegmaIiiPvE.EnoughLevel && PhlegmaIiPvE.CanUse(out act, usedUp: true)) return true;
+            if (!PhlegmaIiPvE.EnoughLevel && PhlegmaPvE.CanUse(out act, usedUp: true)) return true;
+        }
 
-        // Pneuma: damage + AoE heal (120s CD)
-        if (PneumaPvE.CanUse(out act)) return true;
+        // Pneuma: damage + 600p AoE heal (damage-neutral = free heal)
+        // Use proactively: always good when party is not full or damage is incoming
+        if (PneumaPvE.CanUse(out act))
+        {
+            if (PartyMembersAverHP < 0.90f || IsGroupDamageImminent() || IsPanicMode())
+                return true;
+        }
 
         // Toxikon: instant cast during movement
         if (DpsOptimization && IsMoving && Addersting >= 1)
@@ -863,20 +893,23 @@ public sealed class SGE_Dynamic : SageRotation
         if (DyskrasiaIiPvE.CanUse(out act)) return true;
         if (!DyskrasiaIiPvE.EnoughLevel && DyskrasiaPvE.CanUse(out act)) return true;
 
-        // Proactive Eukrasian Prognosis shield when group damage imminent and no oGCDs left
+        // Eukrasian Prognosis GCD shield — LAST RESORT before damage
+        // Every GCD heal = lost Dosis/Dyskrasia damage + lost Kardia healing
+        // Only use when oGCDs are exhausted AND confirmed big hit incoming
         bool groupDmg = (SmartShieldsRaidwide && IsRaidwideImminent())
                      || (SmartShieldsStack && (IsStackImminent() || IsMarkerImminent()));
-        if (groupDmg
+        bool oGCDsExhausted = !KeracholePvE.CanUse(out _) && !PanhaimaPvE.CanUse(out _) && !HolosPvE.CanUse(out _);
+        if (groupDmg && oGCDsExhausted
             && !StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis)
             && !HasEukrasia)
         {
             if (EukrasiaPvE.CanUse(out act))
             {
-                LogDecision("EukrasianPrognosis: group damage imminent, applying shield GCD");
+                LogDecision("EukrasianPrognosis: oGCDs exhausted, GCD shield as last resort");
                 return true;
             }
         }
-        if (HasEukrasia && groupDmg)
+        if (HasEukrasia && groupDmg && oGCDsExhausted)
         {
             if (EukrasianPrognosisIiPvE.CanUse(out act)) return true;
             if (EukrasianPrognosisPvE.CanUse(out act)) return true;
