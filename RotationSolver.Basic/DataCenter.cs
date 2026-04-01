@@ -1882,6 +1882,26 @@ internal static class DataCenter
 		});
 	}
 
+	public static bool IsHostileCastingStack =>
+		InCombat && AllHostileTargets != null && IsAnyHostileCasting(OtherConfiguration.HostileCastingStack);
+
+	public static bool IsHostileCastingPrey =>
+		InCombat && AllHostileTargets != null && IsAnyHostileCasting(OtherConfiguration.HostileCastingPrey);
+
+	public static bool IsHostileCastingMarker =>
+		InCombat && AllHostileTargets != null && IsAnyHostileCasting(OtherConfiguration.HostileCastingMarker);
+
+	private static bool IsAnyHostileCasting(HashSet<uint> ids)
+	{
+		if (AllHostileTargets == null || ids == null || ids.Count == 0) return false;
+		for (int i = 0; i < AllHostileTargets.Count; i++)
+		{
+			if (IsHostileCastingBase(AllHostileTargets[i], (act) => ids.Contains(act.RowId)))
+				return true;
+		}
+		return false;
+	}
+
 	public static bool AreHostilesCastingKnockback
 	{
 		get

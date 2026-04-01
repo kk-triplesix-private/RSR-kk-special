@@ -1528,6 +1528,152 @@ ENCOUNTERS = {
         "type": "alliance", "expansion": "DT",
         "anchors": ["Scrapline", "Megalithe", "Banishga IV", "Provenance Watcher"]
     },
+
+    # ========================================================================
+    # EW VARIANT DUNGEONS (6.x)
+    # ========================================================================
+    "Variant-Sildihn-Subterrane": {
+        "type": "variant", "expansion": "EW",
+        "anchors": ["Puff and Tumble", "Slippery Soap", "Fizzling Suds", "Rush of Might",
+                     "Sculptor's Passion", "Show of Strength", "Infern Brand", "Cast Shadow",
+                     "Firesteel Fracture", "Blessed Beacon"]
+    },
+    "Variant-Mount-Rokkon": {
+        "type": "variant", "expansion": "EW",
+        "anchors": ["Splitting Cry", "Noble Pursuit", "Enkyo", "Unenlightenment",
+                     "Humble Hammer", "Scarlet Auspice", "Kenki Release",
+                     "Double Kasumi-giri", "Moonless Night", "Iai-kasumi-giri",
+                     "Clearout", "Lateral Slice"]
+    },
+    "Variant-Aloalo-Island": {
+        "type": "variant", "expansion": "EW",
+        "anchors": ["Arcane Blight", "Tornado", "Made Magic", "Spring Crystals",
+                     "Bubble Net", "Fluke Typhoon", "Hydrobomb", "Arcane Plot",
+                     "Hundred Lashings", "Wood Golem", "Analysis"]
+    },
+
+    # ========================================================================
+    # EW CRITERION DUNGEONS (6.x)
+    # ========================================================================
+    "Criterion-Sildihn": {
+        "type": "criterion", "expansion": "EW",
+        "anchors": ["Puff and Tumble", "Slippery Soap", "Fizzling Suds", "Rush of Might",
+                     "Sculptor's Passion", "Infern Brand", "Cast Shadow",
+                     "Firesteel Fracture", "Blessed Beacon", "Branding Flare"]
+    },
+    "Criterion-Sildihn-Savage": {
+        "type": "criterion_savage", "expansion": "EW",
+        "anchors": ["Puff and Tumble", "Slippery Soap", "Rush of Might",
+                     "Sculptor's Passion", "Infern Brand", "Cast Shadow",
+                     "Firesteel Fracture", "Blessed Beacon", "Branding Flare"]
+    },
+    "Criterion-Mount-Rokkon": {
+        "type": "criterion", "expansion": "EW",
+        "anchors": ["Splitting Cry", "Noble Pursuit", "Enkyo", "Unenlightenment",
+                     "Humble Hammer", "Scarlet Auspice", "Kenki Release",
+                     "Double Kasumi-giri", "Moonless Night", "Clearout"]
+    },
+    "Criterion-Mount-Rokkon-Savage": {
+        "type": "criterion_savage", "expansion": "EW",
+        "anchors": ["Splitting Cry", "Noble Pursuit", "Enkyo", "Unenlightenment",
+                     "Humble Hammer", "Scarlet Auspice", "Kenki Release",
+                     "Double Kasumi-giri", "Moonless Night", "Clearout"]
+    },
+    "Criterion-Aloalo": {
+        "type": "criterion", "expansion": "EW",
+        "anchors": ["Arcane Blight", "Tornado", "Spring Crystals", "Bubble Net",
+                     "Fluke Typhoon", "Hydrobomb", "Arcane Plot", "Analysis",
+                     "Hundred Lashings"]
+    },
+    "Criterion-Aloalo-Savage": {
+        "type": "criterion_savage", "expansion": "EW",
+        "anchors": ["Arcane Blight", "Tornado", "Spring Crystals", "Bubble Net",
+                     "Fluke Typhoon", "Hydrobomb", "Arcane Plot", "Analysis",
+                     "Hundred Lashings"]
+    },
+
+    # ========================================================================
+    # DT CHAOTIC RAIDS (7.x)
+    # ========================================================================
+    "Chaotic-CloudOfDarkness": {
+        "type": "chaotic", "expansion": "DT",
+        "anchors": ["Doom Arc", "Zero-form Particle Beam", "Ground-razing Particle Beam",
+                     "Wide-angle Particle Beam", "Flood of Darkness", "Curse of Darkness",
+                     "Rapid-sequence Particle Beam", "Active-pivot Particle Beam",
+                     "Ghastly Gloom", "Death's Embrace"]
+    },
+
+    # ========================================================================
+    # DEEP DUNGEONS
+    # ========================================================================
+    "PotD-Floor50-Edda": {
+        "type": "deep_dungeon", "expansion": "HW",
+        "anchors": ["Black Honeymoon", "Void Fire III", "Cold Feet", "In Health"]
+    },
+    "PotD-Floor100-Nybeth": {
+        "type": "deep_dungeon", "expansion": "HW",
+        "anchors": ["Shackled Fist", "Abyss", "Doom of the Living", "Word of Pain"]
+    },
+    "PotD-Floor150-Edda2": {
+        "type": "deep_dungeon", "expansion": "HW",
+        "anchors": ["Black Honeymoon", "Cold Feet", "In Health"]
+    },
+    "PotD-Floor200-TheGodfather": {
+        "type": "deep_dungeon", "expansion": "HW",
+        "anchors": ["Grim Fate", "Grim Halo", "Black Nebula", "Big Burst", "Charybdis"]
+    },
+    "HoH-Floor30-Hiruko": {
+        "type": "deep_dungeon", "expansion": "SB",
+        "anchors": ["Supercell", "Charge", "Lightning Bolt", "Superstorm"]
+    },
+    "HoH-Floor100-Onra": {
+        "type": "deep_dungeon", "expansion": "SB",
+        "anchors": ["Ancient Quaga", "Burning Chains", "Lateral Slice"]
+    },
+    "EO-Floor30-Gancanagh": {
+        "type": "deep_dungeon", "expansion": "EW",
+        "anchors": ["Mandrastorm", "Caterwaul", "Authoritative Shriek"]
+    },
+    "EO-Floor100-ProtoKaliya": {
+        "type": "deep_dungeon", "expansion": "EW",
+        "anchors": ["Nerve Gas", "Barofield", "Resonance", "Main Head", "Auto-cannons"]
+    },
+
+    # ========================================================================
+    # BOZJA / EUREKA FIELD OPERATIONS
+    # ========================================================================
+    "Castrum-Lacus-Litore": {
+        "type": "field_operation", "expansion": "ShB",
+        "anchors": ["Magitek Missiles", "Magitek Cannon", "Aetheroplasm",
+                     "Baleful Comet", "Iron Splitter", "Magitek Magnetism"]
+    },
+    "Delubrum-Reginae": {
+        "type": "field_operation", "expansion": "ShB",
+        "anchors": ["Baleful Blade", "Fury of Bozja", "Queen's Shot",
+                     "Above Board", "Lots Cast", "Heaven's Wrath",
+                     "Optimal Play", "Pawn Off", "Beck and Call to Arms",
+                     "Gods Save the Queen", "Relentless Play", "Judgment Blade"]
+    },
+    "Delubrum-Reginae-Savage": {
+        "type": "field_operation_savage", "expansion": "ShB",
+        "anchors": ["Baleful Blade", "Fury of Bozja", "Queen's Shot",
+                     "Above Board", "Lots Cast", "Heaven's Wrath",
+                     "Optimal Play", "Pawn Off", "Beck and Call to Arms",
+                     "Gods Save the Queen", "Relentless Play", "Judgment Blade"]
+    },
+    "The-Dalriada": {
+        "type": "field_operation", "expansion": "ShB",
+        "anchors": ["Anti-personnel Missile", "Analysis", "Suppressive Magitek Rays",
+                     "Magitek Halo", "Magitek Crossray", "Read Orders",
+                     "Turbine", "Magitek Explosion", "Surface Missile"]
+    },
+    "Baldesion-Arsenal": {
+        "type": "field_operation", "expansion": "SB",
+        "anchors": ["Shockwave", "Art of the Swell", "Trounce", "Raiden",
+                     "For Honor", "Cloud to Ground", "Gallop", "Streak Lightning"]
+    },
+    # NOTE: Add future DT content here as patches release (7.3+ alliance raids,
+    # new EX trials, dungeons, variant/criterion dungeons, chaotic raids)
 }
 
 
@@ -1630,11 +1776,189 @@ def scan_range(start_id, end_id):
 
 
 # ============================================================================
-# CLASSIFICATION
+# SEMANTIC MECHANIC TAGGING
+# ============================================================================
+# Maps lowercase action names to semantic tags.
+# Tags: "tankbuster", "raidwide", "stack", "prey", "marker" (spread/defamation)
+
+KNOWN_TANKBUSTERS = {
+    # ARR
+    "death sentence", "flatten", "ravensbeak", "critical rip", "secondary head",
+    "nerve gas", "revelation",
+    # HW
+    "hypercompressed plasma", "perpetual ray", "single buster", "gobhook",
+    "spin crusher",
+    # SB
+    "arm and hammer", "hyperdrive", "chaotic dispersion", "stormsplitter",
+    "tail end", "doom strike",
+    # ShB
+    "spear of paradise", "stonecrusher", "crippling blow", "instant incineration",
+    "double slap", "umbra smash", "ravenous assault", "dual strike",
+    "stamp", "auri arts", "vertical cleave", "scarlet price",
+    # EW
+    "warder's wrath", "pitiless flail", "heavy hand", "murky depths",
+    "heat of condemnation", "decollation", "elegant evisceration",
+    "flameviper", "glaukopis", "palladian grasp", "crush helm",
+    "ascendant fist", "archaic demolish", "soul grasp", "wicked step",
+    "ania", "hubris", "shattering heat", "dualfire",
+    "mousa's scorn", "heros's sundering",
+    # DT
+    "biscuit maker", "predaceous pounce", "bee sting", "drop of venom",
+    "poison sting", "knuckle sandwich", "doping draught", "wicked bolt",
+    "electrope edge", "bitter whirlwind",
+    # Ultimates
+    "quadruple slap", "shell crusher", "black halo", "somber dance",
+    "heavenly heel", "gnash and lash", "lash and gnash", "solar ray",
+    "pile pitch", "darkdragon dive",
+    # Generic patterns
+    "tankbuster", "tank buster",
+}
+
+KNOWN_RAIDWIDES = {
+    # ARR
+    "gigaflare", "teraflare", "hellfire", "aerial blast", "earthen fury",
+    "judgment bolt", "tidal wave", "aetheric profusion", "megaflare",
+    "ancient flare", "mega death", "curtain call",
+    # HW
+    "mega holy", "whirlwind", "j wave", "ultimate end",
+    # SB
+    "almagest", "light of judgment", "forsaken", "laser shower",
+    "ion efflux", "cosmo memory", "bowels of agony", "gravitational wave",
+    "screams of the damned", "scarlet fever", "storm pulse", "nightbloom",
+    "ahura mazda",
+    # ShB
+    "absolute zero", "diamond dust", "gigantomachy", "shadowreaver",
+    "daybreak", "diamond rain", "optimized ultima", "flood of darkness",
+    "bright sabbath", "being mortal", "total annihilation maneuver",
+    "burnished glory", "titanomachy",
+    # EW
+    "sewage deluge", "dead rebirth", "searing stream", "sonic howl",
+    "hemitheos's dark iv", "spark of life", "genesis of flame",
+    "gluttony's augur", "harrowing hell", "eunomia", "on the soul",
+    "kokytos", "styx", "highest holy", "radiant halo",
+    "elegeia", "elegeia unforgotten", "void aero iv", "inferno",
+    "blazing rapture", "terrastorm", "abyssal nox", "big bang",
+    "knuckle drum",
+    # DT
+    "wrath of zeus", "call me honey", "dawn of an age", "skyruin",
+    "calamitous cry", "bloody scratch", "soulshock", "stampeding thunder",
+    "coronation", "royal domain", "aethertithe", "absolute authority",
+    "prosecution of war", "regicidal rage", "actualize",
+    "doom arc", "shockwave pulsar",
+    # Ultimates
+    "cyclonic break", "memory's end", "exaflare",
+    # Generic patterns
+    "raidwide",
+}
+
+KNOWN_STACKS = {
+    # ARR
+    "thermionic beam", "wild charge", "fireball",
+    # HW
+    "akh morn", "enumeration", "fiendish rage", "compressed lightning",
+    "compressed water",
+    # SB
+    "the pall of light", "path of light", "stotram",
+    "flaming crush", "megaflare",
+    # ShB
+    "morn afah", "dark eruption", "light rampant",
+    "coherence",
+    # EW
+    "soul grasp", "banish iii", "hallowed ray",
+    "double meteor", "eventide fall",
+    # DT
+    "wicked bolt",
+    # Ultimates
+    "irresistible grace", "cauterize",
+    # Generic patterns
+    "stack", "shared buster", "shared tankbuster",
+}
+
+KNOWN_PREYS = {
+    # Named "Prey" mechanics
+    "prey",
+    # Homing / targeted attacks
+    "homing lasers", "homing missile", "high-powered homing lasers",
+    "ballistic missile",
+    # Targeted AoE puddles / chasers
+    "earth shaker", "meteor stream", "liquid hell", "feather rain",
+    "divebomb", "eruption", "weight of the land", "searing wind",
+    "dark fire iii", "dark blizzard iii",
+    "levinbolt",  # individual targeted
+    "thunderstorm",  # targeted circles
+    # EW/DT targeted
+    "flare star", "acid rain",
+}
+
+KNOWN_MARKERS = {
+    # Spread markers
+    "shadow spread", "unholy darkness", "spirit taker",
+    "thunder iii", "dark aero iii",
+    "scattered magic", "defamation",
+    # Look-away markers
+    "shadoweye", "cursed voice", "cursed shriek", "petrifaction",
+    "demon eye",
+    # Proximity markers
+    "proximity",
+    # Dorito / chase markers
+    "flare",  # individual spread away
+    # Generic
+    "spread", "marker",
+}
+
+# Keyword-based heuristic patterns (applied when no exact match found)
+TANKBUSTER_KEYWORDS = {"buster", "crusher", "cleave"}
+STACK_KEYWORDS = {"stack"}
+
+
+def tag_action(action):
+    """Return a list of semantic tags for an action based on name and properties."""
+    name = action.get("name", "").strip().lower()
+    ct = action.get("cast_type", 0)
+    er = action.get("effect_range", 0)
+    cast_time = action.get("cast_time_s", 0)
+    tags = []
+
+    # Exact name matches
+    if name in KNOWN_TANKBUSTERS:
+        tags.append("tankbuster")
+    if name in KNOWN_RAIDWIDES:
+        tags.append("raidwide")
+    if name in KNOWN_STACKS:
+        tags.append("stack")
+    if name in KNOWN_PREYS:
+        tags.append("prey")
+    if name in KNOWN_MARKERS:
+        tags.append("marker")
+
+    # Keyword heuristics (only if no exact match yet)
+    if not tags:
+        for kw in TANKBUSTER_KEYWORDS:
+            if kw in name:
+                tags.append("tankbuster")
+                break
+        for kw in STACK_KEYWORDS:
+            if kw in name:
+                tags.append("stack")
+                break
+
+    # Geometric heuristic: single-target with cast time => likely tankbuster
+    if ct == 1 and cast_time >= 2.0 and "tankbuster" not in tags:
+        tags.append("tankbuster")
+
+    # Geometric heuristic: very large AoE => likely raidwide
+    if er >= 30 and "raidwide" not in tags:
+        tags.append("raidwide")
+
+    return tags
+
+
+# ============================================================================
+# GEOMETRIC CLASSIFICATION
 # ============================================================================
 
 def classify_action(action):
-    """Classify action based on CastType and EffectRange."""
+    """Classify action based on CastType and EffectRange (geometric shape)."""
     ct = action.get("cast_type", 0)
     er = action.get("effect_range", 0)
 
@@ -1704,6 +2028,9 @@ def main():
     all_encounter_data = {}
     all_area_ids = set()
     all_tank_ids = set()
+    all_stack_ids = set()
+    all_prey_ids = set()
+    all_marker_ids = set()
 
     total_encounters = len(ENCOUNTERS)
 
@@ -1766,21 +2093,34 @@ def main():
 
         for action in nearby_actions:
             cls = classify_action(action)
+            tags = tag_action(action)
             if cls not in encounter_actions["actions"]:
                 encounter_actions["actions"][cls] = []
-            encounter_actions["actions"][cls].append({
+            action_entry = {
                 "id": action["id"],
                 "name": action["name"],
                 "cast_type": action["cast_type"],
                 "effect_range": action["effect_range"],
                 "cast_time_s": action["cast_time_s"],
-            })
+            }
+            if tags:
+                action_entry["tags"] = tags
+            encounter_actions["actions"][cls].append(action_entry)
 
-            # Add to flat lists
+            # Add to flat lists (geometric)
             if cls in ("raidwide", "aoe", "cone", "line"):
                 all_area_ids.add(action["id"])
             elif cls == "single_target":
                 all_tank_ids.add(action["id"])
+
+            # Add to semantic flat lists
+            for t in tags:
+                if t == "stack":
+                    all_stack_ids.add(action["id"])
+                elif t == "prey":
+                    all_prey_ids.add(action["id"])
+                elif t == "marker":
+                    all_marker_ids.add(action["id"])
 
         all_encounter_data[enc_key] = encounter_actions
 
@@ -1799,6 +2139,9 @@ def main():
     print(f"Total encounters processed: {len(all_encounter_data)}")
     print(f"Total area/AOE IDs found: {len(all_area_ids)}")
     print(f"Total tank/single-target IDs found: {len(all_tank_ids)}")
+    print(f"Total stack IDs found: {len(all_stack_ids)}")
+    print(f"Total prey IDs found: {len(all_prey_ids)}")
+    print(f"Total marker IDs found: {len(all_marker_ids)}")
     print(f"Total API requests: {request_count}")
 
     # Save structured encounter data
@@ -1834,6 +2177,22 @@ def main():
     with open(tank_file, "w", encoding="utf-8") as f:
         json.dump(merged_tank, f, indent=2)
     print(f"HostileCastingTank.json: {len(existing_tank)} existing + {len(new_tank)} new = {len(merged_tank)} total")
+
+    # Save semantic ID lists
+    stack_file = os.path.join(OUTPUT_DIR, "HostileCastingStack.json")
+    with open(stack_file, "w", encoding="utf-8") as f:
+        json.dump(sorted(all_stack_ids), f, indent=2)
+    print(f"HostileCastingStack.json: {len(all_stack_ids)} IDs")
+
+    prey_file = os.path.join(OUTPUT_DIR, "HostileCastingPrey.json")
+    with open(prey_file, "w", encoding="utf-8") as f:
+        json.dump(sorted(all_prey_ids), f, indent=2)
+    print(f"HostileCastingPrey.json: {len(all_prey_ids)} IDs")
+
+    marker_file = os.path.join(OUTPUT_DIR, "HostileCastingMarker.json")
+    with open(marker_file, "w", encoding="utf-8") as f:
+        json.dump(sorted(all_marker_ids), f, indent=2)
+    print(f"HostileCastingMarker.json: {len(all_marker_ids)} IDs")
 
     # Save new IDs list for easy review
     new_ids_file = os.path.join(OUTPUT_DIR, "NewIDs.json")

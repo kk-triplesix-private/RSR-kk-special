@@ -92,6 +92,10 @@ public sealed class SGE_Dynamic : SageRotation
     private bool _tankbusterImminentValid;
     private bool _stackImminentCached;
     private bool _stackImminentValid;
+    private bool _preyImminentCached;
+    private bool _preyImminentValid;
+    private bool _markerImminentCached;
+    private bool _markerImminentValid;
     private string? _specialModeCache;
     private bool _specialModeCacheValid;
 
@@ -103,6 +107,8 @@ public sealed class SGE_Dynamic : SageRotation
     private static bool _simRaidwideImminent;
     private static bool _simTankbusterImminent;
     private static bool _simSharedImminent;
+    private static bool _simPreyImminent;
+    private static bool _simMarkerImminent;
     private static int _simSpecialModeIndex;
 
     // Decision Log (Ring-Buffer, 40 entries)
@@ -182,6 +188,13 @@ public sealed class SGE_Dynamic : SageRotation
     {
         var target = HostileTarget;
         return target != null && target.IsBossFromIcon();
+    }
+
+    /// <summary>Panic mode: tank HP dangerously low during trash pulls (big dungeon pulls).</summary>
+    private bool IsPanicMode()
+    {
+        if (!InCombat || IsBossFight()) return false;
+        return GetLowestPartyMemberHp() < 0.40f;
     }
 
     #endregion
@@ -293,10 +306,69 @@ public sealed class SGE_Dynamic : SageRotation
             catch (Exception ex) { ThrottledIpcLog($"IPC error Stack: {ex.Message}"); }
         }
 
+        if (DataCenter.IsHostileCastingStack)
+        {
+            LogDecision("Stack=TRUE (RSR: CastStack)");
+            return true;
+        }
+
         return false;
     }
 
-    private bool IsDamageImminent() => IsRaidwideImminent() || IsTankbusterImminent() || IsStackImminent();
+    private bool IsPreyImminent()
+    {
+        if (_preyImminentValid) return _preyImminentCached;
+        _preyImminentValid = true;
+        _preyImminentCached = ComputePreyImminent();
+        return _preyImminentCached;
+    }
+
+    private bool ComputePreyImminent()
+    {
+        if (_simEnabled && _simPreyImminent)
+        {
+            LogDecision("Prey=TRUE (SIM)");
+            return true;
+        }
+
+        if (DataCenter.IsHostileCastingPrey)
+        {
+            LogDecision("Prey=TRUE (RSR: CastPrey)");
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsMarkerImminent()
+    {
+        if (_markerImminentValid) return _markerImminentCached;
+        _markerImminentValid = true;
+        _markerImminentCached = ComputeMarkerImminent();
+        return _markerImminentCached;
+    }
+
+    private bool ComputeMarkerImminent()
+    {
+        if (_simEnabled && _simMarkerImminent)
+        {
+            LogDecision("Marker=TRUE (SIM)");
+            return true;
+        }
+
+        if (DataCenter.IsHostileCastingMarker)
+        {
+            LogDecision("Marker=TRUE (RSR: CastMarker)");
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>Any group-wide damage imminent (raidwide, stack, spread marker).</summary>
+    private bool IsGroupDamageImminent() => IsRaidwideImminent() || IsStackImminent() || IsMarkerImminent();
+
+    private bool IsDamageImminent() => IsGroupDamageImminent() || IsTankbusterImminent() || IsPreyImminent();
 
     #endregion
 
@@ -340,11 +412,11 @@ public sealed class SGE_Dynamic : SageRotation
                 return true;
             }
 
-            // Priority 2: Proactive Zoe before raidwide — amplify AoE heal/shield GCDs
-            if (ZoeProactive && IsRaidwideImminent()
+            // Priority 2: Proactive Zoe before group damage — amplify AoE heal/shield GCDs
+            if (ZoeProactive && IsGroupDamageImminent()
                 && nextGCD.IsTheSameTo(false, EukrasianPrognosisIiPvE, EukrasianPrognosisPvE, PrognosisPvE))
             {
-                LogDecision("Zoe: amplifying AoE heal for raidwide");
+                LogDecision("Zoe: amplifying AoE heal for incoming group damage");
                 return true;
             }
 
@@ -430,44 +502,74 @@ public sealed class SGE_Dynamic : SageRotation
             return true;
         }
 
-        // Soteria: boost Kardia heals — proactive in boss fights, reactive otherwise
+        // Soteria: boost Kardia heals
+        // Boss: proactive / Non-boss: when party member hurt / Panic: immediately
         if (InCombat && SoteriaPvE.CanUse(out act))
         {
             bool bossFight = IsBossFight();
-            if ((bossFight && ProactiveBossHealing) || IsAnyPartyMemberBelow(0.80f))
+            bool panic = IsPanicMode();
+            if ((bossFight && ProactiveBossHealing) || panic || IsAnyPartyMemberBelow(0.88f))
             {
-                LogDecision(bossFight ? "Soteria: proactive boss fight Kardia boost" : "Soteria: Kardion target hurt");
+                LogDecision(panic ? "Soteria: PANIC pull Kardia boost"
+                    : bossFight ? "Soteria: proactive Kardia boost"
+                    : "Soteria: party member hurt");
                 return true;
             }
         }
 
-        // Philosophia: proactive with raidwide OR reactive on sustained damage
-        if (InCombat && (IsRaidwideImminent() || PartyMembersAverHP < 0.7f) && PhilosophiaPvE.CanUse(out act))
+        // Philosophia: proactive with group damage, boss fights, panic, or sustained damage
+        if (InCombat && PhilosophiaPvE.CanUse(out act))
         {
-            LogDecision("Philosophia: party needs sustained healing");
-            return true;
+            bool panic = IsPanicMode();
+            if (IsGroupDamageImminent() || panic || PartyMembersAverHP < 0.75f
+                || (ProactiveBossHealing && IsBossFight() && PartyMembersAverHP < 0.90f))
+            {
+                LogDecision(panic ? $"Philosophia: PANIC pull regen (HP={PartyMembersAverHP:P0})"
+                    : $"Philosophia: proactive regen (party HP={PartyMembersAverHP:P0})");
+                return true;
+            }
         }
 
-        // Proactive boss fight healing: cycle HoTs and mitigation
-        if (ProactiveBossHealing && InCombat && IsBossFight())
+        // Proactive HoTs: keep regens rolling in combat
+        if (ProactiveBossHealing && InCombat)
         {
-            // Physis II: free HoT + 10% healing buff — use proactively when party not full
-            if (PartyMembersAverHP < 0.95f && PhysisIiPvE.CanUse(out act))
+            bool bossFight = IsBossFight();
+            bool panic = IsPanicMode();
+
+            // Physis II: free HoT + 10% healing buff
+            // Boss: any chip damage / Non-boss: moderate damage / Panic: immediately
+            if (PhysisIiPvE.CanUse(out act))
             {
-                LogDecision($"Physis II: proactive boss HoT (party HP={PartyMembersAverHP:P0})");
-                return true;
+                if (panic || (bossFight && PartyMembersAverHP < 0.95f)
+                    || (!bossFight && PartyMembersAverHP < 0.88f))
+                {
+                    LogDecision(panic ? "Physis II: PANIC pull HoT"
+                        : $"Physis II: proactive HoT (party HP={PartyMembersAverHP:P0})");
+                    return true;
+                }
             }
-            if (!PhysisIiPvE.EnoughLevel && PartyMembersAverHP < 0.95f && PhysisPvE.CanUse(out act))
+            if (!PhysisIiPvE.EnoughLevel && PhysisPvE.CanUse(out act))
             {
-                LogDecision("Physis: proactive boss HoT");
-                return true;
+                if (panic || (bossFight && PartyMembersAverHP < 0.95f)
+                    || (!bossFight && PartyMembersAverHP < 0.88f))
+                {
+                    LogDecision(panic ? "Physis: PANIC pull HoT" : "Physis: proactive HoT");
+                    return true;
+                }
             }
 
-            // Kerachole: regen + 10% mit — proactively cycle when Addersgall >= 2 to avoid waste
-            if (Addersgall >= 2 && KeracholePvE.CanUse(out act))
+            // Kerachole: regen + 10% mit
+            // Boss: Addersgall >= 1 when taking damage / Non-boss: >= 2 / Panic: any
+            if (KeracholePvE.CanUse(out act))
             {
-                LogDecision($"Kerachole: proactive boss regen + mit (Addersgall={Addersgall})");
-                return true;
+                if (panic
+                    || (bossFight && Addersgall >= 1 && PartyMembersAverHP < 0.90f)
+                    || (Addersgall >= 2 && PartyMembersAverHP < 0.92f))
+                {
+                    LogDecision(panic ? $"Kerachole: PANIC pull mit + regen"
+                        : $"Kerachole: proactive regen + mit (Addersgall={Addersgall}, HP={PartyMembersAverHP:P0})");
+                    return true;
+                }
             }
         }
 
@@ -478,40 +580,66 @@ public sealed class SGE_Dynamic : SageRotation
 
     #region Heal & Defense Abilities
 
-    [RotationDesc(ActionID.KeracholePvE, ActionID.PanhaimaPvE, ActionID.HolosPvE)]
+    [RotationDesc(ActionID.KeracholePvE, ActionID.PhysisIiPvE, ActionID.PanhaimaPvE, ActionID.HolosPvE)]
     protected override bool DefenseAreaAbility(IAction nextGCD, out IAction? act)
     {
         act = null;
 
         bool raidwide = SmartShieldsRaidwide && IsRaidwideImminent();
         bool stack = SmartShieldsStack && IsStackImminent();
+        bool prey = SmartShieldsStack && IsPreyImminent();
+        bool marker = SmartShieldsStack && IsMarkerImminent();
+        bool confirmedDamage = raidwide || stack || prey || marker;
         bool bossMitigation = ProactiveBossHealing && IsBossFight();
+        bool panic = IsPanicMode();
 
-        if (raidwide || stack || bossMitigation)
+        if (confirmedDamage || bossMitigation || panic)
         {
-            // Kerachole: 10% mitigation + regen, best value (1 Addersgall)
+            string reason = panic ? "PANIC" : raidwide ? "raidwide" : stack ? "stack"
+                : prey ? "prey" : marker ? "marker" : "boss";
+
+            // Kerachole: 10% mitigation + regen, best value (1 Addersgall) — always first
             if (KeracholePvE.CanUse(out act))
             {
-                LogDecision(raidwide ? "Kerachole: raidwide imminent"
-                    : stack ? "Kerachole: stack imminent"
-                    : "Kerachole: proactive boss mitigation");
+                LogDecision($"Kerachole: {reason}");
                 return true;
             }
 
-            // Panhaima: multi-hit shields (120s CD) — save for confirmed damage events
-            if ((raidwide || stack) && PanhaimaPvE.CanUse(out act))
+            // Physis II: regen + 10% healing received buff — proactive before damage or panic
+            if ((confirmedDamage || panic) && SmartPhysis)
             {
-                LogDecision($"Panhaima: {(raidwide ? "raidwide" : "stack")} imminent");
+                if (PhysisIiPvE.CanUse(out act))
+                {
+                    LogDecision($"Physis II: {reason}");
+                    return true;
+                }
+                if (!PhysisIiPvE.EnoughLevel && PhysisPvE.CanUse(out act))
+                {
+                    LogDecision($"Physis: {reason}");
+                    return true;
+                }
+            }
+
+            // Panhaima: multi-hit shields (120s CD) — for raidwide/stack or panic pulls
+            if ((raidwide || stack || panic) && PanhaimaPvE.CanUse(out act))
+            {
+                LogDecision($"Panhaima: {reason}");
                 return true;
             }
 
             // Holos: AoE shield + heal + 10% mit (120s CD)
-            if (PartyMembersAverHP < 0.9f && HolosPvE.CanUse(out act))
+            if (HolosPvE.CanUse(out act))
             {
-                LogDecision(raidwide || stack
-                    ? $"Holos: {(raidwide ? "raidwide" : "stack")} imminent, HP={PartyMembersAverHP:P0}"
-                    : $"Holos: proactive boss mitigation, HP={PartyMembersAverHP:P0}");
-                return true;
+                if (confirmedDamage || panic)
+                {
+                    LogDecision($"Holos: {reason}");
+                    return true;
+                }
+                if (bossMitigation && PartyMembersAverHP < 0.9f)
+                {
+                    LogDecision($"Holos: proactive boss mitigation, HP={PartyMembersAverHP:P0}");
+                    return true;
+                }
             }
         }
 
@@ -524,21 +652,26 @@ public sealed class SGE_Dynamic : SageRotation
         act = null;
 
         bool tankbuster = SmartShieldsTankbuster && IsTankbusterImminent();
+        bool prey = SmartShieldsStack && IsPreyImminent();
         bool bossMitigation = ProactiveBossHealing && IsBossFight();
+        bool panic = IsPanicMode();
 
-        if (tankbuster || bossMitigation)
+        if (tankbuster || prey || bossMitigation || panic)
         {
-            // Haima: strongest ST shield (120s CD) — proactive on tank in boss fights
+            string reason = panic ? "PANIC pull" : tankbuster ? "tankbuster"
+                : prey ? "prey" : "boss";
+
+            // Haima: strongest ST shield (120s CD)
             if (HaimaPvE.CanUse(out act))
             {
-                LogDecision(tankbuster ? "Haima: tankbuster imminent" : "Haima: proactive boss tank shield");
+                LogDecision($"Haima: {reason}");
                 return true;
             }
 
             // Taurochole: heal + 10% mit (1 Addersgall)
             if (TaurocholePvE.CanUse(out act))
             {
-                LogDecision(tankbuster ? "Taurochole: tankbuster imminent" : "Taurochole: proactive boss tank mit");
+                LogDecision($"Taurochole: {reason}");
                 return true;
             }
         }
@@ -551,12 +684,12 @@ public sealed class SGE_Dynamic : SageRotation
     {
         act = null;
 
-        // Zoe: amplify AoE heals — proactive before raidwides and in boss fights
+        // Zoe: amplify AoE heals — proactive before group damage and in boss fights
         if (!StatusHelper.PlayerHasStatus(true, StatusID.Zoe) && ZoePvE.CanUse(out act))
         {
-            if (ZoeProactive && (IsRaidwideImminent() || IsStackImminent()))
+            if (ZoeProactive && IsGroupDamageImminent())
             {
-                LogDecision("Zoe: amplifying AoE heal for incoming damage");
+                LogDecision("Zoe: amplifying AoE heal for incoming group damage");
                 return true;
             }
             if (ZoeProactive && IsBossFight() && PartyMembersAverHP < 0.75f)
@@ -570,7 +703,7 @@ public sealed class SGE_Dynamic : SageRotation
         // Must come before Kerachole/Ixochole to amplify them.
         if (SmartPhysis)
         {
-            if ((IsRaidwideImminent() || PartyMembersAverHP < 0.7f) && PhysisIiPvE.CanUse(out act))
+            if ((IsGroupDamageImminent() || PartyMembersAverHP < 0.7f) && PhysisIiPvE.CanUse(out act))
             {
                 LogDecision("Physis II: amplifying subsequent heals");
                 return true;
@@ -671,6 +804,8 @@ public sealed class SGE_Dynamic : SageRotation
         _raidwideImminentValid = false;
         _tankbusterImminentValid = false;
         _stackImminentValid = false;
+        _preyImminentValid = false;
+        _markerImminentValid = false;
         _specialModeCacheValid = false;
 
         // SpecialMode: Pyretic/Freezing = stop all actions
@@ -728,18 +863,20 @@ public sealed class SGE_Dynamic : SageRotation
         if (DyskrasiaIiPvE.CanUse(out act)) return true;
         if (!DyskrasiaIiPvE.EnoughLevel && DyskrasiaPvE.CanUse(out act)) return true;
 
-        // Proactive Eukrasian Prognosis shield when raidwide imminent and no oGCDs left
-        if (SmartShieldsRaidwide && IsRaidwideImminent()
+        // Proactive Eukrasian Prognosis shield when group damage imminent and no oGCDs left
+        bool groupDmg = (SmartShieldsRaidwide && IsRaidwideImminent())
+                     || (SmartShieldsStack && (IsStackImminent() || IsMarkerImminent()));
+        if (groupDmg
             && !StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis)
             && !HasEukrasia)
         {
             if (EukrasiaPvE.CanUse(out act))
             {
-                LogDecision("EukrasianPrognosis: raidwide imminent, applying shield GCD");
+                LogDecision("EukrasianPrognosis: group damage imminent, applying shield GCD");
                 return true;
             }
         }
-        if (HasEukrasia && SmartShieldsRaidwide && IsRaidwideImminent())
+        if (HasEukrasia && groupDmg)
         {
             if (EukrasianPrognosisIiPvE.CanUse(out act)) return true;
             if (EukrasianPrognosisPvE.CanUse(out act)) return true;
@@ -837,6 +974,8 @@ public sealed class SGE_Dynamic : SageRotation
                 _simRaidwideImminent = false;
                 _simTankbusterImminent = false;
                 _simSharedImminent = false;
+                _simPreyImminent = false;
+                _simMarkerImminent = false;
                 _simSpecialModeIndex = 0;
                 LogDecision("Simulation OFF");
             }
@@ -858,6 +997,12 @@ public sealed class SGE_Dynamic : SageRotation
         ImGui.SameLine();
         bool sh = _simSharedImminent;
         if (ImGui.Checkbox("Stack/Shared", ref sh)) _simSharedImminent = sh;
+        ImGui.SameLine();
+        bool pr = _simPreyImminent;
+        if (ImGui.Checkbox("Prey", ref pr)) _simPreyImminent = pr;
+        ImGui.SameLine();
+        bool mk = _simMarkerImminent;
+        if (ImGui.Checkbox("Marker/Spread", ref mk)) _simMarkerImminent = mk;
 
         ImGui.SetNextItemWidth(120);
         int specIdx = _simSpecialModeIndex;
@@ -873,6 +1018,9 @@ public sealed class SGE_Dynamic : SageRotation
         ColoredBool("  Raidwide Imminent", IsRaidwideImminent());
         ColoredBool("  Tankbuster Imminent", IsTankbusterImminent());
         ColoredBool("  Stack Imminent", IsStackImminent());
+        ColoredBool("  Prey Imminent", IsPreyImminent());
+        ColoredBool("  Marker/Spread Imminent", IsMarkerImminent());
+        ColoredBool("  PANIC Mode (big pull)", IsPanicMode());
 
         ImGui.Spacing();
         float lowestHp = GetLowestPartyMemberHp();

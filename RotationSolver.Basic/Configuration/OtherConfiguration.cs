@@ -55,6 +55,21 @@ internal class OtherConfiguration
     /// </markdown>
     public static HashSet<uint> HostileCastingStop = [];
 
+    /// <markdown file="List" name="Stack / Shared" section="Actions">
+    /// RSR will use group shields/mitigation if any enemy is casting a stack/shared mechanic.
+    /// </markdown>
+    public static HashSet<uint> HostileCastingStack = [];
+
+    /// <markdown file="List" name="Prey / Targeted" section="Actions">
+    /// RSR will prepare heals/shields when an enemy is casting a targeted (prey) mechanic.
+    /// </markdown>
+    public static HashSet<uint> HostileCastingPrey = [];
+
+    /// <markdown file="List" name="Spread / Marker" section="Actions">
+    /// RSR will use group shields when an enemy is casting a spread/marker mechanic.
+    /// </markdown>
+    public static HashSet<uint> HostileCastingMarker = [];
+
     public static Dictionary<uint, string[]> NoHostileNames = [];
     public static Dictionary<uint, string[]> NoProvokeNames = [];
 
@@ -125,6 +140,9 @@ internal class OtherConfiguration
         _ = Task.Run(() => InitOne(ref NoCastingStatus, nameof(NoCastingStatus)));
         _ = Task.Run(() => InitOne(ref HostileCastingKnockback, nameof(HostileCastingKnockback)));
         _ = Task.Run(() => InitOne(ref HostileCastingStop, nameof(HostileCastingStop)));
+        _ = Task.Run(() => InitOne(ref HostileCastingStack, nameof(HostileCastingStack)));
+        _ = Task.Run(() => InitOne(ref HostileCastingPrey, nameof(HostileCastingPrey)));
+        _ = Task.Run(() => InitOne(ref HostileCastingMarker, nameof(HostileCastingMarker)));
 		_ = Task.Run(() => InitOne(ref SupportersList, nameof(SupportersList)));
 	}
 
@@ -148,6 +166,9 @@ internal class OtherConfiguration
             await SaveNoCastingStatus();
             await SaveHostileCastingKnockback();
             await SaveHostileCastingStop();
+            await SaveHostileCastingStack();
+            await SaveHostileCastingPrey();
+            await SaveHostileCastingMarker();
         });
     }
     #region Action Tab
@@ -175,6 +196,24 @@ internal class OtherConfiguration
         SaveHostileCastingStop().Wait();
     }
 
+    public static void ResetHostileCastingStack()
+    {
+        InitOne(ref HostileCastingStack, nameof(HostileCastingStack), true, true);
+        SaveHostileCastingStack().Wait();
+    }
+
+    public static void ResetHostileCastingPrey()
+    {
+        InitOne(ref HostileCastingPrey, nameof(HostileCastingPrey), true, true);
+        SaveHostileCastingPrey().Wait();
+    }
+
+    public static void ResetHostileCastingMarker()
+    {
+        InitOne(ref HostileCastingMarker, nameof(HostileCastingMarker), true, true);
+        SaveHostileCastingMarker().Wait();
+    }
+
     public static Task SaveHostileCastingArea()
     {
         return Task.Run(() => Save(HostileCastingArea, nameof(HostileCastingArea)));
@@ -193,6 +232,21 @@ internal class OtherConfiguration
     private static Task SaveHostileCastingStop()
     {
         return Task.Run(() => Save(HostileCastingStop, nameof(HostileCastingStop)));
+    }
+
+    private static Task SaveHostileCastingStack()
+    {
+        return Task.Run(() => Save(HostileCastingStack, nameof(HostileCastingStack)));
+    }
+
+    private static Task SaveHostileCastingPrey()
+    {
+        return Task.Run(() => Save(HostileCastingPrey, nameof(HostileCastingPrey)));
+    }
+
+    private static Task SaveHostileCastingMarker()
+    {
+        return Task.Run(() => Save(HostileCastingMarker, nameof(HostileCastingMarker)));
     }
     #endregion
 
