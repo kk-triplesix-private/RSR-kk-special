@@ -761,6 +761,9 @@ public sealed class BeirutaRDM : RedMageRotation
         if (CanUseManaficationNow(gateMelee) && ManaficationPvE.CanUse(out act))
             return true;
 
+        if (CanUseManaficationNow(gateMelee) && ManaficationPvE.CanUse(out act))
+            return true;
+
         bool emboldenAllowed = !IsOpen && IsBurst && InCombat && (AnyonesMeleeRule ? InMeleeRange3 : HasHostilesInRange);
         if (emboldenAllowed && EmboldenPvE.CanUse(out act))
         {
