@@ -478,9 +478,12 @@ public sealed class SGE_Dynamic : SageRotation
         if (PsychePvE.CanUse(out act))
             return true;
 
-        // Smart Addersgall: dump before overcap
+        // Smart Addersgall: dump before overcap — but only if someone actually needs healing
         // At 3 = timer stopped, wasting generation. At 2 with timer running low = about to overcap
-        if (SmartAddersgall && (Addersgall == 3 || (Addersgall >= 2 && AddersgallTime < 8000f)))
+        // Skip early combat (first 8s) since Addersgall starts full and no healing is needed yet
+        if (SmartAddersgall && !CombatElapsedLess(8f)
+            && IsAnyPartyMemberBelow(0.90f)
+            && (Addersgall == 3 || (Addersgall >= 2 && AddersgallTime < 8000f)))
         {
             if (DruocholePvE.CanUse(out act))
             {
@@ -832,8 +835,8 @@ public sealed class SGE_Dynamic : SageRotation
         if (TaurocholePvE.CanUse(out act))
             return true;
 
-        // Druochole: fallback ST heal (1 Addersgall)
-        if (DruocholePvE.CanUse(out act))
+        // Druochole: fallback ST heal (1 Addersgall) — only when someone is meaningfully hurt
+        if (IsAnyPartyMemberBelow(0.85f) && DruocholePvE.CanUse(out act))
             return true;
 
         // Soteria: boost Kardia heals (50% stronger Kardion ticks)
