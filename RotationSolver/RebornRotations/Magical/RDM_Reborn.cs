@@ -332,6 +332,7 @@ public sealed class RDM_Reborn : RedMageRotation
 			{
 				return true;
 			}
+		}
 
 		// Hardcode Resolution & Scorch to avoid double melee without finishers
 		if (ResolutionPvE.CanUse(out act, skipStatusProvideCheck: true))

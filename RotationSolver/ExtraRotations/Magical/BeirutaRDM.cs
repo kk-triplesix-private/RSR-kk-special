@@ -1341,11 +1341,6 @@ public sealed class BeirutaRDM : RedMageRotation
         return false;
     }
 
-    if (!VerstonePvE.EnoughLevel && !HasInstantBuffToSpend && VerfirePvE.CanUse(out act))
-        return true;
-
-    return false;
-}
     private bool TryRepriseGCD(out IAction? act)
     {
         act = null;
