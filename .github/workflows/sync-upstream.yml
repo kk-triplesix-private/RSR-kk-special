@@ -46,6 +46,9 @@ jobs:
         if: steps.check.outputs.has_changes == 'true'
         id: merge
         run: |
+          # Configure 'ours' merge driver for .gitattributes-protected files
+          git config merge.ours.driver true
+
           # Squash-merge so upstream commits (which may touch workflow files) are
           # not pushed into our history — GITHUB_TOKEN cannot push workflow changes
           if git merge --squash --strategy-option ours upstream/main; then
@@ -53,6 +56,10 @@ jobs:
             git reset -- .github/workflows/ 2>/dev/null || true
             git checkout HEAD -- .github/workflows/ 2>/dev/null || true
             git clean -fd -- .github/workflows/ 2>/dev/null || true
+
+            # Protect files with known upstream issues — keep our fixed versions
+            git reset -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
+            git checkout HEAD -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
 
             if ! git diff --staged --quiet; then
               git commit -m "Sync upstream changes"

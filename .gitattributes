@@ -1,0 +1,2 @@
+# Keep our fixed version of BeirutaRDM — upstream has persistent broken code
+RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs merge=ours
