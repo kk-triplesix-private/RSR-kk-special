@@ -958,6 +958,24 @@ public sealed class SGE_Dynamic : SageRotation
         if (DyskrasiaIiPvE.CanUse(out act)) return true;
         if (!DyskrasiaIiPvE.EnoughLevel && DyskrasiaPvE.CanUse(out act)) return true;
 
+        // Eukrasian Prognosis: tankbuster shield when Haima is on cooldown
+        bool tankbusterShield = SmartShieldsTankbuster && IsTankbusterImminent() && !HaimaPvE.CanUse(out _);
+        if (tankbusterShield
+            && !StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis)
+            && !HasEukrasia)
+        {
+            if (EukrasiaPvE.CanUse(out act))
+            {
+                LogDecision("EukrasianPrognosis: tankbuster shield (Haima on CD)");
+                return true;
+            }
+        }
+        if (HasEukrasia && tankbusterShield)
+        {
+            if (EukrasianPrognosisIiPvE.CanUse(out act)) return true;
+            if (EukrasianPrognosisPvE.CanUse(out act)) return true;
+        }
+
         // Eukrasian Prognosis GCD shield — LAST RESORT before damage
         // Every GCD heal = lost Dosis/Dyskrasia damage + lost Kardia healing
         // Only use when oGCDs are exhausted AND confirmed big hit incoming
