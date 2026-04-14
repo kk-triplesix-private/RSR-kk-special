@@ -9,10 +9,10 @@ namespace RotationSolver.Basic.Configuration;
 
 internal partial class Configs : IPluginConfiguration
 {
-    [JsonIgnore]
-    public const string
-        BasicTimer = "BasicTimer",
-        BasicAutoSwitch = "BasicAutoSwitch",
+	[JsonIgnore]
+	public const string
+		BasicTimer = "BasicTimer",
+		BasicAutoSwitch = "BasicAutoSwitch",
 		DutySpecifcPvP = "DutySpecifcPvP",
 		DutySpecifcFieldOps = "DutySpecifcFieldOps",
 		DutySpecifcAlliance = "DutySpecifcAlliance",
@@ -24,34 +24,34 @@ internal partial class Configs : IPluginConfiguration
 		DutySpecifcExtreme = "DutySpecifcExtreme",
 		DutySpecifcSavage = "DutySpecifcSavage",
 		BasicParams = "BasicParams",
-        UiInformation = "UiInformation",
-        UiWindows = "UiWindows",
-        PvPSpecificControls = "PvPSpecificControls",
-        AutoActionUsage = "AutoActionUsage",
-        HealingActionCondition = "HealingActionCondition",
-        PhantomDutyRotationConfiguration = "PhantomDutyRotationConfiguration",
-        TargetConfig = "TargetConfig",
-        Extra = "Extra",
-        Rotations = "Rotations",
-        List = "List",
-        List2 = "List2",
-        List3 = "List3",
-        Debug = "Debug";
+		UiInformation = "UiInformation",
+		UiWindows = "UiWindows",
+		PvPSpecificControls = "PvPSpecificControls",
+		AutoActionUsage = "AutoActionUsage",
+		HealingActionCondition = "HealingActionCondition",
+		PhantomDutyRotationConfiguration = "PhantomDutyRotationConfiguration",
+		TargetConfig = "TargetConfig",
+		Extra = "Extra",
+		Rotations = "Rotations",
+		List = "List",
+		List2 = "List2",
+		List3 = "List3",
+		Debug = "Debug";
 
-    public const int CurrentVersion = 12;
-    public int Version { get; set; } = CurrentVersion;
+	public const int CurrentVersion = 12;
+	public int Version { get; set; } = CurrentVersion;
 
-    public string LastSeenChangelog { get; set; } = "0.0.0.0";
-    public bool TutorialDone { get; set; } = false;
+	public string LastSeenChangelog { get; set; } = "0.0.0.0";
+	public bool TutorialDone { get; set; } = false;
 
-    public List<ActionEventInfo> Events { get; private set; } = [];
-    public SortedSet<Job> DisabledJobs { get; private set; } = [];
+	public List<ActionEventInfo> Events { get; private set; } = [];
+	public SortedSet<Job> DisabledJobs { get; private set; } = [];
 
-    public string[] RotationLibs { get; set; } = [];
-    public List<TargetingType> TargetingTypes { get; set; } = [];
+	public string[] RotationLibs { get; set; } = [];
+	public List<TargetingType> TargetingTypes { get; set; } = [];
 
-    public MacroInfo DutyStart { get; set; } = new MacroInfo();
-    public MacroInfo DutyEnd { get; set; } = new MacroInfo();
+	public MacroInfo DutyStart { get; set; } = new MacroInfo();
+	public MacroInfo DutyEnd { get; set; } = new MacroInfo();
 
 	#region Duty Specific
 	[ConditionBool, UI("O12S - Packet Filter logic.",
@@ -224,174 +224,178 @@ internal partial class Configs : IPluginConfiguration
 	#endregion
 
 	[ConditionBool, UI("Intercept player input and queue it for RSR to execute the action. (PvE only)",
-    Filter = AutoActionUsage, Section = 5)]
-    private static readonly bool _interceptAction3 = true;
+	Filter = AutoActionUsage, Section = 5)]
+	private static readonly bool _interceptAction3 = true;
 
-    [ConditionBool, UI("Allow intercepting Spells.",
-    Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
-    private static readonly bool _interceptSpell3 = true;
+	[ConditionBool, UI("Allow intercepting Spells.",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptSpell3 = true;
 
-    [ConditionBool, UI("Allow intercepting Weaponskills.",
-    Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
-    private static readonly bool _interceptWeaponskill3 = true;
+	[ConditionBool, UI("Allow intercepting Weaponskills.",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptWeaponskill3 = true;
 
-    [ConditionBool, UI("Allow intercepting Abilities.",
-    Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
-    private static readonly bool _interceptAbility3 = true;
+	[ConditionBool, UI("Allow intercepting Abilities.",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptAbility3 = true;
 
-    [ConditionBool, UI("Allow intercepting actions in macros.",
-    Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
-    private static readonly bool _interceptMacro = false;
+	[ConditionBool, UI("Allow intercepting actions in macros.",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptMacro = false;
 
-    [ConditionBool, UI("Allow intercepting actions that are currently on cooldown.",
-    Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
-    private static readonly bool _interceptCooldown = false;
+	[ConditionBool, UI("Allow intercepting actions that are currently on cooldown.",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptCooldown = false;
 
-    [UI("Intercepted action execution window (amount of time RSR is allowed to attempt to use an action after it has been intercepted)",
-    Filter = AutoActionUsage, Section = 5)]
-    [Range(1, 10, ConfigUnitType.Seconds)]
-    public float InterceptActionTime { get; set; } = 5;
+	[ConditionBool, UI("Pass original player input to action manager. (Enabling this will cause clipping).",
+	Filter = AutoActionUsage, Section = 5, Parent = nameof(InterceptAction3))]
+	private static readonly bool _interceptPassing = true;
 
-    /// <markdown file="Auto" name="What kind of AoE moves to use" section="Action Usage and Control">
-    /// - Full: Use all available AoE actions.
-    /// - Cleave: Use only single-target AoE actions.
-    /// - Off: Do not use any AoE actions.
-    /// </markdown>
-    [UI("What kind of AoE moves to use.",
-    Description = "Full: Use all available AoE actions.\nCleave: Use only single-target AoE actions.\nOff: Do not use any AoE actions.",
-    Filter = AutoActionUsage, Section = 3)]
-    public AoEType AoEType { get; set; } = AoEType.Full;
+	[UI("Intercepted action execution window (amount of time RSR is allowed to attempt to use an action after it has been intercepted)",
+	Filter = AutoActionUsage, Section = 5)]
+	[Range(1, 10, ConfigUnitType.Seconds)]
+	public float InterceptActionTime { get; set; } = 5;
 
-    [ConditionBool, UI("Ignore status application against mobs that are status capped.",
-    Filter = AutoActionUsage, Section = 3)]
-    private static readonly bool _statuscap2 = true;
+	/// <markdown file="Auto" name="What kind of AoE moves to use" section="Action Usage and Control">
+	/// - Full: Use all available AoE actions.
+	/// - Cleave: Use only single-target AoE actions.
+	/// - Off: Do not use any AoE actions.
+	/// </markdown>
+	[UI("What kind of AoE moves to use.",
+	Description = "Full: Use all available AoE actions.\nCleave: Use only single-target AoE actions.\nOff: Do not use any AoE actions.",
+	Filter = AutoActionUsage, Section = 3)]
+	public AoEType AoEType { get; set; } = AoEType.Full;
 
-    [ConditionBool, UI("Don't attack new mobs by AoE.", Description = "Never use any AoE action when this may attack mobs that are not hostile targets.",
-        Filter = AutoActionUsage, Section = 3)]
-    private static readonly bool _noNewHostiles = false;
+	[ConditionBool, UI("Ignore status application against mobs that are status capped.",
+	Filter = AutoActionUsage, Section = 3)]
+	private static readonly bool _statuscap2 = true;
 
-    [ConditionBool, UI("Disable automatically during area transitions.",
-    Description = "Automatically turn off combat state when moving between different areas.",
-    Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffBetweenArea = true;
+	[ConditionBool, UI("Don't attack new mobs by AoE.", Description = "Never use any AoE action when this may attack mobs that are not hostile targets.",
+		Filter = AutoActionUsage, Section = 3)]
+	private static readonly bool _noNewHostiles = false;
 
-    [ConditionBool, UI("Disable automatically during cutscenes.",
-    Description = "Automatically turn off combat state during cutscenes.",
-    Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffCutScene = true;
+	[ConditionBool, UI("Disable automatically during area transitions.",
+	Description = "Automatically turn off combat state when moving between different areas.",
+	Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffBetweenArea = true;
 
-    [ConditionBool, UI("Auto turn off when switching jobs",
-    Description = "Automatically turn off combat state when you change your job/class.",
-    Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffSwitchClass = true;
+	[ConditionBool, UI("Disable automatically during cutscenes.",
+	Description = "Automatically turn off combat state during cutscenes.",
+	Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffCutScene = true;
 
-    [ConditionBool, UI("Auto turn off when dead in PvE.",
-    Description = "Automatically turn off combat state when your character dies.",
-    Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffWhenDead = true;
+	[ConditionBool, UI("Auto turn off when switching jobs",
+	Description = "Automatically turn off combat state when you change your job/class.",
+	Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffSwitchClass = true;
 
-    [ConditionBool, UI("Auto turn off when duty is completed.",
-    Description = "Automatically turn off combat state when a duty (instance) ends.",
-    Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffWhenDutyCompleted = true;
+	[ConditionBool, UI("Auto turn off when dead in PvE.",
+	Description = "Automatically turn off combat state when your character dies.",
+	Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffWhenDead = true;
 
-    [ConditionBool, UI("Enable changelog window popup on update",
-    Description = "Show a popup window with the changelog when the plugin updates.",
-    Filter = UiInformation)]
-    private static readonly bool _changelogPopup = true;
+	[ConditionBool, UI("Auto turn off when duty is completed.",
+	Description = "Automatically turn off combat state when a duty (instance) ends.",
+	Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffWhenDutyCompleted = true;
 
-    [ConditionBool, UI("Show plugin status in DTR bar.",
-    Description = "Display the plugin's current status in the server information bar.",
-    Filter = UiInformation)]
-    private static readonly bool _showInfoOnDtr = true;
+	[ConditionBool, UI("Enable changelog window popup on update",
+	Description = "Show a popup window with the changelog when the plugin updates.",
+	Filter = UiInformation)]
+	private static readonly bool _changelogPopup = true;
 
-    [UI("DTR Behaviour", Filter = UiInformation, Parent = nameof(ShowInfoOnDtr))]
-    public DTRType DTRType { get; set; } = DTRType.DTRNormal;
+	[ConditionBool, UI("Show plugin status in DTR bar.",
+	Description = "Display the plugin's current status in the server information bar.",
+	Filter = UiInformation)]
+	private static readonly bool _showInfoOnDtr = true;
 
-    [ConditionBool, UI("Display plugin status in toast popup",
-    Description = "Show a toast notification with the combat state when changed.",
-    Filter = UiInformation)]
-    private static readonly bool _showInfoOnToast = false;
+	[UI("DTR Behaviour", Filter = UiInformation, Parent = nameof(ShowInfoOnDtr))]
+	public DTRType DTRType { get; set; } = DTRType.DTRNormal;
 
-    [ConditionBool, UI("Lock movement when casting or performing certain actions.",
-    Description = "Prevents your character from moving while casting or using specific actions.",
-    Filter = Extra)]
-    private static readonly bool _poslockCasting = false;
+	[ConditionBool, UI("Display plugin status in toast popup",
+	Description = "Show a toast notification with the combat state when changed.",
+	Filter = UiInformation)]
+	private static readonly bool _showInfoOnToast = false;
 
-    [UI("", Action = ActionID.PassageOfArmsPvE, Parent = nameof(PoslockCasting))]
-    public bool PosPassageOfArms { get; set; } = false;
+	[ConditionBool, UI("Lock movement when casting or performing certain actions.",
+	Description = "Prevents your character from moving while casting or using specific actions.",
+	Filter = Extra)]
+	private static readonly bool _poslockCasting = false;
 
-    [UI("", Action = ActionID.FlamethrowerPvE, Parent = nameof(PoslockCasting))]
-    public bool PosFlameThrower { get; set; } = false;
+	[UI("", Action = ActionID.PassageOfArmsPvE, Parent = nameof(PoslockCasting))]
+	public bool PosPassageOfArms { get; set; } = false;
 
-    [UI("", Action = ActionID.ImprovisationPvE, Parent = nameof(PoslockCasting))]
-    public bool PosImprovisation { get; set; } = false;
+	[UI("", Action = ActionID.FlamethrowerPvE, Parent = nameof(PoslockCasting))]
+	public bool PosFlameThrower { get; set; } = false;
 
-    /// <markdown file="Auto" name="Gemdraughts/Tinctures/Pots Usage" section="Action Usage and Control">
-    /// Sets whether to use damage-boosting potions and in which duty. You also need to enable the specific
-    /// potion in the `Actions` tab, under `Items`.
-    /// </markdown>
-    [JobConfig, UI("Only used automatically if coded into the rotation",
-    Description = "This setting is only used if the rotation specifically supports automatic tincture usage.",
-    Filter = AutoActionUsage, PvPFilter = JobFilterType.NoJob)]
-    private readonly TinctureUseType _TinctureType = TinctureUseType.Nowhere;
+	[UI("", Action = ActionID.ImprovisationPvE, Parent = nameof(PoslockCasting))]
+	public bool PosImprovisation { get; set; } = false;
 
-    [ConditionBool, UI("Automatically use Anti-Knockback role actions (Arms Length, Surecast)",
-    Description = "Enable to automatically use anti-knockback abilities when needed based on anti-knockback action list in List menu.",
-    Filter = AutoActionUsage)]
-    private static readonly bool _useKnockback = true;
+	/// <markdown file="Auto" name="Gemdraughts/Tinctures/Pots Usage" section="Action Usage and Control">
+	/// Sets whether to use damage-boosting potions and in which duty. You also need to enable the specific
+	/// potion in the `Actions` tab, under `Items`.
+	/// </markdown>
+	[JobConfig, UI("Only used automatically if coded into the rotation",
+	Description = "This setting is only used if the rotation specifically supports automatic tincture usage.",
+	Filter = AutoActionUsage, PvPFilter = JobFilterType.NoJob)]
+	private readonly TinctureUseType _TinctureType = TinctureUseType.InHighEndDuty;
 
-    [ConditionBool, UI("Automatically use HP Potions",
-    Description = "Enable to allow the plugin to use HP potions automatically.",
-    Filter = AutoActionUsage)]
-    private static readonly bool _useHpPotions = false;
+	[ConditionBool, UI("Automatically use Anti-Knockback role actions (Arms Length, Surecast)",
+	Description = "Enable to automatically use anti-knockback abilities when needed based on anti-knockback action list in List menu.",
+	Filter = AutoActionUsage)]
+	private static readonly bool _useKnockback = true;
+
+	[ConditionBool, UI("Automatically use HP Potions",
+	Description = "Enable to allow the plugin to use HP potions automatically.",
+	Filter = AutoActionUsage)]
+	private static readonly bool _useHpPotions = false;
 
 	[UI("Use HP Potions when HP% is lower than this", Parent = nameof(UseHpPotions))]
 	[Range(0, 1, ConfigUnitType.Percent, 0.002f)]
 	public float UseHpPotionsPercent { get; set; } = 0.5f;
 
 	[ConditionBool, UI("Automatically use MP Potions",
-    Description = "Enable to allow the plugin to use MP potions automatically.",
-    Filter = AutoActionUsage)]
-    private static readonly bool _useMpPotions = false;
+	Description = "Enable to allow the plugin to use MP potions automatically.",
+	Filter = AutoActionUsage)]
+	private static readonly bool _useMpPotions = false;
 
 	[UI("Use MP Potions when MP% is lower than this", Parent = nameof(UseMpPotions))]
 	[Range(0, 1, ConfigUnitType.Percent, 0.002f)]
 	public float UseMpPotionsPercent { get; set; } = 0.5f;
 
 	[ConditionBool, UI("Automatically use Phoenix Down",
-    Description = "Enable to allow the plugin to use Phoenix Down item. (Experimental feature)",
-    Filter = AutoActionUsage)]
-    private static readonly bool _usePhoenixDown = false;
+	Description = "Enable to allow the plugin to use Phoenix Down item. (Experimental feature)",
+	Filter = AutoActionUsage)]
+	private static readonly bool _usePhoenixDown = false;
 
-    [UI("Use damaging gap closer abilites if the distance to your target is less than this.",
-        Filter = AutoActionUsage)]
-    [Range(0, 30, ConfigUnitType.Yalms, 1f)]
-    public float DistanceForMoving2 { get; set; } = 3f;
+	[UI("Use damaging gap closer abilites if the distance to your target is less than this.",
+		Filter = AutoActionUsage)]
+	[Range(0, 30, ConfigUnitType.Yalms, 1f)]
+	public float DistanceForMoving2 { get; set; } = 3f;
 
-    [ConditionBool, UI("Allow the use of AOEs against priority-marked targets.",
-    Description = "Enable to allow AoE actions to hit targets with priority markers.",
-    Parent = nameof(ChooseAttackMark))]
-    private static readonly bool _canAttackMarkAOE = true;
+	[ConditionBool, UI("Allow the use of AOEs against priority-marked targets.",
+	Description = "Enable to allow AoE actions to hit targets with priority markers.",
+	Parent = nameof(ChooseAttackMark))]
+	private static readonly bool _canAttackMarkAOE = true;
 
-    [ConditionBool, UI("Teaching mode", Filter = UiInformation)]
-    private static readonly bool _teachingMode = false;
+	[ConditionBool, UI("Teaching mode", Filter = UiInformation)]
+	private static readonly bool _teachingMode = false;
 
     [ConditionBool, UI("Simulate the effect of pressing abilities",
         Filter = UiInformation)]
     private static readonly bool _keyboardNoise = true;
 
-    [ConditionBool, UI("Activate auto mode when countdown starts",
-        Filter = BasicAutoSwitch, Section = 1)]
-    private static readonly bool _startOnCountdown = true;
+	[ConditionBool, UI("Activate auto mode when countdown starts",
+		Filter = BasicAutoSwitch, Section = 1)]
+	private static readonly bool _startOnCountdown = true;
 
-    [ConditionBool, UI("Start manual mode instead of auto mode when countdown starts",
-               Parent = nameof(StartOnCountdown))]
-    private static readonly bool _countdownStartsManualMode = false;
+	[ConditionBool, UI("Start manual mode instead of auto mode when countdown starts",
+			   Parent = nameof(StartOnCountdown))]
+	private static readonly bool _countdownStartsManualMode = false;
 
-    [ConditionBool, UI("Cancel auto mode if combat starts early during countdown",
-        Filter = BasicAutoSwitch, Section = 1)]
-    private static readonly bool _cancelStateOnCombatBeforeCountdown = false;
+	[ConditionBool, UI("Cancel auto mode if combat starts early during countdown",
+		Filter = BasicAutoSwitch, Section = 1)]
+	private static readonly bool _cancelStateOnCombatBeforeCountdown = false;
 
 	[ConditionBool, UI("I understand that Auto On settings will turn RSRs autorotation on, automatically.",
 		Filter = BasicAutoSwitch, Section = 1)]
@@ -399,160 +403,160 @@ internal partial class Configs : IPluginConfiguration
 
 	[ConditionBool, UI("Auto turn on manual mode when attacked.",
 			   Parent = nameof(AutoOnYes))]
-    private static readonly bool _startOnAttackedBySomeone2 = false;
-    
-    [ConditionBool, UI("Auto turn on auto mode when party is in combat.",
+	private static readonly bool _startOnAttackedBySomeone2 = false;
+
+	[ConditionBool, UI("Auto turn on auto mode when party is in combat.",
 			   Parent = nameof(AutoOnYes))]
-    private static readonly bool _startOnPartyIsInCombat2 = false;
-    
-    [ConditionBool, UI("Auto turn on auto mode when alliance is in combat.",
+	private static readonly bool _startOnPartyIsInCombat2 = false;
+
+	[ConditionBool, UI("Auto turn on auto mode when alliance is in combat.",
 			   Parent = nameof(AutoOnYes))]
-    private static readonly bool _startOnAllianceIsInCombat2 = false;
-    
-    [ConditionBool, UI("Auto turn on auto mode when in combat in Bozja/Eureka/Occult Fate/CE",
+	private static readonly bool _startOnAllianceIsInCombat2 = false;
+
+	[ConditionBool, UI("Auto turn on auto mode when in combat in Bozja/Eureka/Occult Fate/CE",
 			   Parent = nameof(AutoOnYes))]
-    private static readonly bool _startOnFieldOpInCombat2 = false;
+	private static readonly bool _startOnFieldOpInCombat2 = false;
 
-    /// <markdown file="Auto" name="Use healing abilities when playing a non-healer role" section="Healing Usage and Control">
-    /// Allow usage of healing abilities when not playing as a healer (such as Vercure, Bloodbath, etc.)
-    /// </markdown>
-    [ConditionBool, UI("Use healing abilities when playing a non-healer role.",
-        Filter = HealingActionCondition, Section = 1)]
-    private static readonly bool _useHealWhenNotAHealer = true;
+	/// <markdown file="Auto" name="Use healing abilities when playing a non-healer role" section="Healing Usage and Control">
+	/// Allow usage of healing abilities when not playing as a healer (such as Vercure, Bloodbath, etc.)
+	/// </markdown>
+	[ConditionBool, UI("Use healing abilities when playing a non-healer role.",
+		Filter = HealingActionCondition, Section = 1)]
+	private static readonly bool _useHealWhenNotAHealer = true;
 
-    [JobConfig, UI("Use interrupt abilities if possible.",
-        Filter = AutoActionUsage, Section = 3,
-        PvEFilter = JobFilterType.Interrupt,
-        PvPFilter = JobFilterType.NoJob)]
-    private static readonly bool _interruptibleMoreCheck = true;
+	[JobConfig, UI("Use interrupt abilities if possible.",
+		Filter = AutoActionUsage, Section = 3,
+		PvEFilter = JobFilterType.Interrupt,
+		PvPFilter = JobFilterType.NoJob)]
+	private static readonly bool _interruptibleMoreCheck = true;
 
-    [ConditionBool, UI("Provoke anything not on the no provoke list.",
-        Filter = AutoActionUsage, Section = 3)]
-    private static readonly bool _provokeAnything = false;
+	[ConditionBool, UI("Provoke anything not on the no provoke list.",
+		Filter = AutoActionUsage, Section = 3)]
+	private static readonly bool _provokeAnything = false;
 
-    [ConditionBool, UI("Stop casting if the target dies.", Filter = Extra)]
-    private static readonly bool _useStopCasting = false;
+	[ConditionBool, UI("Stop casting if the target dies.", Filter = Extra)]
+	private static readonly bool _useStopCasting = false;
 
 	/// <markdown file="Auto" name="Cleanse all dispellable debuffs" section="Action Usage and Control">
 	/// Enabling this setting will force the usage of Esuna on all target that are affected by a
 	/// cleansable debuff.
 	/// </markdown>
 	[ConditionBool, UI("Cleanse all dispellable debuffs regardless of healing.",
-        Filter = AutoActionUsage, Section = 3,
-        PvEFilter = JobFilterType.Dispel, PvPFilter = JobFilterType.NoJob)]
-    private static readonly bool _dispelAll = false;
+		Filter = AutoActionUsage, Section = 3,
+		PvEFilter = JobFilterType.Dispel, PvPFilter = JobFilterType.NoJob)]
+	private static readonly bool _dispelAll = false;
 
-    [ConditionBool, UI("Debug Mode", Filter = Debug)]
-    private static readonly bool _inDebug = false;
+	[ConditionBool, UI("Debug Mode", Filter = Debug)]
+	private static readonly bool _inDebug = false;
 
 	[ConditionBool, UI("Make /rotation Manual a toggle command.",
-        Filter = BasicParams)]
-    private static readonly bool _toggleManual = false;
+		Filter = BasicParams)]
+	private static readonly bool _toggleManual = false;
 
-    [ConditionBool, UI("Make /rotation Auto a toggle command. (Normal behavior cycles between targeting settings)",
-        Filter = BasicParams)]
-    private static readonly bool _toggleAuto = false;
+	[ConditionBool, UI("Make /rotation Auto a toggle command. (Normal behavior cycles between targeting settings)",
+		Filter = BasicParams)]
+	private static readonly bool _toggleAuto = false;
 
-    [ConditionBool, UI("Only show these windows if there are enemies or in duty",
-        Filter = UiWindows)]
-    private static readonly bool _onlyShowWithHostileOrInDuty = false;
+	[ConditionBool, UI("Only show these windows if there are enemies or in duty",
+		Filter = UiWindows)]
+	private static readonly bool _onlyShowWithHostileOrInDuty = false;
 
-    [ConditionBool, UI("Show Control Window",
-        Filter = UiWindows)]
-    private static readonly bool _showControlWindow = false;
+	[ConditionBool, UI("Show Control Window",
+		Filter = UiWindows)]
+	private static readonly bool _showControlWindow = false;
 
-    [ConditionBool, UI("Lock Control Window",
-        Filter = UiWindows)]
-    private static readonly bool _isControlWindowLock = false;
-	
+	[ConditionBool, UI("Lock Control Window",
+		Filter = UiWindows)]
+	private static readonly bool _isControlWindowLock = false;
+
 	[ConditionBool, UI("Show Next Action Window", Filter = UiWindows)]
-    private static readonly bool _showNextActionWindow = false;
+	private static readonly bool _showNextActionWindow = false;
 
 	[ConditionBool, UI("Show Intercepted Action Window", Filter = UiWindows)]
 	private static readonly bool _showInterceptedActionWindow = false;
 
 	[ConditionBool, UI("No Inputs", Parent = nameof(ShowNextActionWindow))]
-    private static readonly bool _isInfoWindowNoInputs = false;
+	private static readonly bool _isInfoWindowNoInputs = false;
 
-    [ConditionBool, UI("No Move", Parent = nameof(ShowNextActionWindow))]
-    private static readonly bool _isInfoWindowNoMove = false;
+	[ConditionBool, UI("No Move", Parent = nameof(ShowNextActionWindow))]
+	private static readonly bool _isInfoWindowNoMove = false;
 
-    [ConditionBool, UI("Show Items' Cooldown",
-        Parent = nameof(ShowCooldownWindow))]
-    private static readonly bool _showItemsCooldown = false;
+	[ConditionBool, UI("Show Items' Cooldown",
+		Parent = nameof(ShowCooldownWindow))]
+	private static readonly bool _showItemsCooldown = false;
 
-    [ConditionBool, UI("Show GCD Cooldown",
-        Parent = nameof(ShowCooldownWindow))]
-    private static readonly bool _showGCDCooldown = false;
+	[ConditionBool, UI("Show GCD Cooldown",
+		Parent = nameof(ShowCooldownWindow))]
+	private static readonly bool _showGCDCooldown = false;
 
-    [ConditionBool, UI("Show Original Cooldown",
-        Filter = UiInformation)]
-    private static readonly bool _useOriginalCooldown = false;
+	[ConditionBool, UI("Show Original Cooldown",
+		Filter = UiInformation)]
+	private static readonly bool _useOriginalCooldown = false;
 
-    [ConditionBool, UI("Always Show Cooldowns", Filter = UiInformation)]
-    private static readonly bool _showCooldownsAlways = false;
+	[ConditionBool, UI("Always Show Cooldowns", Filter = UiInformation)]
+	private static readonly bool _showCooldownsAlways = false;
 
-    [ConditionBool, UI("Show tooltips",
-        Filter = UiInformation)]
-    private static readonly bool _showTooltips = true;
+	[ConditionBool, UI("Show tooltips",
+		Filter = UiInformation)]
+	private static readonly bool _showTooltips = true;
 
-    [ConditionBool, UI("Show Action Context Menu Enable/Disable toggle",
-        Filter = UiWindows)]
-    private static readonly bool _showContext = true;
+	[ConditionBool, UI("Show Action Context Menu Enable/Disable toggle",
+		Filter = UiWindows)]
+	private static readonly bool _showContext = true;
 
-    [ConditionBool, UI("Show random usage hints at top of configuration window",
-        Description = "Displays rotating tips in the main panel; updates every 7 seconds.",
-        Filter = UiInformation)]
-    private static readonly bool _showHints = true;
+	[ConditionBool, UI("Show random usage hints at top of configuration window",
+		Description = "Displays rotating tips in the main panel; updates every 7 seconds.",
+		Filter = UiInformation)]
+	private static readonly bool _showHints = true;
 
-    [ConditionBool, UI("Color disabled actions on hotbars",
-        Description = "When enabled, actions you have disabled in RSR will be tinted on in-game hotbars.",
-        Filter = UiInformation)]
-    private static readonly bool _reddenDisabledHotbarActions = false;
+	[ConditionBool, UI("Color disabled actions on hotbars",
+		Description = "When enabled, actions you have disabled in RSR will be tinted on in-game hotbars.",
+		Filter = UiInformation)]
+	private static readonly bool _reddenDisabledHotbarActions = false;
 
-    [UI("Disabled actions hotbar tint color", Parent = nameof(ReddenDisabledHotbarActions), Filter = UiInformation)]
-    public Vector4 HotbarDisabledTintColor { get; set; } = new(1f, 0f, 0f, 0.40f);
+	[UI("Disabled actions hotbar tint color", Parent = nameof(ReddenDisabledHotbarActions), Filter = UiInformation)]
+	public Vector4 HotbarDisabledTintColor { get; set; } = new(1f, 0f, 0f, 0.40f);
 
-    [ConditionBool, UI("Display do action feedback on toast",
-        Filter = UiInformation)]
-    private static readonly bool _showToastsAboutDoAction = false;
+	[ConditionBool, UI("Display do action feedback on toast",
+		Filter = UiInformation)]
+	private static readonly bool _showToastsAboutDoAction = false;
 
-    [ConditionBool, UI("Allow rotations that use this config to use abilities defined in the rotation as burst", Filter = AutoActionUsage, Section = 4)]
-    private static readonly bool _autoBurst = true;
+	[ConditionBool, UI("Allow rotations that use this config to use abilities defined in the rotation as burst", Filter = AutoActionUsage, Section = 4)]
+	private static readonly bool _autoBurst = true;
 
-    /// <markdown file="Auto" name="Disable hostile actions if something is casting an action on the Gaze/Stop list" section="Action Usage and Control">
-    /// This setting is linked with the <see cref="RotationSolver.Basic.Configuration.OtherConfiguration.HostileCastingStop">Gaze/Stop list.</see>
-    /// </markdown>
-    [ConditionBool, UI("Disable hostile actions if something is casting an action on the Gaze/Stop list (EXPERIMENTAL)", Filter = AutoActionUsage, Section = 4)]
-    private static readonly bool _castingStop = false;
+	/// <markdown file="Auto" name="Disable hostile actions if something is casting an action on the Gaze/Stop list" section="Action Usage and Control">
+	/// This setting is linked with the <see cref="RotationSolver.Basic.Configuration.OtherConfiguration.HostileCastingStop">Gaze/Stop list.</see>
+	/// </markdown>
+	[ConditionBool, UI("Disable hostile actions if something is casting an action on the Gaze/Stop list (EXPERIMENTAL)", Filter = AutoActionUsage, Section = 4)]
+	private static readonly bool _castingStop = false;
 
-    [UI("Configurable amount of time before the cast finishes that RSR stops taking actions", Filter = AutoActionUsage, Section = 4, Parent = nameof(CastingStop))]
-    [Range(0, 15, ConfigUnitType.Seconds)]
-    public float CastingStopTime { get; set; } = 2.5f;
+	[UI("Configurable amount of time before the cast finishes that RSR stops taking actions", Filter = AutoActionUsage, Section = 4, Parent = nameof(CastingStop))]
+	[Range(0, 15, ConfigUnitType.Seconds)]
+	public float CastingStopTime { get; set; } = 2.5f;
 
-    [ConditionBool, UI("Disable for the entire duration (Enabling this will prevent your actions for the entire cast.)", Filter = AutoActionUsage, Section = 4, Parent = nameof(CastingStop))]
-    private static readonly bool _castingStopCalculate = false;
+	[ConditionBool, UI("Disable for the entire duration (Enabling this will prevent your actions for the entire cast.)", Filter = AutoActionUsage, Section = 4, Parent = nameof(CastingStop))]
+	private static readonly bool _castingStopCalculate = false;
 
-    /// <markdown file="Auto" name="Automatic Healing Thresholds" section="Healing Usage and Control" isSubsection="1">
-    /// When enabled, you can customize the healing thresholds for when healing will be cast occur on target(s).
-    /// </markdown>
-    [ConditionBool, UI("Automatic Healing Thresholds", Filter = HealingActionCondition, Section = 1, Order = 1)]
-    private static readonly bool _autoHeal = true;
+	/// <markdown file="Auto" name="Automatic Healing Thresholds" section="Healing Usage and Control" isSubsection="1">
+	/// When enabled, you can customize the healing thresholds for when healing will be cast occur on target(s).
+	/// </markdown>
+	[ConditionBool, UI("Automatic Healing Thresholds", Filter = HealingActionCondition, Section = 1, Order = 1)]
+	private static readonly bool _autoHeal = true;
 
-    /// <markdown file="Auto" name="Stop Healing Cast After Reaching Threshold" section="Healing Usage and Control" isSubsection="1">
-    /// When enabled, you can customize the healing thresholds for when healing will be cast occur on target(s).
-    /// </markdown>
-    [ConditionBool, UI("Stop single target GCD healing after reaching threshold. (EXTREMELY Experimental)", Filter = HealingActionCondition, Section = 1, Order = 2, Description = "If you have another healer on the team, their healing might put the target player(s) above the healing threshold and you'll waste MP. This interrupts the cast if it happens.")]
-    private static readonly bool _stopHealingAfterThresholdExperimental2 = false;
+	/// <markdown file="Auto" name="Stop Healing Cast After Reaching Threshold" section="Healing Usage and Control" isSubsection="1">
+	/// When enabled, you can customize the healing thresholds for when healing will be cast occur on target(s).
+	/// </markdown>
+	[ConditionBool, UI("Stop single target GCD healing after reaching threshold. (EXTREMELY Experimental)", Filter = HealingActionCondition, Section = 1, Order = 2, Description = "If you have another healer on the team, their healing might put the target player(s) above the healing threshold and you'll waste MP. This interrupts the cast if it happens.")]
+	private static readonly bool _stopHealingAfterThresholdExperimental2 = false;
 
-    /// <markdown file="Auto" name="Auto-use oGCD abilities" section="Action Usage and Control" isSubsection="1">
-    /// Whether to use oGCD abilities or not at all.
-    /// </markdown>
-    [ConditionBool, UI("Auto-use oGCD abilities", Filter = AutoActionUsage)]
-    private static readonly bool _useAbility = true;
+	/// <markdown file="Auto" name="Auto-use oGCD abilities" section="Action Usage and Control" isSubsection="1">
+	/// Whether to use oGCD abilities or not at all.
+	/// </markdown>
+	[ConditionBool, UI("Auto-use oGCD abilities", Filter = AutoActionUsage)]
+	private static readonly bool _useAbility = true;
 
 	[ConditionBool, UI("Use defensive actions", Filter = AutoActionUsage, Description = "It is recommended to check this option if you are playing Raids or you can plan the heal and defense ability usage by yourself.")]
-    private static readonly bool _useDefenseAbility = true;
+	private static readonly bool _useDefenseAbility = true;
 
 	[ConditionBool, UI("Automatically use Single Target defensive actions", Filter = AutoActionUsage, Parent = nameof(UseDefenseAbility))]
 	private static readonly bool _useSTDefense = true;
@@ -560,6 +564,23 @@ internal partial class Configs : IPluginConfiguration
 	[ConditionBool, UI("Automatically use AOE defensive actions", Filter = AutoActionUsage, Parent = nameof(UseDefenseAbility))]
 	private static readonly bool _useAOEDefense = true;
 
+	[ConditionBool, UI("Use BossModReborn timeline for proactive mitigation",
+		Description = "When enabled and BossModReborn is loaded, RSR will use its timeline data to trigger defensive abilities before raidwides and tankbusters hit.",
+		Filter = AutoActionUsage, Parent = nameof(UseDefenseAbility))]
+	private static readonly bool _useBMRTimeline = false;
+
+	[UI("Seconds before raidwide to use area mitigation", Parent = nameof(UseBmrTimeline))]
+	[Range(1, 15, ConfigUnitType.Seconds, 0.5f)]
+	public float BMRRaidwideMitWindow { get; set; } = 5f;
+
+	[UI("Seconds before tankbuster to use single mitigation", Parent = nameof(UseBmrTimeline),
+		PvEFilter = JobFilterType.Tank)]
+	[Range(1, 10, ConfigUnitType.Seconds, 0.5f)]
+	public float BMRTankbusterMitWindow { get; set; } = 3f;
+
+	[UI("Seconds before knockback to use anti-knockback", Parent = nameof(UseBmrTimeline))]
+	[Range(1, 10, ConfigUnitType.Seconds, 0.5f)]
+	public float BMRKnockbackWindow { get; set; } = 3f;
 	[UI("Number of hostiles", Parent = nameof(UseDefenseAbility),
 		PvEFilter = JobFilterType.Tank)]
 	[Range(1, 8, ConfigUnitType.None, 0.05f)]
@@ -571,39 +592,39 @@ internal partial class Configs : IPluginConfiguration
 	private readonly float _healthForAutoDefense = 1;
 
 	[ConditionBool, UI("Automatically activate tank stance", Parent = nameof(UseAbility),
-        PvEFilter = JobFilterType.Tank)]
-    private static readonly bool _autoTankStance = true;
+		PvEFilter = JobFilterType.Tank)]
+	private static readonly bool _autoTankStance = true;
 
-    [ConditionBool, UI("Auto provoke when there is another tank in party", Description = "Automatically use provoke when an enemy is attacking a non-tank member of the party while there is more than one tank in party.",
-        Parent = nameof(UseAbility), PvEFilter = JobFilterType.Tank)]
-    private static readonly bool _autoProvokeForTank = true;
+	[ConditionBool, UI("Auto provoke when there is another tank in party", Description = "Automatically use provoke when an enemy is attacking a non-tank member of the party while there is more than one tank in party.",
+		Parent = nameof(UseAbility), PvEFilter = JobFilterType.Tank)]
+	private static readonly bool _autoProvokeForTank = true;
 
-    /// <markdown file="Auto" name="Auto True North" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._useAbility">
-    /// Whether to cast True North when playing as a melee DPS when you do not have the right
-    /// positional on the enemy.
-    /// </markdown>
-    [ConditionBool, UI("Auto True North (Melee DPS)",
-        Parent = nameof(UseAbility),
-        PvEFilter = JobFilterType.Melee)]
-    private static readonly bool _autoUseTrueNorth = true;
+	/// <markdown file="Auto" name="Auto True North" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._useAbility">
+	/// Whether to cast True North when playing as a melee DPS when you do not have the right
+	/// positional on the enemy.
+	/// </markdown>
+	[ConditionBool, UI("Auto True North (Melee DPS)",
+		Parent = nameof(UseAbility),
+		PvEFilter = JobFilterType.Melee)]
+	private static readonly bool _autoUseTrueNorth = true;
 
-    [ConditionBool, UI("Use movement speed increase abilities when out of combat and in duty.", Parent = nameof(UseAbility))]
-    private static readonly bool _autoSpeedOutOfCombat = true;
+	[ConditionBool, UI("Use movement speed increase abilities when out of combat and in duty.", Parent = nameof(UseAbility))]
+	private static readonly bool _autoSpeedOutOfCombat = true;
 
-    [ConditionBool, UI("Use movement speed increase abilities when out of combat and out of duty.", Parent = nameof(UseAbility))]
-    private static readonly bool _autoSpeedOutOfCombatNoDuty = false;
+	[ConditionBool, UI("Use movement speed increase abilities when out of combat and out of duty.", Parent = nameof(UseAbility))]
+	private static readonly bool _autoSpeedOutOfCombatNoDuty = false;
 
-    [ConditionBool, UI("Use beneficial ground-targeted actions", Description = "1.    Self-Target Fallback:\r\nIf range is zero, always targets the player and returns all affectable targets at the player's position.\r\n2.    Preferred Positions (OnLocations):\r\n•    Tries to get predefined beneficial positions for the current territory.\r\n•    If none are found and the content is a trial or raid, uses fallback points (e.g., 0,0 or 100,100 point as those are the center of arenas most of the time).\r\n•    Picks the closest point to the player, applies a small random offset, and checks if it’s within effect range.\r\n•    If so, returns that as the target area.\r\n3.    Boss Positional Fallback:\r\n•    If the current target is a boss with positional requirements and within range, uses the boss’s position (or a point within range) as the target area.\r\n4.    Party Member Fallback:\r\n•    Gathers party members within range + effect range.\r\n•    Attempts to find a party member who is being attacked (tank or focus target).\r\n•    If found, calculates whether to stay at the player’s position or move closer to the tank, based on distances and effect range.\r\n•    If not found or not needed, defaults to the player’s position.", Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _useGroundBeneficialAbility = true;
+	[ConditionBool, UI("Use beneficial ground-targeted actions", Description = "1.    Self-Target Fallback:\r\nIf range is zero, always targets the player and returns all affectable targets at the player's position.\r\n2.    Preferred Positions (OnLocations):\r\n•    Tries to get predefined beneficial positions for the current territory.\r\n•    If none are found and the content is a trial or raid, uses fallback points (e.g., 0,0 or 100,100 point as those are the center of arenas most of the time).\r\n•    Picks the closest point to the player, applies a small random offset, and checks if it’s within effect range.\r\n•    If so, returns that as the target area.\r\n3.    Boss Positional Fallback:\r\n•    If the current target is a boss with positional requirements and within range, uses the boss’s position (or a point within range) as the target area.\r\n4.    Party Member Fallback:\r\n•    Gathers party members within range + effect range.\r\n•    Attempts to find a party member who is being attacked (tank or focus target).\r\n•    If found, calculates whether to stay at the player’s position or move closer to the tank, based on distances and effect range.\r\n•    If not found or not needed, defaults to the player’s position.", Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _useGroundBeneficialAbility = true;
 
-    /// <markdown file="Auto" name="Use beneficial ground-targeted actions when moving" section="Healing Usage and Control">
-    /// Enable to allow the usage of ground AoE actions while moving, such as Earthly Star (AST), Sacred Soil (SCH), etc.
-    /// </markdown>
-    [JobConfig, UI("Use beneficial ground-targeted actions when moving.", Parent = nameof(UseGroundBeneficialAbility))]
-    private static readonly bool _useGroundBeneficialAbilityWhenMoving = false;
+	/// <markdown file="Auto" name="Use beneficial ground-targeted actions when moving" section="Healing Usage and Control">
+	/// Enable to allow the usage of ground AoE actions while moving, such as Earthly Star (AST), Sacred Soil (SCH), etc.
+	/// </markdown>
+	[JobConfig, UI("Use beneficial ground-targeted actions when moving.", Parent = nameof(UseGroundBeneficialAbility))]
+	private static readonly bool _useGroundBeneficialAbilityWhenMoving = false;
 
-    [JobConfig, UI("Use beneficial ground-targeted actions only on self, skipping other logic.", Parent = nameof(UseGroundBeneficialAbility))]
-    private static readonly bool _useGroundBeneficialAbilityOnlySelf = false;
+	[JobConfig, UI("Use beneficial ground-targeted actions only on self, skipping other logic.", Parent = nameof(UseGroundBeneficialAbility))]
+	private static readonly bool _useGroundBeneficialAbilityOnlySelf = false;
 
 	[JobConfig, UI("Use beneficial ground-targeted actions on party Tank if present, skipping other logic.", Parent = nameof(UseGroundBeneficialAbility))]
 	private static readonly bool _useTargetTankForGroundHeal = false;
@@ -1214,48 +1235,48 @@ internal partial class Configs : IPluginConfiguration
     public void Save()
     {
 #if DEBUG
-        PluginLog.Information("Saved configurations.");
+		PluginLog.Information("Saved configurations.");
 #endif
-        File.WriteAllText(Svc.PluginInterface.ConfigFile.FullName,
-            JsonConvert.SerializeObject(this, Formatting.Indented));
-    }
+		File.WriteAllText(Svc.PluginInterface.ConfigFile.FullName,
+			JsonConvert.SerializeObject(this, Formatting.Indented));
+	}
 
-    public static Configs Migrate(Configs oldConfigs)
-    {
-        // Implement migration logic if needed
-        if (oldConfigs.Version != CurrentVersion)
-        {
-            // Reset to default if versions do not match
-            return new Configs();
-        }
-        return oldConfigs;
-    }
+	public static Configs Migrate(Configs oldConfigs)
+	{
+		// Implement migration logic if needed
+		if (oldConfigs.Version != CurrentVersion)
+		{
+			// Reset to default if versions do not match
+			return new Configs();
+		}
+		return oldConfigs;
+	}
 
-    public void Backup()
-    {
-        Save();
-        File.Copy(Svc.PluginInterface.ConfigFile.FullName, Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_Backup.json", true);
-        Svc.Toasts.ShowNormal("Configs backed up.");
-    }
+	public void Backup()
+	{
+		Save();
+		File.Copy(Svc.PluginInterface.ConfigFile.FullName, Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_Backup.json", true);
+		Svc.Toasts.ShowNormal("Configs backed up.");
+	}
 
-    public void Restore()
-    {
-        File.Copy(Svc.PluginInterface.ConfigFile.FullName, Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_SafetySave.json", true);
-        File.Copy(Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_Backup.json", Svc.PluginInterface.ConfigFile.FullName, true);
+	public void Restore()
+	{
+		File.Copy(Svc.PluginInterface.ConfigFile.FullName, Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_SafetySave.json", true);
+		File.Copy(Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_Backup.json", Svc.PluginInterface.ConfigFile.FullName, true);
 
-        Configs restoredConfigs = JsonConvert.DeserializeObject<Configs>(
-                                      File.ReadAllText(Svc.PluginInterface.ConfigFile.FullName))
-                                  ?? new Configs();
+		Configs restoredConfigs = JsonConvert.DeserializeObject<Configs>(
+									  File.ReadAllText(Svc.PluginInterface.ConfigFile.FullName))
+								  ?? new Configs();
 
-        if (restoredConfigs.Version != CurrentVersion)
-        {
-            Svc.Toasts.ShowNormal("Backed up configs are not compatible with the current version.");
-            return;
-        }
+		if (restoredConfigs.Version != CurrentVersion)
+		{
+			Svc.Toasts.ShowNormal("Backed up configs are not compatible with the current version.");
+			return;
+		}
 
-        Service.Config = restoredConfigs;
-        Save();
-        Svc.Toasts.ShowNormal("Configs restored. Closing to set.");
-        DataCenter.HoldingRestore = true;
-    }
+		Service.Config = restoredConfigs;
+		Save();
+		Svc.Toasts.ShowNormal("Configs restored. Closing to set.");
+		DataCenter.HoldingRestore = true;
+	}
 }

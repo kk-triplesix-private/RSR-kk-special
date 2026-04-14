@@ -554,113 +554,113 @@ static partial void ModifyIkishotenPvE(ref ActionSetting setting)
 		setting.MPOverride = () => 0;
 	}
 
-    static partial void ModifyGekkoPvP(ref ActionSetting setting)
-    {
+	static partial void ModifyGekkoPvP(ref ActionSetting setting)
+	{
 		setting.MPOverride = () => 0;
 	}
 
-    static partial void ModifyKashaPvP(ref ActionSetting setting)
-    {
+	static partial void ModifyKashaPvP(ref ActionSetting setting)
+	{
 		setting.MPOverride = () => 0;
 	}
 
-    static partial void ModifyOgiNamikiriPvP(ref ActionSetting setting)
-    {
-        setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+	static partial void ModifyOgiNamikiriPvP(ref ActionSetting setting)
+	{
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyHissatsuChitenPvP(ref ActionSetting setting)
-    {
+	static partial void ModifyHissatsuChitenPvP(ref ActionSetting setting)
+	{
 
-    }
+	}
 
-    static partial void ModifyMineuchiPvP(ref ActionSetting setting)
-    {
-        setting.TargetStatusNeed = [StatusID.Kuzushi];
-    }
+	static partial void ModifyMineuchiPvP(ref ActionSetting setting)
+	{
+		setting.TargetStatusNeed = [StatusID.Kuzushi];
+	}
 
-    static partial void ModifyMeikyoShisuiPvP(ref ActionSetting setting)
-    {
-        setting.IsFriendly = true;
-    }
+	static partial void ModifyMeikyoShisuiPvP(ref ActionSetting setting)
+	{
+		setting.IsFriendly = true;
+	}
 
-    static partial void ModifyHyosetsuPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.HyosetsuPvP;
+	static partial void ModifyHyosetsuPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.HyosetsuPvP;
 		setting.MPOverride = () => 0;
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyMangetsuPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.MangetsuPvP;
+	static partial void ModifyMangetsuPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.MangetsuPvP;
 		setting.MPOverride = () => 0;
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyOkaPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.OkaPvP;
+	static partial void ModifyOkaPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.YukikazePvP) == ActionID.OkaPvP;
 		setting.MPOverride = () => 0;
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyKaeshiNamikiriPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.OgiNamikiriPvP) == ActionID.KaeshiNamikiriPvP;
-        setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+	static partial void ModifyKaeshiNamikiriPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.OgiNamikiriPvP) == ActionID.KaeshiNamikiriPvP;
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyZanshinPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.HissatsuChitenPvP) == ActionID.ZanshinPvP;
+	static partial void ModifyZanshinPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.HissatsuChitenPvP) == ActionID.ZanshinPvP;
 		setting.MPOverride = () => 0;
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyTendoSetsugekkaPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.MeikyoShisuiPvP) == ActionID.TendoSetsugekkaPvP;
+	static partial void ModifyTendoSetsugekkaPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.MeikyoShisuiPvP) == ActionID.TendoSetsugekkaPvP;
 		setting.MPOverride = () => 0;
 	}
 
-    static partial void ModifyTendoKaeshiSetsugekkaPvP(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.MeikyoShisuiPvP) == ActionID.TendoKaeshiSetsugekkaPvP;
-    }
+	static partial void ModifyTendoKaeshiSetsugekkaPvP(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.MeikyoShisuiPvP) == ActionID.TendoKaeshiSetsugekkaPvP;
+	}
 
 
-    static partial void ModifyHissatsuSotenPvP(ref ActionSetting setting)
-    {
-        setting.StatusProvide = [StatusID.Kaiten_3201];
-        setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
-    #endregion
+	static partial void ModifyHissatsuSotenPvP(ref ActionSetting setting)
+	{
+		setting.StatusProvide = [StatusID.Kaiten_3201];
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
+	}
+	#endregion
 
-    /// <inheritdoc/>
-    public override bool IsBursting()
-    {
-        return StatusHelper.PlayerHasStatus(true, StatusID.Fugetsu) && StatusHelper.PlayerHasStatus(true, StatusID.Fuka);
-    }
+	/// <inheritdoc/>
+	public override bool IsBursting()
+	{
+		return StatusHelper.PlayerHasStatus(true, StatusID.Fugetsu) && StatusHelper.PlayerHasStatus(true, StatusID.Fuka);
+	}
 }

@@ -84,148 +84,148 @@ internal class ControlWindow : CtrlWindow
         pushedStyleColor = false;
         Vector4 color = *ImGui.GetStyleColorVec4(ImGuiCol.TextDisabled);
 
-        if (!isBurst)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, color);
-            pushedStyleColor = true; // Indicate that a style color has been pushed
-        }
+		if (!isBurst)
+		{
+			ImGui.PushStyleColor(ImGuiCol.Text, color);
+			pushedStyleColor = true; // Indicate that a style color has been pushed
+		}
 
-        if (ImGuiHelper.SelectableButton("Burst"))
-        {
-            Service.Config.AutoBurst.Value = !isBurst;
-        }
+		if (ImGuiHelper.SelectableButton("Burst"))
+		{
+			Service.Config.AutoBurst.Value = !isBurst;
+		}
 
-        // Ensure PopStyleColor is called only if PushStyleColor was called
-        if (pushedStyleColor)
-        {
-            ImGui.PopStyleColor();
-        }
-        ImGui.SameLine();
+		// Ensure PopStyleColor is called only if PushStyleColor was called
+		if (pushedStyleColor)
+		{
+			ImGui.PopStyleColor();
+		}
+		ImGui.SameLine();
 
-        int value = Service.Config.IsControlWindowLock ? 0 : 1;
-        if (ImGuiHelper.SelectableCombo("Rotation Solver Reborn Lock the Control Window",
-        [
-            UiString.InfoWindowNoMove.GetDescription(),
-            UiString.InfoWindowMove.GetDescription(),
-        ], ref value))
-        {
-            Service.Config.IsControlWindowLock.Value = value == 0;
-        }
-        columnWidth = Math.Max(columnWidth, ImGui.GetCursorPosX());
-        ImGui.SetColumnWidth(0, columnWidth + 10);
+		int value = Service.Config.IsControlWindowLock ? 0 : 1;
+		if (ImGuiHelper.SelectableCombo("Rotation Solver Reborn Lock the Control Window",
+		[
+			UiString.InfoWindowNoMove.GetDescription(),
+			UiString.InfoWindowMove.GetDescription(),
+		], ref value))
+		{
+			Service.Config.IsControlWindowLock.Value = value == 0;
+		}
+		columnWidth = Math.Max(columnWidth, ImGui.GetCursorPosX());
+		ImGui.SetColumnWidth(0, columnWidth + 10);
 
-        ImGui.NextColumn();
-        ImGui.NextColumn();
+		ImGui.NextColumn();
+		ImGui.NextColumn();
 
-        DrawSpecials();
+		DrawSpecials();
 
-        ImGui.Columns(1);
-    }
+		ImGui.Columns(1);
+	}
 
-    private static void DrawSpecials()
-    {
-        ICustomRotation? rotation = DataCenter.CurrentRotation;
+	private static void DrawSpecials()
+	{
+		ICustomRotation? rotation = DataCenter.CurrentRotation;
 
-        DrawCommandAction(rotation?.ActionHealAreaGCD, rotation?.ActionHealAreaAbility,
-            SpecialCommandType.HealArea, ImGuiColors.HealerGreen);
+		DrawCommandAction(rotation?.ActionHealAreaGCD, rotation?.ActionHealAreaAbility,
+			SpecialCommandType.HealArea, ImGuiColors.HealerGreen);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionHealSingleGCD, rotation?.ActionHealSingleAbility,
-            SpecialCommandType.HealSingle, ImGuiColors.HealerGreen);
+		DrawCommandAction(rotation?.ActionHealSingleGCD, rotation?.ActionHealSingleAbility,
+			SpecialCommandType.HealSingle, ImGuiColors.HealerGreen);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionDefenseAreaGCD, rotation?.ActionDefenseAreaAbility,
-            SpecialCommandType.DefenseArea, ImGuiColors.TankBlue);
+		DrawCommandAction(rotation?.ActionDefenseAreaGCD, rotation?.ActionDefenseAreaAbility,
+			SpecialCommandType.DefenseArea, ImGuiColors.TankBlue);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionDefenseSingleGCD, rotation?.ActionDefenseSingleAbility,
-            SpecialCommandType.DefenseSingle, ImGuiColors.TankBlue);
+		DrawCommandAction(rotation?.ActionDefenseSingleGCD, rotation?.ActionDefenseSingleAbility,
+			SpecialCommandType.DefenseSingle, ImGuiColors.TankBlue);
 
-        ImGui.Spacing();
+		ImGui.Spacing();
 
-        DrawCommandAction(rotation?.ActionMoveForwardGCD, rotation?.ActionMoveForwardAbility,
-            SpecialCommandType.MoveForward, ImGuiColors.DalamudOrange);
+		DrawCommandAction(rotation?.ActionMoveForwardGCD, rotation?.ActionMoveForwardAbility,
+			SpecialCommandType.MoveForward, ImGuiColors.DalamudOrange);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionMoveBackAbility,
-            SpecialCommandType.MoveBack, ImGuiColors.DalamudOrange);
+		DrawCommandAction(rotation?.ActionMoveBackAbility,
+			SpecialCommandType.MoveBack, ImGuiColors.DalamudOrange);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(61397, SpecialCommandType.NoCasting, ImGuiColors.DalamudWhite2);
+		DrawCommandAction(61397, SpecialCommandType.NoCasting, ImGuiColors.DalamudWhite2);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(61804, SpecialCommandType.Burst, ImGuiColors.DalamudWhite2);
+		DrawCommandAction(61804, SpecialCommandType.Burst, ImGuiColors.DalamudWhite2);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(61753, SpecialCommandType.EndSpecial, ImGuiColors.DalamudWhite2);
+		DrawCommandAction(61753, SpecialCommandType.EndSpecial, ImGuiColors.DalamudWhite2);
 
-        ImGui.Spacing();
+		ImGui.Spacing();
 
-        DrawCommandAction(rotation?.ActionDispelStancePositionalGCD, rotation?.ActionDispelStancePositionalAbility,
-            SpecialCommandType.DispelStancePositional, ImGuiColors.ParsedGold);
+		DrawCommandAction(rotation?.ActionDispelStancePositionalGCD, rotation?.ActionDispelStancePositionalAbility,
+			SpecialCommandType.DispelStancePositional, ImGuiColors.ParsedGold);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionRaiseShirkGCD, rotation?.ActionRaiseShirkAbility,
-            SpecialCommandType.RaiseShirk, ImGuiColors.ParsedBlue);
+		DrawCommandAction(rotation?.ActionRaiseShirkGCD, rotation?.ActionRaiseShirkAbility,
+			SpecialCommandType.RaiseShirk, ImGuiColors.ParsedBlue);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
 
-        DrawCommandAction(rotation?.ActionAntiKnockbackAbility,
-            SpecialCommandType.AntiKnockback, ImGuiColors.DalamudWhite2);
+		DrawCommandAction(rotation?.ActionAntiKnockbackAbility,
+			SpecialCommandType.AntiKnockback, ImGuiColors.DalamudWhite2);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        DrawCommandAction(rotation?.ActionSpeedAbility,
-            SpecialCommandType.Speed, ImGuiColors.DalamudWhite2);
+		DrawCommandAction(rotation?.ActionSpeedAbility,
+			SpecialCommandType.Speed, ImGuiColors.DalamudWhite2);
 
-        ImGui.Spacing();
+		ImGui.Spacing();
 
-        ImGui.Text("CMD:");
-        ImGui.SameLine();
+		ImGui.Text("CMD:");
+		ImGui.SameLine();
 
-        _ = DrawIAction(DataCenter.CommandNextAction, Service.Config.ControlWindow0GCDSize, 1);
+		_ = DrawIAction(DataCenter.CommandNextAction, Service.Config.ControlWindow0GCDSize, 1);
 
-        ImGui.SameLine();
+		ImGui.SameLine();
 
-        using ImRaii.IEndObject group = ImRaii.Group();
-        if (group)
-        {
-            ImGui.Text(DataCenter.CurrentTargetToHostileType.GetDescription());
-            ImGui.Text("Auto: " + DataCenter.AutoStatus.ToString());
-        }
-    }
+		using ImRaii.IEndObject group = ImRaii.Group();
+		if (group)
+		{
+			ImGui.Text(DataCenter.CurrentTargetToHostileType.GetDescription());
+			ImGui.Text("Auto: " + DataCenter.AutoStatus.ToString());
+		}
+	}
 
-    private static void DrawCommandAction(IAction? gcd, IAction? ability, SpecialCommandType command, Vector4 color)
-    {
-        float gcdW = Service.Config.ControlWindowGCDSize;
-        float abilityW = Service.Config.ControlWindow0GCDSize;
-        float width = gcdW + abilityW + ImGui.GetStyle().ItemSpacing.X;
-        string str = command.ToString();
-        float strWidth = ImGui.CalcTextSize(str).X;
+	private static void DrawCommandAction(IAction? gcd, IAction? ability, SpecialCommandType command, Vector4 color)
+	{
+		float gcdW = Service.Config.ControlWindowGCDSize;
+		float abilityW = Service.Config.ControlWindow0GCDSize;
+		float width = gcdW + abilityW + ImGui.GetStyle().ItemSpacing.X;
+		string str = command.ToString();
+		float strWidth = ImGui.CalcTextSize(str).X;
 
-        Vector2 pos = ImGui.GetCursorPos();
+		Vector2 pos = ImGui.GetCursorPos();
 
-        using ImRaii.IEndObject group = ImRaii.Group();
-        if (!group)
-        {
-            return;
-        }
+		using ImRaii.IEndObject group = ImRaii.Group();
+		if (!group)
+		{
+			return;
+		}
 
-        using (ImRaii.IEndObject subGroup = ImRaii.Group())
-        {
-            if (subGroup)
-            {
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(2, (width / 2) - (strWidth / 2)));
-                ImGui.TextColored(color, str);
+		using (ImRaii.IEndObject subGroup = ImRaii.Group())
+		{
+			if (subGroup)
+			{
+				ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(2, (width / 2) - (strWidth / 2)));
+				ImGui.TextColored(color, str);
 
                 string help = command.GetDescription();
                 if (ability != null)

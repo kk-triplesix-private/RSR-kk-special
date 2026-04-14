@@ -554,89 +554,89 @@ public sealed class AST_Reborn : AstrologianRotation
 	}
 
 	protected override bool GeneralGCD(out IAction? act)
-    {
-        if ((HasSwift || IsLastAction(ActionID.SwiftcastPvE)) && SwiftLogic && MergedStatus.HasFlag(AutoStatus.Raise))
-        {
-            return base.GeneralGCD(out act);
-        }
+	{
+		if ((HasSwift || IsLastAction(ActionID.SwiftcastPvE)) && SwiftLogic && MergedStatus.HasFlag(AutoStatus.Raise))
+		{
+			return base.GeneralGCD(out act);
+		}
 
-        if (GravityIiPvE.EnoughLevel && GravityIiPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!GravityIiPvE.EnoughLevel && GravityPvE.EnoughLevel && GravityPvE.CanUse(out act))
-        {
-            return true;
-        }
+		if (GravityIiPvE.EnoughLevel && GravityIiPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!GravityIiPvE.EnoughLevel && GravityPvE.EnoughLevel && GravityPvE.CanUse(out act))
+		{
+			return true;
+		}
 
-        if (CombustIiiPvE.EnoughLevel && CombustIiiPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!CombustIiiPvE.EnoughLevel && CombustIiPvE.EnoughLevel && CombustIiPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!CombustIiPvE.EnoughLevel && CombustPvE.EnoughLevel && CombustPvE.CanUse(out act))
-        {
-            return true;
-        }
+		if (CombustIiiPvE.EnoughLevel && CombustIiiPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!CombustIiiPvE.EnoughLevel && CombustIiPvE.EnoughLevel && CombustIiPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!CombustIiPvE.EnoughLevel && CombustPvE.EnoughLevel && CombustPvE.CanUse(out act))
+		{
+			return true;
+		}
 
-        if (FallMaleficPvE.EnoughLevel && FallMaleficPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!FallMaleficPvE.EnoughLevel && MaleficIvPvE.EnoughLevel && MaleficIvPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!MaleficIvPvE.EnoughLevel && MaleficIiiPvE.EnoughLevel && MaleficIiiPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!MaleficIiiPvE.EnoughLevel && MaleficIiPvE.EnoughLevel && MaleficIiPvE.CanUse(out act))
-        {
-            return true;
-        }
-        if (!MaleficIiPvE.Info.EnoughLevelAndQuest() && MaleficPvE.CanUse(out act))
-        {
-            return true;
-        }
+		if (FallMaleficPvE.EnoughLevel && FallMaleficPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!FallMaleficPvE.EnoughLevel && MaleficIvPvE.EnoughLevel && MaleficIvPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!MaleficIvPvE.EnoughLevel && MaleficIiiPvE.EnoughLevel && MaleficIiiPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!MaleficIiiPvE.EnoughLevel && MaleficIiPvE.EnoughLevel && MaleficIiPvE.CanUse(out act))
+		{
+			return true;
+		}
+		if (!MaleficIiPvE.Info.EnoughLevelAndQuest() && MaleficPvE.CanUse(out act))
+		{
+			return true;
+		}
 
-        return base.GeneralGCD(out act);
-    }
-    #endregion
+		return base.GeneralGCD(out act);
+	}
+	#endregion
 
-    #region Extra Methods
-    public override bool CanHealSingleSpell
-    {
-        get
-        {
-            int aliveHealerCount = 0;
-            IEnumerable<IBattleChara> healers = PartyMembers.GetJobCategory(JobRole.Healer);
-            foreach (IBattleChara h in healers)
-            {
-                if (!h.IsDead)
-                    aliveHealerCount++;
-            }
+	#region Extra Methods
+	public override bool CanHealSingleSpell
+	{
+		get
+		{
+			int aliveHealerCount = 0;
+			IEnumerable<IBattleChara> healers = PartyMembers.GetJobCategory(JobRole.Healer);
+			foreach (IBattleChara h in healers)
+			{
+				if (!h.IsDead)
+					aliveHealerCount++;
+			}
 
-            return base.CanHealSingleSpell && (GCDHeal || aliveHealerCount == 1);
-        }
-    }
-    public override bool CanHealAreaSpell
-    {
-        get
-        {
-            int aliveHealerCount = 0;
-            IEnumerable<IBattleChara> healers = PartyMembers.GetJobCategory(JobRole.Healer);
-            foreach (IBattleChara h in healers)
-            {
-                if (!h.IsDead)
-                    aliveHealerCount++;
-            }
+			return base.CanHealSingleSpell && (GCDHeal || aliveHealerCount == 1);
+		}
+	}
+	public override bool CanHealAreaSpell
+	{
+		get
+		{
+			int aliveHealerCount = 0;
+			IEnumerable<IBattleChara> healers = PartyMembers.GetJobCategory(JobRole.Healer);
+			foreach (IBattleChara h in healers)
+			{
+				if (!h.IsDead)
+					aliveHealerCount++;
+			}
 
-            return base.CanHealAreaSpell && (GCDHeal || aliveHealerCount == 1);
-        }
-    }
-    #endregion
+			return base.CanHealAreaSpell && (GCDHeal || aliveHealerCount == 1);
+		}
+	}
+	#endregion
 }
