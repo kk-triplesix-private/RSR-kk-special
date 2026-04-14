@@ -51,26 +51,53 @@ jobs:
 
           # Squash-merge so upstream commits (which may touch workflow files) are
           # not pushed into our history — GITHUB_TOKEN cannot push workflow changes
-          if git merge --squash --strategy-option ours upstream/main; then
-            # Remove any upstream workflow changes from staging — we keep our own
-            git reset -- .github/workflows/ 2>/dev/null || true
-            git checkout HEAD -- .github/workflows/ 2>/dev/null || true
-            git clean -fd -- .github/workflows/ 2>/dev/null || true
+          # `-X ours` does not handle modify/delete conflicts; resolve those manually below.
+          set +e
+          git merge --squash --strategy-option ours upstream/main
+          merge_rc=$?
+          set -e
 
-            # Protect files with known upstream issues — keep our fixed versions
-            git reset -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
-            git checkout HEAD -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
+          # Resolve modify/delete conflicts: keep our side (file kept if we modified, deleted if we deleted)
+          # `git status --porcelain` codes: DU = deleted by them, modified by us; UD = modified by them, deleted by us
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            code="${line:0:2}"
+            path="${line:3}"
+            case "$code" in
+              "DU") git add -- "$path" ;;          # upstream deleted, we modified → keep ours
+              "UD") git rm -f -- "$path" ;;        # upstream modified, we deleted → keep deletion
+            esac
+          done < <(git status --porcelain)
 
-            if ! git diff --staged --quiet; then
-              git commit -m "Sync upstream changes"
-              echo "status=success" >> "$GITHUB_OUTPUT"
-            else
-              echo "No effective changes after excluding workflows"
-              echo "status=noop" >> "$GITHUB_OUTPUT"
-            fi
-          else
+          # Bail if any real (content) conflicts remain (UU/AA/etc.)
+          if git status --porcelain | grep -qE '^(UU|AA|DD|AU|UA) '; then
             git reset --merge
             echo "status=conflict" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # If merge failed for reasons other than modify/delete conflicts we just resolved, abort
+          if [ $merge_rc -ne 0 ] && git status --porcelain | grep -qE '^U'; then
+            git reset --merge
+            echo "status=conflict" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Remove any upstream workflow changes from staging — we keep our own
+          git reset -- .github/workflows/ 2>/dev/null || true
+          git checkout HEAD -- .github/workflows/ 2>/dev/null || true
+          git clean -fd -- .github/workflows/ 2>/dev/null || true
+
+          # Protect files with known upstream issues — keep our fixed versions
+          git reset -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
+          git checkout HEAD -- RotationSolver/ExtraRotations/Magical/BeirutaRDM.cs 2>/dev/null || true
+
+          if ! git diff --staged --quiet; then
+            git commit -m "Sync upstream changes"
+            echo "status=success" >> "$GITHUB_OUTPUT"
+          else
+            echo "No effective changes after excluding workflows"
+            echo "status=noop" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Determine next version tag
