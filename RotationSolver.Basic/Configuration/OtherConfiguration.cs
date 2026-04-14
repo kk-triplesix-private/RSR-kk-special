@@ -69,8 +69,8 @@ internal class OtherConfiguration
     /// </markdown>
     public static HashSet<uint> HostileCastingMarker = [];
 
-    public static Dictionary<uint, string[]> NoHostileNames = [];
-    public static Dictionary<uint, string[]> NoProvokeNames = [];
+	public static Dictionary<uint, string[]> NoHostileNames = [];
+	public static Dictionary<uint, string[]> NoProvokeNames = [];
 
 	/// <markdown file="List" name="Beneficial Positions" section="Map-Specific Settings">
 	/// Adds a preferred location used for ground **healing** AoE abilities (example: Earthly Star).
@@ -213,10 +213,10 @@ internal class OtherConfiguration
         SaveHostileCastingMarker().Wait();
     }
 
-    public static Task SaveHostileCastingArea()
-    {
-        return Task.Run(() => Save(HostileCastingArea, nameof(HostileCastingArea)));
-    }
+	public static Task SaveHostileCastingArea()
+	{
+		return Task.Run(() => Save(HostileCastingArea, nameof(HostileCastingArea)));
+	}
 
 	public static Task SaveHostileCastingTank()
 	{
