@@ -59,15 +59,16 @@ jobs:
 
           # Resolve modify/delete conflicts: keep our side (file kept if we modified, deleted if we deleted)
           # `git status --porcelain` codes: DU = deleted by them, modified by us; UD = modified by them, deleted by us
-          while IFS= read -r line; do
-            [ -z "$line" ] && continue
-            code="${line:0:2}"
-            path="${line:3}"
+          # Use -z for NUL-terminated output so paths with spaces are not quoted
+          while IFS= read -r -d '' entry; do
+            [ -z "$entry" ] && continue
+            code="${entry:0:2}"
+            path="${entry:3}"
             case "$code" in
               "DU") git add -- "$path" ;;          # upstream deleted, we modified → keep ours
               "UD") git rm -f -- "$path" ;;        # upstream modified, we deleted → keep deletion
             esac
-          done < <(git status --porcelain)
+          done < <(git status --porcelain -z)
 
           # Bail if any real (content) conflicts remain (UU/AA/etc.)
           if git status --porcelain | grep -qE '^(UU|AA|DD|AU|UA) '; then
