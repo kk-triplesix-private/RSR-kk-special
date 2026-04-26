@@ -470,7 +470,7 @@ internal static class StateUpdater
 
 		// Proactive knockback prevention via BossModReborn timeline
 		if (DataCenter.InCombat && Service.Config.UseBmrTimeline
-			&& DataCenter.BMRNextKnockbackIn > 0.6f
+			&& DataCenter.BMRNextKnockbackIn > 0f
 			&& DataCenter.BMRNextKnockbackIn <= Service.Config.BMRKnockbackWindow)
 			return true;
 

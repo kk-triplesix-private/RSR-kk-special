@@ -2067,6 +2067,7 @@ internal static class DataCenter
 	public static string? BMRActiveModuleName { get; set; }
 	public static float BMRNextRaidwideIn { get; set; } = float.MaxValue;
 	public static float BMRNextTankbusterIn { get; set; } = float.MaxValue;
+	public static float BMRNextStackIn { get; set; } = float.MaxValue;
 	public static float BMRNextKnockbackIn { get; set; } = float.MaxValue;
 	public static float BMRNextDowntimeIn { get; set; } = float.MaxValue;
 	public static float BMRNextDowntimeEndIn { get; set; } = float.MaxValue;
@@ -2082,12 +2083,14 @@ internal static class DataCenter
 	public static float BMRDebugTimelineTankbuster { get; set; } = float.MaxValue;
 	public static float BMRDebugHintsRaidwide { get; set; } = float.MaxValue;
 	public static float BMRDebugHintsTankbuster { get; set; } = float.MaxValue;
+	public static float BMRDebugHintsStack { get; set; } = float.MaxValue;
 	public static float BMRDebugGenericDamageIn { get; set; } = float.MaxValue;
 	public static int BMRDebugGenericDamageType { get; set; }
 	public static bool BMRDebugTimelineRwFunc { get; set; }
 	public static bool BMRDebugTimelineTbFunc { get; set; }
 	public static bool BMRDebugHintsRwFunc { get; set; }
 	public static bool BMRDebugHintsTbFunc { get; set; }
+	public static bool BMRDebugHintsStackFunc { get; set; }
 	public static string? BMRDebugTimelineWalk { get; set; }
 	public static void ResetBmrData()
 	{
@@ -2095,6 +2098,7 @@ internal static class DataCenter
 		BMRActiveModuleName = null;
 		BMRNextRaidwideIn = float.MaxValue;
 		BMRNextTankbusterIn = float.MaxValue;
+		BMRNextStackIn = float.MaxValue;
 		BMRNextKnockbackIn = float.MaxValue;
 		BMRNextDowntimeIn = float.MaxValue;
 		BMRNextDowntimeEndIn = float.MaxValue;
@@ -2108,12 +2112,14 @@ internal static class DataCenter
 		BMRDebugTimelineTankbuster = float.MaxValue;
 		BMRDebugHintsRaidwide = float.MaxValue;
 		BMRDebugHintsTankbuster = float.MaxValue;
+		BMRDebugHintsStack = float.MaxValue;
 		BMRDebugGenericDamageIn = float.MaxValue;
 		BMRDebugGenericDamageType = 0;
 		BMRDebugTimelineRwFunc = false;
 		BMRDebugTimelineTbFunc = false;
 		BMRDebugHintsRwFunc = false;
 		BMRDebugHintsTbFunc = false;
+		BMRDebugHintsStackFunc = false;
 		BMRDebugTimelineWalk = null;
 	}
 	#endregion

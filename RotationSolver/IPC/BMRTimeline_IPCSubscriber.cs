@@ -50,6 +50,18 @@ internal static class BMRTimeline_IPCSubscriber
 	[EzIPC("Hints.NextTankbusterDamageIn", true)]
 	internal static readonly Func<float>? NextTankbusterDamageIn;
 
+	[EzIPC("Hints.NextSharedDamageIn", true)]
+	internal static readonly Func<float>? NextSharedDamageIn;
+
+	[EzIPC("Hints.IsRaidwideImminent", true)]
+	internal static readonly Func<float, bool>? IsRaidwideImminent;
+
+	[EzIPC("Hints.IsTankbusterImminent", true)]
+	internal static readonly Func<float, bool>? IsTankbusterImminent;
+
+	[EzIPC("Hints.IsSharedImminent", true)]
+	internal static readonly Func<float, bool>? IsSharedImminent;
+
 	[EzIPC("Debug.TimelineWalk", true)]
 	internal static readonly Func<string?>? DebugTimelineWalk;
 
