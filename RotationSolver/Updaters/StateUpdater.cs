@@ -137,7 +137,7 @@ internal static class StateUpdater
 			return true;
 
 		if (DataCenter.InCombat && Service.Config.UseBmrTimeline
-			&& DataCenter.BMRNextRaidwideIn > 0.6f
+			&& DataCenter.BMRNextRaidwideIn > 0f
 			&& DataCenter.BMRNextRaidwideIn <= Service.Config.BMRRaidwideMitWindow)
 			return true;
 
@@ -214,7 +214,7 @@ internal static class StateUpdater
 			}
 
 			if (Service.Config.UseBmrTimeline && DataCenter.Role == JobRole.Tank
-			&& DataCenter.BMRNextTankbusterIn > 0.6f
+			&& DataCenter.BMRNextTankbusterIn > 0f
 			&& DataCenter.BMRNextTankbusterIn <= Service.Config.BMRTankbusterMitWindow)
 				return true;
 
