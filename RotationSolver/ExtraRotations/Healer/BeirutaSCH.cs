@@ -88,11 +88,27 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
     [RotationConfig(CombatType.PvE, Name = "Enable Swiftcast restriction: only allow Raise while Swiftcast is active")]
     public bool SwiftLogic { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Use Recitation during the countdown opener")]
-    public bool UseRecitationInOpener { get; set; } = true;
+    [RotationConfig(CombatType.PvE, Name = "Countdown opener configuration")]
+public CountdownOpenerStrategy CountdownOpener { get; set; } =
+    CountdownOpenerStrategy.RecitationAdloquiumDeploymentTactics;
 
-    [RotationConfig(CombatType.PvE, Name = "Use Adloquium during the countdown opener")]
-    public bool AdloquiumDuringCountdown { get; set; } = true;
+public enum CountdownOpenerStrategy : byte
+{
+    [Description("Recitation - Adloquium - Deployment Tactics")]
+    RecitationAdloquiumDeploymentTactics = 0,
+
+    [Description("Adloquium - Deployment Tactics")]
+    AdloquiumDeploymentTactics = 1,
+
+    [Description("Concitation/Succor")]
+    ConcitationOrSuccor = 2,
+
+    [Description("Recitation - Concitation/Succor")]
+    RecitationConcitationOrSuccor = 3,
+
+    [Description("None (no defensive countdown actions)")]
+    None = 4,
+}
 
     [RotationConfig(CombatType.PvE, Name = "How to control Deployment Tactics usage")]
     public DeploymentTacticsUsageStrategy DeploymentTacticsUsage { get; set; } = DeploymentTacticsUsageStrategy.ProtractionControl;
@@ -167,6 +183,145 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
     private bool InFirst5sAfterAdloquium =>
         _adloquiumUsedAtMs != 0 &&
         Environment.TickCount64 - _adloquiumUsedAtMs < DeploymentTacticsAfterAdloquiumWindowMs;
+    private bool CountdownUsesRecitation =>
+    CountdownOpener is
+        CountdownOpenerStrategy.RecitationAdloquiumDeploymentTactics or
+        CountdownOpenerStrategy.RecitationConcitationOrSuccor;
+
+private bool CountdownUsesDeploymentAdlo =>
+    CountdownOpener is
+        CountdownOpenerStrategy.RecitationAdloquiumDeploymentTactics or
+        CountdownOpenerStrategy.AdloquiumDeploymentTactics;
+
+private bool CountdownUsesConcitationSuccor =>
+    CountdownOpener is
+        CountdownOpenerStrategy.ConcitationOrSuccor or
+        CountdownOpenerStrategy.RecitationConcitationOrSuccor;
+    private bool ShouldSwiftcastForAdloquium()
+{
+    return UseSwiftcastOnAdloquium &&
+           !HasSeraphism &&
+           HasSufficientMovement &&
+           !HasSwift &&
+           !IsLastAction(ActionID.SwiftcastPvE) &&
+           !ShouldDeferToRaise() &&
+           ShouldUseDeploymentAdloquium();
+}
+    private static bool IsPartyMedicated =>
+    PartyMembers?.Any(member =>
+        member?.StatusList?.Any(status => status.StatusId == (uint)StatusID.Medicated) == true
+    ) == true;
+private bool CanUseCountdownShieldGCD(out IAction? act)
+{
+    if (ConcitationPvE.CanUse(out act))
+        return true;
+
+    if (SuccorPvE.CanUse(out act))
+        return true;
+
+    act = null;
+    return false;
+}
+    #endregion
+
+    #region Helper Methods
+
+    private static float EstimateRemainingSeconds(dynamic cooldown, float maxProbeSeconds, float stepSeconds = 0.5f)
+    {
+        if (cooldown.HasOneCharge) return 0f;
+
+        for (float t = 0f; t <= maxProbeSeconds; t += stepSeconds)
+        {
+            if (cooldown.WillHaveOneCharge(t))
+                return t;
+        }
+
+        return -1f;
+    }
+
+    private float SummonSeraphRem()
+    {
+        if (!SummonSeraphPvE.EnoughLevel) return -1f;
+        return EstimateRemainingSeconds(SummonSeraphPvE.Cooldown, 180f, 0.5f);
+    }
+
+    private float DissipationRem()
+    {
+        if (!DissipationPvE.EnoughLevel) return -1f;
+        return EstimateRemainingSeconds(DissipationPvE.Cooldown, 180f, 0.5f);
+    }
+
+    private bool CurrentTargetInLast5sOfChainStratagem
+    {
+        get
+        {
+            if (CurrentTarget == null)
+                return false;
+
+            return CurrentTarget.HasStatus(true, StatusID.ChainStratagem) &&
+                   CurrentTarget.WillStatusEnd(5f, true, StatusID.ChainStratagem);
+        }
+    }
+
+    private bool ShouldUseSummonEos()
+    {
+        float summonSeraphRem = SummonSeraphRem();
+        float dissipationRem = DissipationRem();
+
+        return summonSeraphRem < 90f && dissipationRem < 140f;
+    }
+
+    private void UpdateActionTracking()
+    {
+        if (!InCombat)
+        {
+            _lastSwiftcastLockingActionCombatTime = float.MinValue;
+            return;
+        }
+
+        if (IsLastAction(ActionID.BiolysisPvE) ||
+            IsLastAction(ActionID.ArtOfWarPvE) ||
+            IsLastAction(ActionID.ManifestationPvE) ||
+            IsLastAction(ActionID.AccessionPvE) ||
+            IsLastAction(ActionID.RuinIiPvE))
+        {
+            _lastSwiftcastLockingActionCombatTime = CombatTime;
+        }
+    }
+
+    private bool IsMovementPreferredNextGCD(IAction nextGCD)
+    {
+        if (nextGCD == ArtOfWarPvE ||
+            nextGCD == ManifestationPvE ||
+            nextGCD == AccessionPvE ||
+            nextGCD == RuinIiPvE)
+        {
+            return true;
+        }
+
+        if (CanUseCurrentBio(out IAction? bioAct) &&
+            nextGCD == bioAct)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool ShouldSwiftcastForMovement(IAction nextGCD)
+    {
+        if (!UseSwiftcastForMovement ||
+            !InCombat ||
+            !HasSufficientMovement ||
+            HasSwift ||
+            IsLastAction(ActionID.SwiftcastPvE) ||
+            ShouldDeferToRaise())
+        {
+            return false;
+        }
+
+        return !IsMovementPreferredNextGCD(nextGCD);
+    }
 
     private bool IsSwiftcastPostActionLockActive =>
         InCombat &&
@@ -280,31 +435,71 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
     #region Countdown Logic
 
     protected override IAction? CountDownAction(float remainTime)
+{
+    if ((remainTime is < 14f and > 7f || remainTime is < 4f and > 3f) && SummonEosPvE.CanUse(out IAction? act))
+        return act;
+
+    if (remainTime < RuinPvE.Info.CastTime + CountDownAhead && RuinPvE.CanUse(out act))
+        return act;
+
+    if (remainTime < 3f && UseBurstMedicine(out act))
+        return act;
+
+    switch (CountdownOpener)
     {
-        if (SummonEosPvE.CanUse(out IAction? act))
-            return act;
+        case CountdownOpenerStrategy.RecitationAdloquiumDeploymentTactics:
+            if (remainTime is < 4f and > 3f && DeploymentTacticsPvE.CanUse(out act))
+                return act;
 
-        if (remainTime < RuinPvE.Info.CastTime + CountDownAhead && RuinPvE.CanUse(out act))
-            return act;
+            if (remainTime is < 7f and > 6f &&
+                AdloquiumPvE.CanUse(out act, targetOverride: TargetType.Tank))
+            {
+                StampAdloquiumUse();
+                return act;
+            }
 
-        if (remainTime < 3f && UseBurstMedicine(out act))
-            return act;
+            if (remainTime is < 14f and > 9f &&
+                RecitationPvE.CanUse(out act))
+            {
+                return act;
+            }
+            break;
 
-        if (remainTime is < 4f and > 3f && DeploymentTacticsPvE.CanUse(out act))
-            return act;
+        case CountdownOpenerStrategy.AdloquiumDeploymentTactics:
+            if (remainTime is < 4f and > 3f && DeploymentTacticsPvE.CanUse(out act))
+                return act;
 
-        if (remainTime is < 7f and > 6f && AdloquiumDuringCountdown &&
-            AdloquiumPvE.CanUse(out act, targetOverride: TargetType.Tank))
-        {
-            StampAdloquiumUse();
-            return act;
-        }
+            if (remainTime is < 7f and > 6f &&
+                AdloquiumPvE.CanUse(out act, targetOverride: TargetType.Tank))
+            {
+                StampAdloquiumUse();
+                return act;
+            }
+            break;
 
-        if (remainTime <= 15f && UseRecitationInOpener && RecitationPvE.CanUse(out act))
-            return act;
+        case CountdownOpenerStrategy.ConcitationOrSuccor:
+            if (remainTime is < 7f and > 6f && CanUseCountdownShieldGCD(out act))
+                return act;
+            break;
 
-        return base.CountDownAction(remainTime);
+        case CountdownOpenerStrategy.RecitationConcitationOrSuccor:
+            if (remainTime is < 7f and > 6f && CanUseCountdownShieldGCD(out act))
+                return act;
+
+            if (remainTime is < 14f and > 9f &&
+                RecitationPvE.CanUse(out act))
+            {
+                return act;
+            }
+            break;
+
+        case CountdownOpenerStrategy.None:
+        default:
+            break;
     }
+
+    return base.CountDownAction(remainTime);
+}
 
     #endregion
 
@@ -332,7 +527,13 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
         }
 
         if (ShouldUseRecitationForDeploymentTactics() && RecitationPvE.CanUse(out act))
-            return true;
+    return true;
+
+if (ShouldSwiftcastForAdloquium() &&
+    SwiftcastPvE.CanUse(out act))
+{
+    return true;
+}
 
         if (PartyMembersAverHP < HealAreaGcdEmergencyTacticsHeal &&
             EmergencyTacticsPvE.CanUse(out act) &&
@@ -591,6 +792,7 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
             return base.HealAreaGCD(out act);
 
         if (HasEmergencyTactics &&
+            !HasRecitation &&
             PartyMembersAverHP < HealAreaGcdEmergencyTacticsHeal &&
             SuccorPvE.CanUse(out act, skipStatusProvideCheck: true))
         {
@@ -598,6 +800,7 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
         }
 
         if (!HasEmergencyTactics &&
+            !HasRecitation &&
             PartyMembersAverHP < HealAreaGcdAccessionHeal &&
             AccessionPvE.CanUse(out act, skipCastingCheck: true))
         {
@@ -837,23 +1040,14 @@ public bool EnableEnergyDrainGatlingMode { get; set; } = false;
     #region Decision Helpers
 
     private bool ShouldUseRecitationForDeploymentTactics()
+{
+    if (!OnlyUseDeploymentTacticsOnCriticalShields ||
+        !RecitationPvE.EnoughLevel ||
+        HasRecitation ||
+        HasGalvanize ||
+        !DeploymentTacticsPvE.Cooldown.WillHaveOneChargeGCD(2))
     {
-        if (!OnlyUseDeploymentTacticsOnCriticalShields ||
-            !RecitationPvE.EnoughLevel ||
-            HasRecitation ||
-            HasGalvanize ||
-            !DeploymentTacticsPvE.Cooldown.WillHaveOneChargeGCD(2))
-        {
-            return false;
-        }
-
-        return DeploymentTacticsUsage switch
-        {
-            DeploymentTacticsUsageStrategy.ProtractionControl => HasProtraction,
-            DeploymentTacticsUsageStrategy.RecitationControl => true,
-            DeploymentTacticsUsageStrategy.BothControl => false,
-            _ => false,
-        };
+        return false;
     }
 
     private bool ShouldUseDeploymentAdloquium()

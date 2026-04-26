@@ -5,16 +5,16 @@ namespace RotationSolver.UI;
 
 internal static class ImguiTooltips
 {
-    private const ImGuiWindowFlags TooltipFlag =
-          ImGuiWindowFlags.Tooltip |
-          ImGuiWindowFlags.NoMove |
-          ImGuiWindowFlags.NoSavedSettings |
-          ImGuiWindowFlags.NoBringToFrontOnFocus |
-          ImGuiWindowFlags.NoDecoration |
-          ImGuiWindowFlags.NoInputs |
-          ImGuiWindowFlags.AlwaysAutoResize;
+	private const ImGuiWindowFlags TooltipFlag =
+		  ImGuiWindowFlags.Tooltip |
+		  ImGuiWindowFlags.NoMove |
+		  ImGuiWindowFlags.NoSavedSettings |
+		  ImGuiWindowFlags.NoBringToFrontOnFocus |
+		  ImGuiWindowFlags.NoDecoration |
+		  ImGuiWindowFlags.NoInputs |
+		  ImGuiWindowFlags.AlwaysAutoResize;
 
-    private const string TooltipId = "RotationSolverReborn Tooltips";
+	private const string TooltipId = "RotationSolverReborn Tooltips";
 
     /// <summary>
     /// Displays a tooltip when the item is hovered.
