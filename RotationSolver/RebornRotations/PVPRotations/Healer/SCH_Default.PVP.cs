@@ -27,8 +27,8 @@ public class SCH_DefaultPVP : ScholarRotation
 			return true;
 		}
 
-        if (!IsLastAction(false, DeploymentTacticsPvP))
-        {
+		if (!IsLastAction(false, DeploymentTacticsPvP))
+		{
 			if (DeploymentTacticsPvP.CanUse(out action, usedUp: true))
 			{
 				return true;
@@ -41,7 +41,14 @@ public class SCH_DefaultPVP : ScholarRotation
 		}
 
 		return base.AttackAbility(nextGCD, out action);
-    }
+	}
+
+	protected override bool HealAreaAbility(IAction nextGCD, out IAction? action)
+	{
+		if (SummonSeraphPvP.CanUse(out action, usedUp: true))
+		{
+			return true;
+		}
 
 		return base.HealAreaAbility(nextGCD, out action);
 	}

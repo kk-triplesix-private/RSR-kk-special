@@ -463,11 +463,14 @@ public partial class BardRotation
 		setting.SpecialType = SpecialActionType.MovingBackward;
 	}
 
-    static partial void ModifyTheWardensPaeanPvP(ref ActionSetting setting)
-    {
-        setting.TargetStatusNeed = StatusHelper.PurifyPvPStatuses;
-        setting.IsFriendly = true;
-		setting.TargetType = TargetType.Dispel;
+	static partial void ModifyEncoreOfLightPvP(ref ActionSetting setting)
+	{
+		setting.StatusNeed = [StatusID.EncoreOfLightReady];
+		setting.MPOverride = () => 0;
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
 	}
 
 	static partial void ModifyTheWardensPaeanPvP(ref ActionSetting setting)

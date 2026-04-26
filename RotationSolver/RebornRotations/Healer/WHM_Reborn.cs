@@ -12,9 +12,6 @@ public sealed class WHM_Reborn : WhiteMageRotation
 	public bool UseOpenerHighEnd { get; set; } = true;
 
 	[RotationConfig(CombatType.PvE, Name = "Limit Liturgy Of The Bell to multihit party stacks")]
-    public bool MultiHitRestrict { get; set; } = false;
-
-	[RotationConfig(CombatType.PvE, Name = "Limit Liturgy Of The Bell to multihit party stacks")]
 	public bool MultiHitRestrict { get; set; } = false;
 
 	[RotationConfig(CombatType.PvE, Name = "Use Tincture/Gemdraught when about to use Presence of Mind")]
@@ -213,15 +210,15 @@ public sealed class WHM_Reborn : WhiteMageRotation
 		return base.DefenseSingleAbility(nextGCD, out act);
 	}
 
-    [RotationDesc(ActionID.AsylumPvE)]
-    protected override bool HealAreaAbility(IAction nextGCD, out IAction? act)
-    {
-        if (AsylumPvE.CanUse(out act))
-        {
-            return true;
-        }
-        return base.HealAreaAbility(nextGCD, out act);
-    }
+	[RotationDesc(ActionID.AsylumPvE)]
+	protected override bool HealAreaAbility(IAction nextGCD, out IAction? act)
+	{
+		if (AsylumPvE.CanUse(out act))
+		{
+			return true;
+		}
+		return base.HealAreaAbility(nextGCD, out act);
+	}
 
 	[RotationDesc(ActionID.BenedictionPvE, ActionID.AsylumPvE, ActionID.DivineBenisonPvE, ActionID.TetragrammatonPvE)]
 	protected override bool HealSingleAbility(IAction nextGCD, out IAction? act)
@@ -255,27 +252,18 @@ public sealed class WHM_Reborn : WhiteMageRotation
 		return base.HealSingleAbility(nextGCD, out act);
 	}
 
-    protected override bool AttackAbility(IAction nextGCD, out IAction? act)
-    {
-        if (InCombat)
-        {
-            if (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(3)))
-            {
+	protected override bool AttackAbility(IAction nextGCD, out IAction? act)
+	{
+		if (InCombat)
+		{
+			if (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(3)))
+			{
 				if (PresenceOfMindPvE.CanUse(out act, skipTTKCheck: IsInHighEndDuty))
 				{
 					return true;
 				}
 			}
 
-
-			if (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(4)))
-			{
-				if (AssizePvE.CanUse(out act, skipAoeCheck: true))
-				{
-					return true;
-				}
-			}
-        }
 
 			if (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(4)))
 			{
@@ -404,19 +392,12 @@ public sealed class WHM_Reborn : WhiteMageRotation
 		bool liliesFullNoBlood = Lily == 3;
 
 		if (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && (HasBuffs || HasPresenceOfMind || ((liliesNearlyFull || liliesFullNoBlood) && !CombatElapsedLessGCD(3)))))
-        {
+		{
 			if (AfflatusMiseryPvE.CanUse(out act, skipAoeCheck: true))
 			{
 				return true;
 			}
 		}
-
-        if (AfflatusMiseryPvE.EnoughLevel && UseLilyWhenFull && (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(13))) && (liliesNearlyFull || liliesFullNoBlood) && AfflatusMiseryPvE.EnoughLevel && BloodLily < 3)
-        {
-            if (AfflatusRapturePvE.CanUse(out act, skipAoeCheck: true))
-            {
-                return true;
-            }
 
 		if (AfflatusMiseryPvE.EnoughLevel && UseLilyWhenFull && (!IsInHighEndDuty || !UseOpenerHighEnd || (IsInHighEndDuty && UseOpenerHighEnd && !CombatElapsedLessGCD(13))) && (liliesNearlyFull || liliesFullNoBlood) && AfflatusMiseryPvE.EnoughLevel && BloodLily < 3)
 		{

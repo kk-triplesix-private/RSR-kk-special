@@ -77,6 +77,11 @@ public class AST_DefaultPVP : AstrologianRotation
 			return true;
 		}
 
+		if (GravityIiPvP_29248.CanUse(out action, usedUp: true))
+		{
+			return true;
+		}
+
 		if (FallMaleficPvP_29246.CanUse(out action, usedUp: true))
 		{
 			return true;
@@ -129,17 +134,10 @@ public class AST_DefaultPVP : AstrologianRotation
 			return true;
 		}
 
-    protected override bool GeneralGCD(out IAction? action)
-    {
-		if (NumberOfHostilesInRangeOf(20) > 0 && MacrocosmosPvP.CanUse(out action))
+		if (GravityIiPvP.CanUse(out action))
 		{
 			return true;
 		}
-
-		if (GravityIiPvP.CanUse(out action))
-        {
-            return true;
-        }
 
 		if (FallMaleficPvP.CanUse(out action))
 		{

@@ -95,26 +95,26 @@ public partial class RotationConfigWindow
 		_allSearchable.DrawItems(Configs.BasicAutoSwitch);
 	}
 
-    /// <summary>
-    /// Draws the Action Usage and Control section.
-    /// </summary>
-    private static void DrawActionUsageControl()
-    {
-        ImGui.TextWrapped(UiString.ConfigWindow_Auto_ActionUsage_Description.GetDescription());
-        RSRStyle.ThemedSeparator();
-        _allSearchable.DrawItems(Configs.AutoActionUsage);
-    }
+	/// <summary>
+	/// Draws the Action Usage and Control section.
+	/// </summary>
+	private static void DrawActionUsageControl()
+	{
+		ImGui.TextWrapped(UiString.ConfigWindow_Auto_ActionUsage_Description.GetDescription());
+		ImGui.Separator();
+		_allSearchable.DrawItems(Configs.AutoActionUsage);
+	}
 
-    /// <summary>
-    /// Draws the healing action condition section.
-    /// </summary>
-    private static void DrawHealingActionCondition()
-    {
-        ImGui.TextWrapped(UiString.ConfigWindow_Auto_HealingCondition_Description.GetDescription());
-        RSRStyle.ThemedSeparator();
-        _allSearchable.DrawItems(Configs.HealingActionCondition);
-    }
-    #endregion
+	/// <summary>
+	/// Draws the healing action condition section.
+	/// </summary>
+	private static void DrawHealingActionCondition()
+	{
+		ImGui.TextWrapped(UiString.ConfigWindow_Auto_HealingCondition_Description.GetDescription());
+		ImGui.Separator();
+		_allSearchable.DrawItems(Configs.HealingActionCondition);
+	}
+	#endregion
 
 	#region Target
 	private static void DrawTarget()
@@ -237,7 +237,9 @@ public partial class RotationConfigWindow
 
 		ImGui.TextWrapped(UiString.ConfigWindow_Events_Description.GetDescription());
 
-        RSRStyle.ThemedSeparator();
+		ImGui.Text(UiString.ConfigWindow_Events_DutyStart.GetDescription());
+		ImGui.SameLine();
+		Service.Config.DutyStart.DisplayMacro();
 
 		ImGui.Text(UiString.ConfigWindow_Events_DutyEnd.GetDescription());
 		ImGui.SameLine();
@@ -245,13 +247,20 @@ public partial class RotationConfigWindow
 
 		ImGui.Separator();
 
-            if (ImGui.Button($"{UiString.ConfigWindow_Events_RemoveEvent.GetDescription()}##RemoveEvent{eve.GetHashCode()}"))
-            {
-                Service.Config.Events.RemoveAt(i);
-                i--; // Adjust index after removal
-            }
-            RSRStyle.ThemedSeparator();
-        }
-    }
-    #endregion
+		for (int i = 0; i < Service.Config.Events.Count; i++)
+		{
+			ActionEventInfo eve = Service.Config.Events[i];
+			eve.DisplayEvent();
+
+			ImGui.SameLine();
+
+			if (ImGui.Button($"{UiString.ConfigWindow_Events_RemoveEvent.GetDescription()}##RemoveEvent{eve.GetHashCode()}"))
+			{
+				Service.Config.Events.RemoveAt(i);
+				i--; // Adjust index after removal
+			}
+			ImGui.Separator();
+		}
+	}
+	#endregion
 }

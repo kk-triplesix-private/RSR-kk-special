@@ -72,12 +72,26 @@ internal class ActionTimelineWindow : Window
 			return;
 		}
 
-        using var theme = RSRStyle.PushTheme();
-        RSRStyle.DrawGlassWindowBackground();
-        var pos = ImGui.GetWindowPos();
-        var size = ImGui.GetWindowSize();
-        var now = DateTime.Now;
-        var endTime = now - TimeSpan.FromSeconds(size.X / SizePerSecond - TimeOffset);
+		using ImRaii.Style selectableAlign = ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
+		using var framePad = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, new Vector2(4, 3));
+		using var childWinPad = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(12, 12));
+		using var frameCellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4, 2));
+		using var frameItemSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemSpacing, new Vector2(8, 4));
+		using var frameItemInnerSpacing = ImRaii.PushStyle(ImGuiStyleVar.ItemInnerSpacing, new Vector2(4, 4));
+		using var frameIndentSpacing = ImRaii.PushStyle(ImGuiStyleVar.IndentSpacing, 21f);
+		using var frameScrollbarSize = ImRaii.PushStyle(ImGuiStyleVar.ScrollbarSize, 16f);
+		using var frameGrabMinSize = ImRaii.PushStyle(ImGuiStyleVar.GrabMinSize, 13f);
+		using var frameWindowRounding = ImRaii.PushStyle(ImGuiStyleVar.WindowRounding, 11f);
+		using var frameChildRounding = ImRaii.PushStyle(ImGuiStyleVar.ChildRounding, 11f);
+		using var frameFrameRounding = ImRaii.PushStyle(ImGuiStyleVar.FrameRounding, 11f);
+		using var framePopupRounding = ImRaii.PushStyle(ImGuiStyleVar.PopupRounding, 11f);
+		using var frameScrollbarRounding = ImRaii.PushStyle(ImGuiStyleVar.ScrollbarRounding, 11f);
+		using var frameGrabRounding = ImRaii.PushStyle(ImGuiStyleVar.GrabRounding, 11f);
+		using var frameTabRounding = ImRaii.PushStyle(ImGuiStyleVar.TabRounding, 11f);
+		var pos = ImGui.GetWindowPos();
+		var size = ImGui.GetWindowSize();
+		var now = DateTime.Now;
+		var endTime = now - TimeSpan.FromSeconds(size.X / SizePerSecond - TimeOffset);
 
 		// Get timeline items from our timeline manager
 		var items = ActionTimelineManager.Instance.GetItems(endTime, out var lastEndTime);
@@ -112,45 +126,23 @@ internal class ActionTimelineWindow : Window
 		var startX = pos.X + timelineLength - (timeSinceStart + TimeOffset) * SizePerSecond;
 		var endX = startX + itemDuration * SizePerSecond;
 
-        // Draw background bar for GCD actions
-        if (item.Type == TimelineItemType.GCD)
-        {
-            var barColor = item.State switch
-            {
-                TimelineItemState.Casting => ImGui.ColorConvertFloat4ToU32(RSRStyle.Accent with { W = 0.75f }),
-                TimelineItemState.Finished => ImGui.ColorConvertFloat4ToU32(RSRStyle.BgRaised with { W = 0.80f }),
-                TimelineItemState.Canceled => ImGui.ColorConvertFloat4ToU32(new Vector4(0.75f, 0.25f, 0.25f, 0.80f)),
-                _ => ImGui.ColorConvertFloat4ToU32(RSRStyle.BgCard with { W = 0.70f })
-            };
+		// Skip if completely outside visible area
+		if (endX < pos.X || startX > pos.X + timelineLength) return;
 
 		var iconSize = item.Type == TimelineItemType.GCD ? GCDIconSize : OGCDIconSize;
 		var yOffset = item.Type == TimelineItemType.GCD ? heightLength * GCDHeightLow : heightLength * (GCDHeightLow + 0.1f);
 		var itemHeight = item.Type == TimelineItemType.GCD ? heightLength * (GCDHeightHigh - GCDHeightLow) : iconSize;
 
-        // Draw action icon
-        if (IconSet.GetTexture(item.Icon, out IDalamudTextureWrap? texture) && texture != null)
-        {
-            var iconPos = new Vector2(startX, pos.Y + yOffset + (itemHeight - iconSize) / 2);
-            
-            // Ensure icon is within window bounds
-            iconPos.X = Math.Max(iconPos.X, pos.X);
-            iconPos.X = Math.Min(iconPos.X, pos.X + timelineLength - iconSize);
-            
-            drawList.AddImage(
-                texture.Handle,
-                iconPos,
-                iconPos + new Vector2(iconSize, iconSize));
-        }
-        else
-        {
-            // Fallback: draw colored rectangle
-            var fallbackColor = item.Type switch
-            {
-                TimelineItemType.GCD => RSRStyle.AccentU32,
-                TimelineItemType.OGCD => ImGui.ColorConvertFloat4ToU32(RSRStyle.AccentDim),
-                TimelineItemType.AutoAttack => ImGui.ColorConvertFloat4ToU32(RSRStyle.TextSecondary),
-                _ => ImGui.ColorConvertFloat4ToU32(RSRStyle.TextDisabled)
-            };
+		// Draw background bar for GCD actions
+		if (item.Type == TimelineItemType.GCD)
+		{
+			var barColor = item.State switch
+			{
+				TimelineItemState.Casting => ImGui.ColorConvertFloat4ToU32(new Vector4(0.2f, 0.8f, 0.2f, 0.8f)),
+				TimelineItemState.Finished => ImGui.ColorConvertFloat4ToU32(new Vector4(0.5f, 0.5f, 0.5f, 0.8f)),
+				TimelineItemState.Canceled => ImGui.ColorConvertFloat4ToU32(new Vector4(0.8f, 0.2f, 0.2f, 0.8f)),
+				_ => ImGui.ColorConvertFloat4ToU32(new Vector4(0.3f, 0.3f, 0.3f, 0.8f))
+			};
 
 			drawList.AddRectFilled(
 				new Vector2(Math.Max(startX, pos.X), pos.Y + yOffset),
@@ -159,11 +151,10 @@ internal class ActionTimelineWindow : Window
 				2f);
 		}
 
-    private void DrawGrid(Vector2 pos, Vector2 size)
-    {
-        var drawList = ImGui.GetWindowDrawList();
-        var timelineLength = IsHorizontal ? size.X : size.Y;
-        var gridColor = RSRStyle.SeparatorU32;
+		// Draw action icon
+		if (IconSet.GetTexture(item.Icon, out IDalamudTextureWrap? texture) && texture != null)
+		{
+			var iconPos = new Vector2(startX, pos.Y + yOffset + (itemHeight - iconSize) / 2);
 
 			// Ensure icon is within window bounds
 			iconPos.X = Math.Max(iconPos.X, pos.X);
@@ -188,15 +179,12 @@ internal class ActionTimelineWindow : Window
 			var iconPos = new Vector2(Math.Max(startX, pos.X), pos.Y + yOffset + (itemHeight - iconSize) / 2);
 			iconPos.X = Math.Min(iconPos.X, pos.X + timelineLength - iconSize);
 
-        // Draw current time line
-        var currentTimeX = pos.X + timelineLength - TimeOffset * SizePerSecond;
-        var currentTimeColor = RSRStyle.AccentU32;
-        drawList.AddLine(
-            new Vector2(currentTimeX, pos.Y),
-            new Vector2(currentTimeX, pos.Y + size.Y),
-            currentTimeColor,
-            3f);
-    }
+			drawList.AddRectFilled(
+				iconPos,
+				iconPos + new Vector2(iconSize, iconSize),
+				fallbackColor);
+		}
+	}
 
 	private void DrawGrid(Vector2 pos, Vector2 size)
 	{

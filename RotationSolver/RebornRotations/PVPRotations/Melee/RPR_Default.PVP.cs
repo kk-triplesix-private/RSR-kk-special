@@ -10,13 +10,9 @@ public sealed class RPR_DefaultPvP : ReaperRotation
 	[RotationConfig(CombatType.PvP, Name = "Player health threshold needed for Bloodbath use")]
 	public float BloodBathPvPPercent { get; set; } = 0.75f;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvP, Name = "Enemy health threshold needed for Smite use")]
-    public float SmitePvPPercent { get; set; } = 0.25f;
-
-    [RotationConfig(CombatType.PvP, Name = "Use Communio immediately after Enshroud (For frontline)")]
-    public bool UseCommunioImmediately { get; set; } = false;
-    #endregion
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvP, Name = "Enemy health threshold needed for Smite use")]
+	public float SmitePvPPercent { get; set; } = 0.25f;
 
 	[RotationConfig(CombatType.PvP, Name = "Use Communio immediately after Enshroud (For frontline)")]
 	public bool UseCommunioImmediately { get; set; } = false;
@@ -79,33 +75,32 @@ public sealed class RPR_DefaultPvP : ReaperRotation
 			}
 		}
 
-    #region GCDs
-    protected override bool GeneralGCD(out IAction? action)
-    {
-        if (HasEnshroudedPvP)
-        {
-            if (CommunioPvP.CanUse(out action))
-            {
-                if (UseCommunioImmediately ||
-                    StatusHelper.PlayerStatusStack(true, StatusID.Enshrouded_2863) == 1 ||
-                    StatusHelper.PlayerWillStatusEndGCD(1, 0, true, StatusID.Enshrouded_2863))
-                {
-                    return true;
-                }
-            }
-        }
+		return base.AttackAbility(nextGCD, out action);
+	}
+	#endregion
 
-        if (PerfectioPvP.CanUse(out action))
-        {
-            return true;
-        }
-
-        if (CrossReapingPvP.CanUse(out action))
-        {
-            return true;
-        }
+	#region GCDs
+	protected override bool GeneralGCD(out IAction? action)
+	{
+		if (HasEnshroudedPvP)
+		{
+			if (CommunioPvP.CanUse(out action))
+			{
+				if (UseCommunioImmediately ||
+					StatusHelper.PlayerStatusStack(true, StatusID.Enshrouded_2863) == 1 ||
+					StatusHelper.PlayerWillStatusEndGCD(1, 0, true, StatusID.Enshrouded_2863))
+				{
+					return true;
+				}
+			}
+		}
 
 		if (PerfectioPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (CrossReapingPvP.CanUse(out action))
 		{
 			return true;
 		}

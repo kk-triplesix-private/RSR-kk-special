@@ -22,14 +22,17 @@ public sealed class BeirutaSCH : ScholarRotation
         "• Without burst delay, this restriction will occur during the 30-second window at 0s and 180s then every multiple of 180s thereafter\n")]
     public bool RotationNotes { get; set; } = true;
 
-    [RotationConfig(CombatType.PvE, Name = "Enable Energy Drain Gatling Mode")]
-public bool EnableEnergyDrainGatlingMode { get; set; } = false;
+    [RotationConfig(CombatType.PvE, Name = "Use all Energy Drain During Burst")]
+    public bool EnableEnergyDrainGatlingMode { get; set; } = true;
 
     [RotationConfig(CombatType.PvE, Name = "Use first stack of Consolation ASAP when Seraph is out")]
     public bool UseFirstConsolationAsapWhenSeraphIsOut { get; set; } = true;
 
     [RotationConfig(CombatType.PvE, Name = "Use Swiftcast for movement")]
     public bool UseSwiftcastForMovement { get; set; } = true;
+
+    [RotationConfig(CombatType.PvE, Name = "Use Swiftcast on Adloquium")]
+    public bool UseSwiftcastOnAdloquium { get; set; } = true;
 
     [Range(0, 5, ConfigUnitType.Seconds, 0.1f)]
     [RotationConfig(CombatType.PvE, Name = "Minimum movement time before allowing movement-based actions")]
@@ -141,7 +144,6 @@ public enum CountdownOpenerStrategy : byte
     private const float AetherpactStartHpThreshold = 0.8f;
     private const float ExcogHealHpThreshold = 0.4f;
     private const float BallparkDamagePercent = 0.08f;
-    private const float SwiftcastPostActionLockSeconds = 2f;
 
     private const int DotOffsetMobs = 1;
     private const int MinimumFairyGaugeForLinkPriority = 70;
@@ -160,6 +162,7 @@ public enum CountdownOpenerStrategy : byte
     private bool HasGalvanize => StatusHelper.PlayerHasStatus(true, StatusID.Galvanize);
     private bool HasProtraction => StatusHelper.PlayerHasStatus(true, StatusID.Protraction);
     private bool HasMacrocosmos => StatusHelper.PlayerHasStatus(true, StatusID.Macrocosmos);
+    private bool HasSeraphism => StatusHelper.PlayerHasStatus(true, StatusID.Seraphism);
 
     private bool HasWhisperingDawn => HasPartyMemberWithOwnStatus(StatusID.WhisperingDawn);
     private bool HasAngelsWhisper => HasPartyMemberWithOwnStatus(StatusID.AngelsWhisper);
@@ -316,113 +319,6 @@ private bool CanUseCountdownShieldGCD(out IAction? act)
             HasSwift ||
             IsLastAction(ActionID.SwiftcastPvE) ||
             ShouldDeferToRaise())
-        {
-            return false;
-        }
-
-        return !IsMovementPreferredNextGCD(nextGCD);
-    }
-
-    private bool IsSwiftcastPostActionLockActive =>
-        InCombat &&
-        _lastSwiftcastLockingActionCombatTime > float.MinValue / 2 &&
-        CombatTime - _lastSwiftcastLockingActionCombatTime <= SwiftcastPostActionLockSeconds;
-
-    #endregion
-
-    #region Helper Methods
-
-    private static float EstimateRemainingSeconds(dynamic cooldown, float maxProbeSeconds, float stepSeconds = 0.5f)
-    {
-        if (cooldown.HasOneCharge) return 0f;
-
-        for (float t = 0f; t <= maxProbeSeconds; t += stepSeconds)
-        {
-            if (cooldown.WillHaveOneCharge(t))
-                return t;
-        }
-
-        return -1f;
-    }
-
-    private float SummonSeraphRem()
-    {
-        if (!SummonSeraphPvE.EnoughLevel) return -1f;
-        return EstimateRemainingSeconds(SummonSeraphPvE.Cooldown, 180f, 0.5f);
-    }
-
-    private float DissipationRem()
-    {
-        if (!DissipationPvE.EnoughLevel) return -1f;
-        return EstimateRemainingSeconds(DissipationPvE.Cooldown, 180f, 0.5f);
-    }
-
-    private bool CurrentTargetInLast5sOfChainStratagem
-    {
-        get
-        {
-            if (CurrentTarget == null)
-                return false;
-
-            return CurrentTarget.HasStatus(true, StatusID.ChainStratagem) &&
-                   CurrentTarget.WillStatusEnd(5f, true, StatusID.ChainStratagem);
-        }
-    }
-
-    private bool ShouldUseSummonEos()
-    {
-        float summonSeraphRem = SummonSeraphRem();
-        float dissipationRem = DissipationRem();
-
-        return summonSeraphRem < 90f || dissipationRem < 140f;
-    }
-
-    private void UpdateActionTracking()
-    {
-        if (!InCombat)
-        {
-            _lastSwiftcastLockingActionCombatTime = float.MinValue;
-            return;
-        }
-
-        if (IsLastAction(ActionID.BiolysisPvE) ||
-            IsLastAction(ActionID.ArtOfWarPvE) ||
-            IsLastAction(ActionID.ManifestationPvE) ||
-            IsLastAction(ActionID.AccessionPvE) ||
-            IsLastAction(ActionID.RuinIiPvE))
-        {
-            _lastSwiftcastLockingActionCombatTime = CombatTime;
-        }
-    }
-
-    private bool IsMovementPreferredNextGCD(IAction nextGCD)
-    {
-        if (nextGCD == ArtOfWarPvE ||
-            nextGCD == ManifestationPvE ||
-            nextGCD == AccessionPvE ||
-            nextGCD == RuinIiPvE)
-        {
-            return true;
-        }
-
-        if (CanUseCurrentBio(out IAction? bioAct) &&
-            nextGCD == bioAct)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool ShouldSwiftcastForMovement(IAction nextGCD)
-    {
-        if (!UseSwiftcastForMovement ||
-            !InCombat ||
-            !HasSufficientMovement ||
-            HasSwift ||
-            IsLastAction(ActionID.SwiftcastPvE) ||
-            ShouldDeferToRaise() ||
-            IsSwiftcastPostActionLockActive)
         {
             return false;
         }
@@ -734,7 +630,6 @@ if (ShouldSwiftcastForAdloquium() &&
         int closeTargetCount = NumberOfHostilesInRangeOf(5);
 
         if (ShouldSwiftcastForMovement(nextGCD) &&
-        !IsSwiftcastPostActionLockActive &&
             MovingTime > MovementTimeThreshold + 0.5f &&
             SwiftcastPvE.CanUse(out act))
         {
@@ -752,11 +647,11 @@ if (ShouldSwiftcastForAdloquium() &&
             AetherflowPvE.Cooldown.WillHaveOneChargeGCD(3);
 
         if (EnableEnergyDrainGatlingMode &&
-        InFirst20sAfterChainStratagem &&
-        EnergyDrainPvE.CanUse(out act, usedUp: true))
-    {
-        return true;
-    }
+            InFirst20sAfterChainStratagem &&
+            EnergyDrainPvE.CanUse(out act, usedUp: true))
+        {
+            return true;
+        }
 
         if (CombatTime > 5 && shouldDumpAether && EnergyDrainPvE.CanUse(out act, usedUp: true))
             return true;
@@ -764,8 +659,12 @@ if (ShouldSwiftcastForAdloquium() &&
         if (!HasAetherflow && AetherflowPvE.CanUse(out act))
             return true;
 
-        if (ChainStratagemPvE.Cooldown.WillHaveOneCharge(5) && IsBurst &&UseBurstMedicine(out act))
-            return true;
+       if (IsBurst &&
+    (IsPartyMedicated || ChainStratagemPvE.Cooldown.WillHaveOneCharge(5)) &&
+    UseBurstMedicine(out act))
+{
+    return true;
+}
 
         if (ShouldUseBanefulImpaction(closeTargetCount, out act))
             return true;
@@ -1025,8 +924,6 @@ if (ShouldSwiftcastForAdloquium() &&
 
         if (HasSufficientMovement &&
     !HasSwift &&
-    (!UseSwiftcastForMovement || !SwiftcastPvE.CanUse(out _)) &&
-    !IsSwiftcastPostActionLockActive &&
     RuinIiPvE.CanUse(out act))
 {
     return true;
@@ -1050,6 +947,14 @@ if (ShouldSwiftcastForAdloquium() &&
         return false;
     }
 
+    return DeploymentTacticsUsage switch
+    {
+        DeploymentTacticsUsageStrategy.ProtractionControl => HasProtraction,
+        DeploymentTacticsUsageStrategy.RecitationControl => false,
+        DeploymentTacticsUsageStrategy.BothControl => false,
+        _ => false,
+    };
+}
     private bool ShouldUseDeploymentAdloquium()
     {
         if (!DeploymentTacticsPvE.Cooldown.WillHaveOneChargeGCD(2) || HasGalvanize)

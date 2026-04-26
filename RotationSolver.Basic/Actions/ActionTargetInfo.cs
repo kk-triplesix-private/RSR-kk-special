@@ -925,71 +925,15 @@ public struct ActionTargetInfo(IBaseAction action)
 			}
 		}
 
-        // --- OnCalculated logic (fallback) ---
-        // Try to place at/near a boss position (known valid terrain)
-        // Exclude "wall bosses" — very large omnidirectional bosses positioned off the arena.
-        IBattleChara? bossTarget = null;
-        if (Svc.Targets.Target is IBattleChara b && b.DistanceToPlayer() <= range && b.IsBossFromIcon()
-            && (b.HasPositional() || b.HitboxRadius <= 8))
-        {
-            bossTarget = b;
-        }
-
-        // If the current target isn't a boss in range, search hostile targets for one
-        if (bossTarget == null && DataCenter.AllHostileTargets != null)
-        {
-            foreach (var hostile in DataCenter.AllHostileTargets)
-            {
-                if (hostile != null && hostile.IsBossFromIcon() && hostile.DistanceToPlayer() <= range
-                    && (hostile.HasPositional() || hostile.HitboxRadius <= 8))
-                {
-                    bossTarget = hostile;
-                    break;
-                }
-            }
-        }
-
-        if (bossTarget != null)
-        {
-            Vector3 bossPos = bossTarget.Position;
-            float distToBoss = Vector3.Distance(player.Position, bossPos);
-
-            Vector3 targetPos;
-            if (distToBoss <= range)
-            {
-                targetPos = bossPos;
-            }
-            else if (distToBoss > 0.001f)
-            {
-                // Adjust position to be within cast range along the line to boss
-                Vector3 toBoss = bossPos - player.Position;
-                targetPos = player.Position + toBoss / distToBoss * range;
-            }
-            else
-            {
-                targetPos = player.Position;
-            }
-
-            List<IBattleChara> affectsList = [.. GetAffectsVector(targetPos, canAffects)];
-            return new TargetResult(player, [.. affectsList], targetPos);
-        }
-        else
-        {
-            float effectRange = EffectRange;
-            List<IBattleChara> partyMembersInRadius = [];
-            if (DataCenter.PartyMembers != null)
-            {
-                foreach (var member in DataCenter.PartyMembers)
-                {
-                    float dist = Vector3.Distance(member.Position, player.Position);
-                    if (dist <= range + effectRange)
-                    {
-                        partyMembersInRadius.Add(member);
-                    }
-                }
-            }
-            IBattleChara? attackT = FindTargetByType(partyMembersInRadius,
-                TargetType.BeAttacked, action.Config.AutoHealRatio, action.Setting.SpecialType, targetOverride, true);
+		// --- OnCalculated logic (fallback) ---
+		// Try to place at/near a boss position (known valid terrain)
+		// Exclude "wall bosses" — very large omnidirectional bosses positioned off the arena.
+		IBattleChara? bossTarget = null;
+		if (Svc.Targets.Target is IBattleChara b && b.DistanceToPlayer() <= range && b.IsBossFromIcon()
+			&& (b.HasPositional() || b.HitboxRadius <= 8))
+		{
+			bossTarget = b;
+		}
 
 		// If the current target isn't a boss in range, search hostile targets for one
 		if (bossTarget == null && DataCenter.AllHostileTargets != null)
@@ -1005,48 +949,26 @@ public struct ActionTargetInfo(IBaseAction action)
 			}
 		}
 
-                Vector3 finalPos;
-                if (disToTankRound < effectRange
-                    || disToTankRound > (2 * effectRange) - player.HitboxRadius)
-                {
-                    finalPos = player.Position;
-                }
-                else
-                {
-                    Vector3 directionToTank = attackT.Position - player.Position;
-                    float dirLength = directionToTank.Length();
-                    if (dirLength < 0.001f)
-                    {
-                        finalPos = player.Position;
-                    }
-                    else
-                    {
-                        Vector3 moveDirection = directionToTank / dirLength * Math.Max(0, disToTankRound - effectRange);
-                        finalPos = player.Position + moveDirection;
-                    }
-                }
+		if (bossTarget != null)
+		{
+			Vector3 bossPos = bossTarget.Position;
+			float distToBoss = Vector3.Distance(player.Position, bossPos);
 
-                // Clamp finalPos within cast range
-                Vector3 toFinal = finalPos - player.Position;
-                float toFinalLen = toFinal.Length();
-                if (toFinalLen > range)
-                {
-                    if (toFinalLen > 0.001f)
-                    {
-                        finalPos = player.Position + toFinal / toFinalLen * range;
-                    }
-                    else
-                    {
-                        finalPos = player.Position;
-                    }
-                }
-
-                // Safety: fall back to player position if computation produced invalid values
-                if (float.IsNaN(finalPos.X) || float.IsNaN(finalPos.Y) || float.IsNaN(finalPos.Z) ||
-                    float.IsInfinity(finalPos.X) || float.IsInfinity(finalPos.Y) || float.IsInfinity(finalPos.Z))
-                {
-                    finalPos = player.Position;
-                }
+			Vector3 targetPos;
+			if (distToBoss <= range)
+			{
+				targetPos = bossPos;
+			}
+			else if (distToBoss > 0.001f)
+			{
+				// Adjust position to be within cast range along the line to boss
+				Vector3 toBoss = bossPos - player.Position;
+				targetPos = player.Position + toBoss / distToBoss * range;
+			}
+			else
+			{
+				targetPos = player.Position;
+			}
 
 			List<IBattleChara> affectsList = [.. GetAffectsVector(targetPos, canAffects)];
 			return new TargetResult(player, [.. affectsList], targetPos);

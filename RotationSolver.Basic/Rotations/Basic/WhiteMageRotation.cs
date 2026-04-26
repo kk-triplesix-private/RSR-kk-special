@@ -82,28 +82,17 @@ public partial class WhiteMageRotation
 	}
 	#endregion
 
-    #region Status Tracking
-    /// <summary>
-    /// Player has Thin Air.
-    /// </summary>
-    public static bool HasThinAir => StatusHelper.PlayerHasStatus(true, StatusID.ThinAir);
+	#region Status Tracking
+	/// <summary>
+	/// Player has Thin Air.
+	/// </summary>
+	public static bool HasThinAir => StatusHelper.PlayerHasStatus(true, StatusID.ThinAir);
 
 	/// <summary>
 	/// Player has Presence Of Mind.
 	/// </summary>
 	public static bool HasPresenceOfMind => StatusHelper.PlayerHasStatus(true, StatusID.PresenceOfMind);
 	#endregion
-
-	#region Debug
-	/// <inheritdoc/>
-	public override void DisplayBaseStatus()
-    {
-        ImGui.Text("SacredSightStacks: " + SacredSightStacks.ToString());
-        ImGui.Text("LilyTime: " + LilyTime.ToString());
-        ImGui.Text("BloodLilyStacks: " + BloodLily.ToString());
-        ImGui.Text("Lily: " + Lily.ToString());
-    }
-    #endregion
 
 	#region Debug
 	/// <inheritdoc/>
@@ -414,11 +403,12 @@ public partial class WhiteMageRotation
 
 	}
 
-    static partial void ModifyAquaveilPvP(ref ActionSetting setting)
-    {
-        setting.TargetStatusNeed = StatusHelper.PurifyPvPStatuses;
-        setting.IsFriendly = true;
-        setting.TargetType = TargetType.Dispel;
+	static partial void ModifyAfflatusMiseryPvP(ref ActionSetting setting)
+	{
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
 	}
 
 	static partial void ModifyAquaveilPvP(ref ActionSetting setting)

@@ -1,4 +1,6 @@
-﻿using Dalamud.Interface.Windowing;
+﻿using Dalamud.Interface.Colors;
+using Dalamud.Interface.Windowing;
+using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using RotationSolver.Updaters;
@@ -99,10 +101,58 @@ internal class NextActionWindow : Window
 			return;
 		}
 
-        ImGui.PushStyleColor(ImGuiCol.PlotHistogram, RSRStyle.AccentActive);
-        ImGui.PushStyleColor(ImGuiCol.FrameBg, RSRStyle.FrameBg);
-        ImGui.ProgressBar(elapsed / total, new Vector2(width, height), string.Empty);
-        ImGui.PopStyleColor(2);
+		string name = suggestedTarget.Name.TextValue;
+		if (string.IsNullOrEmpty(name))
+		{
+			return;
+		}
+
+		bool isCurrentTarget = Svc.Targets.Target?.GameObjectId == suggestedTarget.GameObjectId;
+		bool isSelf = suggestedTarget.GameObjectId == (Player.Object?.GameObjectId ?? 0);
+
+		string label = $"Target: {name}";
+		Vector4 color = isSelf
+			? ImGuiColors.DalamudWhite
+			: isCurrentTarget
+				? ImGuiColors.HealerGreen
+				: ImGuiColors.DalamudOrange;
+
+		float textWidth = ImGui.CalcTextSize(label).X;
+		float offsetX = (width - textWidth) / 2f;
+		ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(0, offsetX));
+
+		ImGui.PushStyleColor(ImGuiCol.Text, color);
+		ImGui.Selectable(label, false, ImGuiSelectableFlags.None, new Vector2(textWidth, 0));
+		ImGui.PopStyleColor();
+
+		if (ImGui.IsItemClicked() && !isSelf)
+		{
+			Svc.Targets.Target = suggestedTarget;
+		}
+
+		if (ImGui.IsItemHovered() && !isSelf)
+		{
+			ImGui.SetTooltip("Click to target");
+		}
+	}
+
+	public static void DrawGcdCooldown(float width, bool drawTitle)
+	{
+		float remain = DataCenter.DefaultGCDRemain;
+		float total = DataCenter.DefaultGCDTotal;
+		float elapsed = DataCenter.DefaultGCDElapsed;
+
+		if (drawTitle)
+		{
+			string str = $"{remain:F2}s / {total:F2}s";
+			ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (width / 2) - (ImGui.CalcTextSize(str).X / 2));
+			ImGui.Text(str);
+		}
+
+		Vector2 cursor = ImGui.GetCursorPos() + ImGui.GetWindowPos();
+		float height = Service.Config.ControlProgressHeight;
+
+		ImGui.ProgressBar(elapsed / total, new Vector2(width, height), string.Empty);
 
 		float actionRemain = DataCenter.DefaultGCDRemain;
 		if (actionRemain > 0)
@@ -115,7 +165,7 @@ internal class NextActionWindow : Window
 				Vector2 pt = cursor + (new Vector2(width, 0) * value / total);
 
 				ImGui.GetWindowDrawList().AddLine(pt, pt + new Vector2(0, height),
-					RSRStyle.AccentU32, 2);
+					ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudRed), 2);
 			}
 		}
 	}
