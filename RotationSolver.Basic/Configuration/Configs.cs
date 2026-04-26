@@ -622,7 +622,7 @@ internal partial class Configs : IPluginConfiguration
 
 	[UI("Seconds before raidwide to use area mitigation", Parent = nameof(UseBmrTimeline))]
 	[Range(1, 15, ConfigUnitType.Seconds, 0.5f)]
-	public float BMRRaidwideMitWindow { get; set; } = 5f;
+	public float BMRRaidwideMitWindow { get; set; } = 10f;
 
 	[UI("Seconds before tankbuster to use single mitigation", Parent = nameof(UseBmrTimeline),
 		PvEFilter = JobFilterType.Tank)]
