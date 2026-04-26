@@ -163,7 +163,7 @@ internal static class MajorUpdater
 			// Target updater always needs to be first to update
 			MacroUpdater.UpdateMacro();
 
-			if (DataCenter.BMREndabled)
+			if (DataCenter.BMREnabled)
 			{
 				BossModUpdater.Update();
 			}

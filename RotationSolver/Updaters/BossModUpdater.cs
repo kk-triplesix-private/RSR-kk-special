@@ -1,3 +1,4 @@
+using ECommons.DalamudServices;
 using RotationSolver.IPC;
 
 namespace RotationSolver.Updaters;
@@ -100,22 +101,23 @@ internal static class BossModUpdater
 
 			// Last-resort fallback for fights/clients where neither timeline nor type-specific hints
 			// fire but the boolean Hints.IsXImminent probe sees the event. We fold a synthetic
-			// "in-window" timestamp (= window/2) so RSR's window check downstream succeeds.
+			// "in-window" timestamp (= window/2) so RSR's window check downstream succeeds. Reuses
+			// the existing BossModHints_IPCSubscriber bindings to avoid duplicating IPC plumbing.
 			if (timelineRaidwide >= float.MaxValue && hintsRaidwide >= float.MaxValue && genericRaidwide >= float.MaxValue
-				&& BMRTimeline_IPCSubscriber.IsRaidwideImminent != null
-				&& SafeBool(() => BMRTimeline_IPCSubscriber.IsRaidwideImminent!(ImminentProbeSeconds)))
+				&& BossModHints_IPCSubscriber.Hints_IsRaidwideImminent != null
+				&& SafeBool(() => BossModHints_IPCSubscriber.Hints_IsRaidwideImminent(ImminentProbeSeconds)))
 			{
 				hintsRaidwide = ImminentProbeSeconds * 0.5f;
 			}
 			if (timelineTankbuster >= float.MaxValue && hintsTankbuster >= float.MaxValue && genericTankbuster >= float.MaxValue
-				&& BMRTimeline_IPCSubscriber.IsTankbusterImminent != null
-				&& SafeBool(() => BMRTimeline_IPCSubscriber.IsTankbusterImminent!(ImminentProbeSeconds)))
+				&& BossModHints_IPCSubscriber.Hints_IsTankbusterImminent != null
+				&& SafeBool(() => BossModHints_IPCSubscriber.Hints_IsTankbusterImminent(ImminentProbeSeconds)))
 			{
 				hintsTankbuster = ImminentProbeSeconds * 0.5f;
 			}
 			if (hintsStack >= float.MaxValue && genericStack >= float.MaxValue
-				&& BMRTimeline_IPCSubscriber.IsSharedImminent != null
-				&& SafeBool(() => BMRTimeline_IPCSubscriber.IsSharedImminent!(ImminentProbeSeconds)))
+				&& BossModHints_IPCSubscriber.Hints_IsSharedImminent != null
+				&& SafeBool(() => BossModHints_IPCSubscriber.Hints_IsSharedImminent(ImminentProbeSeconds)))
 			{
 				hintsStack = ImminentProbeSeconds * 0.5f;
 			}
@@ -133,26 +135,34 @@ internal static class BossModUpdater
 			DataCenter.BMRSpecialModeType = BMRTimeline_IPCSubscriber.SpecialModeType?.Invoke() ?? 0;
 			DataCenter.BMRDebugTimelineWalk = BMRTimeline_IPCSubscriber.DebugTimelineWalk?.Invoke();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Svc.Log.Verbose($"BMR IPC poll failed, resetting BMR data: {ex.Message}");
 			DataCenter.ResetBmrData();
 			_checkedAvailability = false;
 			_nextAvailabilityRecheck = DateTime.MinValue;
 		}
 	}
 
-	public static void ResetAvailabilityCheck()
+	private static float SafeFloat(Func<float>? f)
 	{
-		_checkedAvailability = false;
-		_nextAvailabilityRecheck = DateTime.MinValue;
+		float v = f?.Invoke() ?? float.MaxValue;
+		// Guard against NaN/Infinity/negative-overflow values an upstream IPC could theoretically
+		// produce; downstream window checks treat MaxValue as "no event" so this is the safe default.
+		return float.IsFinite(v) ? v : float.MaxValue;
 	}
-
-	private static float SafeFloat(Func<float>? f) => f?.Invoke() ?? float.MaxValue;
 
 	private static bool SafeBool(Func<bool> f)
 	{
-		try { return f(); }
-		catch { return false; }
+		try
+		{
+			return f();
+		}
+		catch (Exception ex)
+		{
+			Svc.Log.Verbose($"BMR IsXImminent probe threw: {ex.Message}");
+			return false;
+		}
 	}
 
 	private static float Min4(float a, float b, float c, float d) => Math.Min(Math.Min(a, b), Math.Min(c, d));

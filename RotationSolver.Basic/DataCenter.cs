@@ -2046,22 +2046,43 @@ internal static class DataCenter
 
 	#region BossModReborn Timeline Integration
 
-	public static bool BMREndabled
+	private static bool _bmrEnabledCache;
+	private static DateTime _bmrEnabledCacheExpiry = DateTime.MinValue;
+	private const string BmrPluginName = "BossModReborn";
+	private static readonly TimeSpan BmrEnabledCacheTtl = TimeSpan.FromSeconds(5);
+
+	// Whether the BossModReborn Dalamud plugin is installed and loaded.
+	// Cached because the previous implementation enumerated InstalledPlugins on every getter call,
+	// and the per-frame caller in MajorUpdater turned that into a hot path. Cache TTL trades a few
+	// seconds of plugin-load detection lag for one allocation-free dictionary lookup per frame.
+	public static bool BMREnabled
 	{
 		get
 		{
-			string name = "BossModReborn";
-			IEnumerable<Dalamud.Plugin.IExposedPlugin> installedPlugins = Svc.PluginInterface.InstalledPlugins;
-			foreach (Dalamud.Plugin.IExposedPlugin x in installedPlugins)
+			DateTime now = DateTime.Now;
+			if (now < _bmrEnabledCacheExpiry)
+				return _bmrEnabledCache;
+
+			bool found = false;
+			foreach (Dalamud.Plugin.IExposedPlugin x in Svc.PluginInterface.InstalledPlugins)
 			{
-				if ((x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) || x.InternalName.Equals(name, StringComparison.OrdinalIgnoreCase)) && x.IsLoaded)
+				if ((x.Name.Equals(BmrPluginName, StringComparison.OrdinalIgnoreCase)
+					|| x.InternalName.Equals(BmrPluginName, StringComparison.OrdinalIgnoreCase))
+					&& x.IsLoaded)
 				{
-					return true;
+					found = true;
+					break;
 				}
 			}
-			return false;
+
+			_bmrEnabledCache = found;
+			_bmrEnabledCacheExpiry = now + BmrEnabledCacheTtl;
+			return found;
 		}
 	}
+
+	[Obsolete("Typo. Use BMREnabled instead.", false)]
+	public static bool BMREndabled => BMREnabled;
 
 	public static bool BMRHasActiveModule { get; set; }
 	public static string? BMRActiveModuleName { get; set; }
