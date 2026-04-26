@@ -334,8 +334,8 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 
         _rotationPlannerWindow!.IsOpen = Service.Config.ShowRotationPlannerWindow;
 
-        _overlayWindow!.IsOpen = isValid && Service.Config.TeachingMode;
-    }
+		_overlayWindow!.IsOpen = isValid && Service.Config.TeachingMode;
+	}
 
 	private static bool AnyHostileTargetWithinDistance(float distance)
 	{

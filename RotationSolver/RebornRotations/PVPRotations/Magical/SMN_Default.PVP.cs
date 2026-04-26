@@ -95,10 +95,6 @@ public class SMN_DefaultPvP : SummonerRotation
         }
         
 
-        if (RuinIiiPvP.CanUse(out action))
-        {
-            return true;
-        }
 
 		if (RuinIiiPvP.CanUse(out action))
 		{

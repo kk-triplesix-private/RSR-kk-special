@@ -110,16 +110,10 @@ public sealed class RPR_DefaultPvP : ReaperRotation
 			return true;
 		}
 
-        if (HasImmortalSacrificePvP)
-        {
-            if (PlentifulHarvestPvP.CanUse(out action))
-            {
-                if (StatusHelper.PlayerStatusStack(true, StatusID.ImmortalSacrifice_3204) > 3)
-                {
-                    return true;
-                }
-            }
-        }
+		if (VoidReapingPvP.CanUse(out action))
+		{
+			return true;
+		}
 
 		if (HasImmortalSacrificePvP)
 		{
