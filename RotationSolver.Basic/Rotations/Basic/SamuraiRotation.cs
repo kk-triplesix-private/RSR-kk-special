@@ -647,6 +647,15 @@ static partial void ModifyIkishotenPvE(ref ActionSetting setting)
 		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.MeikyoShisuiPvP) == ActionID.TendoKaeshiSetsugekkaPvP;
 	}
 
+	static partial void ModifyHissatsuSotenPvP(ref ActionSetting setting)
+	{
+		setting.StatusProvide = [StatusID.Kaiten_3201];
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
+	}
+	#endregion
 
 	static partial void ModifyHissatsuSotenPvP(ref ActionSetting setting)
 	{
