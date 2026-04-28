@@ -167,7 +167,6 @@ namespace RotationSolver.Commands
 
 			if (nextAction.Use())
 			{
-
 				_lastActionID = nextAction.AdjustedID;
 				_lastUsedTime = DateTime.Now;
 

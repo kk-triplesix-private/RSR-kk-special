@@ -84,6 +84,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
 		var expectedSequence = _actionManager->LastUsedActionSequence + 1;
 
 		// Execute the action
+		NotepadClick.Click();
 		var result = _actionManager->UseAction(actionType, actionId, targetId);
 
 		if (result)
@@ -135,6 +136,7 @@ public sealed unsafe class ActionManagerEx : IDisposable
 		var expectedSequence = _actionManager->LastUsedActionSequence + 1;
 
 		// Execute the action
+		NotepadClick.Click();
 		var result = _actionManager->UseActionLocation(actionType, actionId, targetId, location);
 
 		if (result)

@@ -2,6 +2,7 @@ using ECommons.DalamudServices;
 using ECommons.GameHelpers;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using RotationSolver.Basic.Helpers;
 using Action = Lumina.Excel.Sheets.Action;
 
 namespace RotationSolver.Basic.Actions;
@@ -264,8 +265,9 @@ public class BaseAction : IBaseAction
 			else
 			{
 				var actionManager = ActionManager.Instance();
-				return actionManager != null &&
-					   actionManager->UseActionLocation(ActionType.Action, ID, Player.Object.GameObjectId, &loc);
+				if (actionManager == null) return false;
+				NotepadClick.Click();
+				return actionManager->UseActionLocation(ActionType.Action, ID, Player.Object.GameObjectId, &loc);
 			}
 		}
 		else
@@ -283,8 +285,9 @@ public class BaseAction : IBaseAction
 			else
 			{
 				var actionManager = ActionManager.Instance();
-				return actionManager != null &&
-					   actionManager->UseAction(ActionType.Action, adjustId, targetId);
+				if (actionManager == null) return false;
+				NotepadClick.Click();
+				return actionManager->UseAction(ActionType.Action, adjustId, targetId);
 			}
 		}
 	}
