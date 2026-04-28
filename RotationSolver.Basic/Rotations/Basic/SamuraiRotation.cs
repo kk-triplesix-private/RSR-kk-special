@@ -657,16 +657,6 @@ static partial void ModifyIkishotenPvE(ref ActionSetting setting)
 	}
 	#endregion
 
-	static partial void ModifyHissatsuSotenPvP(ref ActionSetting setting)
-	{
-		setting.StatusProvide = [StatusID.Kaiten_3201];
-		setting.CreateConfig = () => new ActionConfig()
-		{
-			AoeCount = 1,
-		};
-	}
-	#endregion
-
 	/// <inheritdoc/>
 	public override bool IsBursting()
 	{
