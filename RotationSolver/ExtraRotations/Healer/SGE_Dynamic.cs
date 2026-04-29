@@ -869,6 +869,20 @@ public sealed class SGE_Dynamic : SageRotation
             return false;
         }
 
+        // === Eukrasian Prognosis Group Shield Intent ===
+        // Galvanize/E.Prognosis lasts 30s; we maintain it throughout boss fights as a baseline,
+        // and proactively apply it before incoming group damage. DoT refresh always wins over
+        // shield maintenance — shield slips by at most 1 GCD when both compete.
+        bool shieldActive = StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis);
+        bool groupDmgImminent = (SmartShieldsRaidwide && IsRaidwideImminent())
+                             || (SmartShieldsStack && (IsStackImminent() || IsMarkerImminent()));
+        bool tankbusterFallbackShield = SmartShieldsTankbuster && IsTankbusterImminent() && !HaimaPvE.CanUse(out _);
+        bool bossfightMaintenance = ProactiveBossHealing && IsBossFight() && InCombat;
+        bool wantShield = !shieldActive && (groupDmgImminent || tankbusterFallbackShield || bossfightMaintenance);
+        string shieldReason = groupDmgImminent ? "group damage imminent"
+            : tankbusterFallbackShield ? "tankbuster (Haima CD)"
+            : "boss fight maintenance";
+
         // === INSTANT GCD PRIORITY WHEN DAMAGE IMMINENT ===
         // oGCDs (Kerachole, Panhaima, etc.) can only weave AFTER the current GCD finishes.
         // Casted GCDs (Dosis=1.5s, Pneuma=1.5s) delay the oGCD weave window.
@@ -876,12 +890,25 @@ public sealed class SGE_Dynamic : SageRotation
         bool damageUrgent = IsDamageImminent() || IsPanicMode() || IsSustainedPull();
         if (damageUrgent)
         {
-            // If Eukrasia active, fire the instant E.Dosis/E.Dyskrasia (they're instant after Eukrasia)
+            // If Eukrasia active: spend on DoT (DPS) → Shield (mit) → AoE DoT
             if (HasEukrasia)
             {
                 if (EukrasianDosisIiiPvE.CanUse(out act)) return true;
                 if (EukrasianDosisIiPvE.CanUse(out act)) return true;
                 if (EukrasianDosisPvE.CanUse(out act)) return true;
+                if (wantShield)
+                {
+                    if (EukrasianPrognosisIiPvE.CanUse(out act))
+                    {
+                        LogDecision($"E.Prognosis II: {shieldReason} (urgent)");
+                        return true;
+                    }
+                    if (EukrasianPrognosisPvE.CanUse(out act))
+                    {
+                        LogDecision($"E.Prognosis: {shieldReason} (urgent)");
+                        return true;
+                    }
+                }
                 if (EukrasianDyskrasiaPvE.CanUse(out act)) return true;
             }
 
@@ -905,23 +932,42 @@ public sealed class SGE_Dynamic : SageRotation
             LogDecision("Damage imminent but no instant GCD available, using casted GCD");
         }
 
-        // === Eukrasian DoT uptime ===
-        // If Eukrasia is already active, fire the DoT (instant after Eukrasia)
+        // === Eukrasian Spend (DoT primary, Shield secondary, AoE DoT fallback) ===
         if (HasEukrasia)
         {
             if (EukrasianDosisIiiPvE.CanUse(out act)) return true;
             if (EukrasianDosisIiPvE.CanUse(out act)) return true;
             if (EukrasianDosisPvE.CanUse(out act)) return true;
+            if (wantShield)
+            {
+                if (EukrasianPrognosisIiPvE.CanUse(out act))
+                {
+                    LogDecision($"E.Prognosis II: {shieldReason}");
+                    return true;
+                }
+                if (EukrasianPrognosisPvE.CanUse(out act))
+                {
+                    LogDecision($"E.Prognosis: {shieldReason}");
+                    return true;
+                }
+            }
             if (EukrasianDyskrasiaPvE.CanUse(out act)) return true;
         }
 
-        // Apply Eukrasia for DoT refresh — only when DoT is missing or expiring
+        // === Apply Eukrasia ===
+        // 1. DoT refresh (highest DPS priority, only fires when DoT actually needs refresh)
         if (EukrasianDosisIiiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
         if (!EukrasianDosisIiiPvE.EnoughLevel && EukrasianDosisIiPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
         if (!EukrasianDosisIiPvE.EnoughLevel && EukrasianDosisPvE.CanUse(out _) && EukrasiaPvE.CanUse(out act))
             return true;
+        // 2. Shield maintenance — group shield as baseline during boss fights and before group damage
+        if (wantShield && EukrasiaPvE.CanUse(out act))
+        {
+            LogDecision($"Eukrasia: prepare shield ({shieldReason})");
+            return true;
+        }
 
         // === DPS Priority ===
 
@@ -957,46 +1003,6 @@ public sealed class SGE_Dynamic : SageRotation
         // AoE: Dyskrasia
         if (DyskrasiaIiPvE.CanUse(out act)) return true;
         if (!DyskrasiaIiPvE.EnoughLevel && DyskrasiaPvE.CanUse(out act)) return true;
-
-        // Eukrasian Prognosis: tankbuster shield when Haima is on cooldown
-        bool tankbusterShield = SmartShieldsTankbuster && IsTankbusterImminent() && !HaimaPvE.CanUse(out _);
-        if (tankbusterShield
-            && !StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis)
-            && !HasEukrasia)
-        {
-            if (EukrasiaPvE.CanUse(out act))
-            {
-                LogDecision("EukrasianPrognosis: tankbuster shield (Haima on CD)");
-                return true;
-            }
-        }
-        if (HasEukrasia && tankbusterShield)
-        {
-            if (EukrasianPrognosisIiPvE.CanUse(out act)) return true;
-            if (EukrasianPrognosisPvE.CanUse(out act)) return true;
-        }
-
-        // Eukrasian Prognosis GCD shield — LAST RESORT before damage
-        // Every GCD heal = lost Dosis/Dyskrasia damage + lost Kardia healing
-        // Only use when oGCDs are exhausted AND confirmed big hit incoming
-        bool groupDmg = (SmartShieldsRaidwide && IsRaidwideImminent())
-                     || (SmartShieldsStack && (IsStackImminent() || IsMarkerImminent()));
-        bool oGCDsExhausted = !KeracholePvE.CanUse(out _) && !PanhaimaPvE.CanUse(out _) && !HolosPvE.CanUse(out _);
-        if (groupDmg && oGCDsExhausted
-            && !StatusHelper.PlayerHasStatus(true, StatusID.EukrasianPrognosis)
-            && !HasEukrasia)
-        {
-            if (EukrasiaPvE.CanUse(out act))
-            {
-                LogDecision("EukrasianPrognosis: oGCDs exhausted, GCD shield as last resort");
-                return true;
-            }
-        }
-        if (HasEukrasia && groupDmg && oGCDsExhausted)
-        {
-            if (EukrasianPrognosisIiPvE.CanUse(out act)) return true;
-            if (EukrasianPrognosisPvE.CanUse(out act)) return true;
-        }
 
         // Filler: Dosis
         if (DosisIiiPvE.CanUse(out act)) return true;
