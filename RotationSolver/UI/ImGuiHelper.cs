@@ -109,8 +109,8 @@ internal static class ImGuiHelper
 			ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
 		}
 
-		using ImRaii.IEndObject popUp = ImRaii.Popup(popId);
-		if (!popUp.Success)
+		using var popUp = ImRaii.Popup(popId);
+		if (!popUp.Alive)
 		{
 			return;
 		}
@@ -136,7 +136,7 @@ internal static class ImGuiHelper
 
 		ImGui.Spacing();
 
-		ImRaii.IEndObject? child = null;
+		ImRaii.ChildDisposable child = default;
 		if (members.Count >= 15)
 		{
 			ImGui.SetNextWindowSizeConstraints(new Vector2(0, 300), new Vector2(500, 300));
@@ -155,7 +155,7 @@ internal static class ImGuiHelper
 				ImGui.CloseCurrentPopup();
 			}
 		}
-		child?.Dispose();
+		child.Dispose();
 	}
 
 	private static float GetMaxButtonSize<T>(List<(T, string)> members)
@@ -492,7 +492,7 @@ internal static class ImGuiHelper
 	#region PopUp
 	public static void DrawHotKeysPopup(string key, string command, params (string name, Action action, string[] keys)[] pairs)
 	{
-		using ImRaii.IEndObject popup = ImRaii.Popup(key);
+		using var popup = ImRaii.Popup(key);
 		if (popup)
 		{
 			if (ImGui.BeginTable(key, 2, ImGuiTableFlags.BordersOuter))

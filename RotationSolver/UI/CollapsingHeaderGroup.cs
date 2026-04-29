@@ -118,7 +118,7 @@ internal class CollapsingHeaderGroup(Dictionary<Func<string>, Action> headers)
                 using (ImRaii.PushColor(ImGuiCol.HeaderActive, RSRStyle.SectionHeaderBg))
                 using (ImRaii.PushColor(ImGuiCol.Text, selected ? RSRStyle.Accent : RSRStyle.TextPrimary))
                 using (ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.0f, 0.5f)))
-                using (ImRaii.Font font = ImRaii.PushFont(FontManager.GetFont(18)))
+                using (var font = ImRaii.PushFont(FontManager.GetFont(18)))
                 {
                     changed = ImGui.Selectable($"   {chevron}{name}", selected, ImGuiSelectableFlags.DontClosePopups,
                         new Vector2(0, headerHeight));

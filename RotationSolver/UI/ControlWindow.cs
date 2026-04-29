@@ -39,7 +39,7 @@ internal class ControlWindow : CtrlWindow
 
 	public override unsafe void Draw()
 	{
-		using ImRaii.Style selectableAlign = ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
+		using var selectableAlign = ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
 		using var framePad = ImRaii.PushStyle(ImGuiStyleVar.FramePadding, new Vector2(4, 3));
 		using var childWinPad = ImRaii.PushStyle(ImGuiStyleVar.WindowPadding, new Vector2(12, 12));
 		using var frameCellPadding = ImRaii.PushStyle(ImGuiStyleVar.CellPadding, new Vector2(4, 2));
@@ -210,8 +210,8 @@ internal class ControlWindow : CtrlWindow
 
 		ImGui.SameLine();
 
-		using ImRaii.IEndObject group = ImRaii.Group();
-		if (group)
+		using var group = ImRaii.Group();
+		if (group.Alive)
 		{
 			ImGui.Text(DataCenter.CurrentTargetToHostileType.GetDescription());
 			ImGui.Text("Auto: " + DataCenter.AutoStatus.ToString());
@@ -228,15 +228,15 @@ internal class ControlWindow : CtrlWindow
 
 		Vector2 pos = ImGui.GetCursorPos();
 
-		using ImRaii.IEndObject group = ImRaii.Group();
-		if (!group)
+		using var group = ImRaii.Group();
+		if (!group.Alive)
 		{
 			return;
 		}
 
-		using (ImRaii.IEndObject subGroup = ImRaii.Group())
+		using (var subGroup = ImRaii.Group())
 		{
-			if (subGroup)
+			if (subGroup.Alive)
 			{
 				ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(2, (width / 2) - (strWidth / 2)));
 				ImGui.TextColored(color, str);
@@ -331,15 +331,15 @@ internal class ControlWindow : CtrlWindow
 
 		Vector2 pos = ImGui.GetCursorPos();
 
-		using ImRaii.IEndObject group = ImRaii.Group();
-		if (!group)
+		using var group = ImRaii.Group();
+		if (!group.Alive)
 		{
 			return;
 		}
 
-		using (ImRaii.IEndObject subGroup = ImRaii.Group())
+		using (var subGroup = ImRaii.Group())
 		{
-			if (subGroup)
+			if (subGroup.Alive)
 			{
 				ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(0, (width / 2) - (strWidth / 2)));
 				ImGui.TextColored(color, str);
@@ -384,9 +384,9 @@ internal class ControlWindow : CtrlWindow
 
 		Vector2 pos = ImGui.GetCursorPos();
 
-		using (ImRaii.IEndObject group = ImRaii.Group())
+		using (var group = ImRaii.Group())
 		{
-			if (group)
+			if (group.Alive)
 			{
 				ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(0, (width / 2) - (strWidth / 2)) - 3.5f);
 				ImGui.TextColored(color, str);
@@ -522,7 +522,7 @@ internal class ControlWindow : CtrlWindow
 					ImGui.GetWindowDrawList().AddLine(startPos, startPos + new Vector2(0, size.Y), ImGuiHelper.Black);
 				}
 
-				using ImRaii.Font font = ImRaii.PushFont(ImGui.GetFont());
+				using var font = ImRaii.PushFont(ImGui.GetFont());
 				string time = recast == 0 ? "0" : ((int)(recast - (elapsed % recast)) + 1).ToString();
 				Vector2 strSize = ImGui.CalcTextSize(time);
 				Vector2 fontPos = new Vector2(pos.X + (size.X / 2) - (strSize.X / 2), pos.Y + (size.Y / 2) - (strSize.Y / 2)) + winPos;
@@ -544,8 +544,8 @@ internal class ControlWindow : CtrlWindow
 
 	private static unsafe void DrawNextAction(float gcd, float ability, float width)
 	{
-		using ImRaii.IEndObject group = ImRaii.Group();
-		if (!group)
+		using var group = ImRaii.Group();
+		if (!group.Alive)
 		{
 			return;
 		}

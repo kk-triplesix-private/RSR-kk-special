@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.DutyState;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
@@ -143,7 +144,7 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 		Svc.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
 		ClientState_TerritoryChanged(Svc.ClientState.TerritoryType);
 
-		static void DutyState_DutyCompleted(object? sender, ushort e)
+		static void DutyState_DutyCompleted(IDutyStateEventArgs args)
 		{
 			TimeSpan delay = TimeSpan.FromSeconds(_random.Next(4, 6));
 			_ = Svc.Framework.RunOnTick(() =>
@@ -157,7 +158,7 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 			}, delay);
 		}
 
-		static void ClientState_TerritoryChanged(ushort id)
+		static void ClientState_TerritoryChanged(uint id)
 		{
 			DataCenter.ResetAllRecords();
 
@@ -182,7 +183,7 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 			}
 		}
 
-		static void DutyState_DutyStarted(object? sender, ushort e)
+		static void DutyState_DutyStarted(IDutyStateEventArgs args)
 		{
 			if (!Player.Available)
 			{
@@ -201,7 +202,7 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
 			}
 		}
 
-		static void DutyState_DutyWiped(object? sender, ushort e)
+		static void DutyState_DutyWiped(IDutyStateEventArgs args)
 		{
 			if (!Player.Available)
 			{

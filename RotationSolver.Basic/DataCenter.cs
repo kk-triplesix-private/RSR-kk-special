@@ -419,7 +419,7 @@ internal static class DataCenter
 	#region Territory Info Tracking
 
 	public static Data.TerritoryInfo? Territory { get; set; }
-	public static ushort TerritoryID => Svc.ClientState.TerritoryType;
+	public static ushort TerritoryID => (ushort)Svc.ClientState.TerritoryType;
 
 	public static bool IsPvP => Territory?.IsPvP ?? false;
 

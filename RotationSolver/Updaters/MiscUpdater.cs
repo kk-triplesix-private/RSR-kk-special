@@ -289,7 +289,7 @@ internal static class MiscUpdater
 					}
 
 					actionBar->PulseActionBarSlot(slotIndex);
-					UIGlobals.PlaySoundEffect(12, 0, 0, 0);
+					UIGlobals.PlaySoundEffect(12, null, null, 0);
 				}
 				slotIndex++;
 				index++;
