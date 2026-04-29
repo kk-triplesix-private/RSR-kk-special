@@ -110,7 +110,7 @@ internal static class ImGuiHelper
 		}
 
 		using var popUp = ImRaii.Popup(popId);
-		if (!popUp.Alive)
+		if (!popUp)
 		{
 			return;
 		}
