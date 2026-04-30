@@ -265,7 +265,6 @@ public class BaseAction : IBaseAction
 			{
 				var actionManager = ActionManager.Instance();
 				if (actionManager == null) return false;
-				NotepadClick.Click();
 				return actionManager->UseActionLocation(ActionType.Action, ID, Player.Object.GameObjectId, &loc);
 			}
 		}
@@ -285,7 +284,6 @@ public class BaseAction : IBaseAction
 			{
 				var actionManager = ActionManager.Instance();
 				if (actionManager == null) return false;
-				NotepadClick.Click();
 				return actionManager->UseAction(ActionType.Action, adjustId, targetId);
 			}
 		}

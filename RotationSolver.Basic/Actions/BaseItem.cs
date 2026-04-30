@@ -241,24 +241,20 @@ public class BaseItem : IBaseItem
 		{
 			if (InventoryManager.Instance()->GetInventoryItemCount(ID, true) > 0)
 			{
-				NotepadClick.Click();
 				return ActionManager.Instance()->UseAction(ActionType.Item, ID + 1000000, DataCenter.DeathTarget.GameObjectId, 65535);
 			}
 			else
 			{
-				NotepadClick.Click();
 				return ActionManager.Instance()->UseAction(ActionType.Item, ID, DataCenter.DeathTarget.GameObjectId, 65535);
 			}
 		}
 
 		if (InventoryManager.Instance()->GetInventoryItemCount(ID, true) > 0)
 		{
-			NotepadClick.Click();
 			return ActionManager.Instance()->UseAction(ActionType.Item, ID + 1000000, Player.Object.GameObjectId, A4);
 		}
 		else
 		{
-			NotepadClick.Click();
 			return ActionManager.Instance()->UseAction(ActionType.Item, ID, Player.Object.GameObjectId, A4);
 		}
 	}
