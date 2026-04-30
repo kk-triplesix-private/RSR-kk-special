@@ -31,6 +31,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BossModReborn", "BossModReb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossModReborn", "..\BossmodRebornPrivate\BossMod\BossModReborn.csproj", "{13C812E9-0D42-4B95-8646-40EEBF30636F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXIVClientStructs", "..\BossModRebornPrivate\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj", "{A6379D94-4BF1-4E7E-B87A-6CE99BE6FB62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InteropGenerator.Runtime", "..\BossModRebornPrivate\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj", "{15781B84-2686-442A-991A-C7AC393CB7B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +65,14 @@ Global
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Debug|x64.Build.0 = Debug|x64
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.ActiveCfg = Release|x64
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.Build.0 = Release|x64
+		{A6379D94-4BF1-4E7E-B87A-6CE99BE6FB62}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A6379D94-4BF1-4E7E-B87A-6CE99BE6FB62}.Debug|x64.Build.0 = Debug|Any CPU
+		{A6379D94-4BF1-4E7E-B87A-6CE99BE6FB62}.Release|x64.ActiveCfg = Release|Any CPU
+		{A6379D94-4BF1-4E7E-B87A-6CE99BE6FB62}.Release|x64.Build.0 = Release|Any CPU
+		{15781B84-2686-442A-991A-C7AC393CB7B3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{15781B84-2686-442A-991A-C7AC393CB7B3}.Debug|x64.Build.0 = Debug|Any CPU
+		{15781B84-2686-442A-991A-C7AC393CB7B3}.Release|x64.ActiveCfg = Release|Any CPU
+		{15781B84-2686-442A-991A-C7AC393CB7B3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
