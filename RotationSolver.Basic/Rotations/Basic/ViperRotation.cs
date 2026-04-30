@@ -115,7 +115,7 @@ public partial class ViperRotation
 	/// <summary>
 	/// Indicates if base no abilities are ready.
 	/// </summary>
-	public static bool NoAbilityReady => JobGauge.SerpentCombo.HasFlag(SerpentCombo.None);
+	public static bool NoAbilityReady => JobGauge.SerpentCombo == default;
 
 	/// <summary>
 	/// Indicates if base Death Rattle oGCD is ready.

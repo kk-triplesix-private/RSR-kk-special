@@ -255,7 +255,7 @@ public partial class BardRotation
 
 	static partial void ModifyPitchPerfectPvE(ref ActionSetting setting)
 	{
-		setting.ActionCheck = () => Song == Song.Wanderer && Repertoire > 0;
+		setting.ActionCheck = () => Song == Song.WanderersMinuet && Repertoire > 0;
 		setting.CreateConfig = () => new ActionConfig()
 		{
 			AoeCount = 1,

@@ -243,7 +243,7 @@ public static class ObjectHelper
 
 			if (isInCE)
 			{
-				if (!battleChara.IsBozjanCEMob() && battleChara.GetBattleNPCSubKind() != BattleNpcSubKind.BattleNpcPart)
+				if (!battleChara.IsBozjanCEMob() && battleChara.GetBattleNPCSubKind() != BattleNpcSubKind.BNpcPart)
 				{
 					return false;
 				}
@@ -721,7 +721,7 @@ public static class ObjectHelper
 
 	internal static bool IsPlayerCharacterChocobo(this IBattleChara battleChara)
 	{
-		return battleChara.GetBattleNPCSubKind() == BattleNpcSubKind.Chocobo;
+		return battleChara.GetBattleNPCSubKind() == BattleNpcSubKind.Buddy;
 	}
 
 	internal static bool IsFocusTarget(this IBattleChara battleChara)
@@ -954,7 +954,7 @@ public static class ObjectHelper
 		//71344 Major Quest
 
 		// Check if the object is a BattleNpcPart
-		if (Service.Config.PrioEnemyParts && battleChara.GetBattleNPCSubKind() == BattleNpcSubKind.BattleNpcPart)
+		if (Service.Config.PrioEnemyParts && battleChara.GetBattleNPCSubKind() == BattleNpcSubKind.BNpcPart)
 		{
 			return true;
 		}
