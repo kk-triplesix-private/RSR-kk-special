@@ -173,6 +173,20 @@ internal static class MajorUpdater
 				BossModUpdater.Update();
 			}
 
+		if (DataCenter.BMREndabled)
+		{
+			try
+			{
+				BossModUpdater.Update();
+			}
+			catch (Exception ex)
+			{
+				LogOnce("(RSRActivatedCore): BossModUpdater.Update Exception", ex);
+			}
+		}
+
+		try
+		{
 			StateUpdater.UpdateState();
 		}
 		catch (Exception ex)
