@@ -468,6 +468,7 @@ internal static class DataCenter
 	public static bool IsInM10S => TerritoryID == 1323;
 	public static bool IsInM11S => TerritoryID == 1325;
 	public static bool IsInM12S => TerritoryID == 1327;
+	#endregion
 
 	#region Alliance Raid
 	public static bool IsInWindurst => TerritoryID == 1368;
