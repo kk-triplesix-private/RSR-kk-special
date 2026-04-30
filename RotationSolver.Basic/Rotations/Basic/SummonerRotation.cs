@@ -1,5 +1,4 @@
 using Dalamud.Interface.Colors;
-using FFXIVClientStructs.FFXIV.Client.Game.Gauge;
 
 namespace RotationSolver.Basic.Rotations.Basic;
 
