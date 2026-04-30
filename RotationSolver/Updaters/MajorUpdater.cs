@@ -162,6 +162,11 @@ internal static class MajorUpdater
 
 			// Target updater always needs to be first to update
 			MacroUpdater.UpdateMacro();
+		}
+		catch (Exception ex)
+		{
+			LogOnce("(RSRActivatedCore): MacroUpdater.UpdateMacro Exception", ex);
+		}
 
 			if (DataCenter.BMREnabled)
 			{
@@ -169,11 +174,39 @@ internal static class MajorUpdater
 			}
 
 			StateUpdater.UpdateState();
+		}
+		catch (Exception ex)
+		{
+			LogOnce("(RSRActivatedCore): StateUpdater.UpdateState Exception", ex);
+		}
 
+		try
+		{
 			ActionUpdater.UpdateNextAction();
+		}
+		catch (Exception ex)
+		{
+			LogOnce("(RSRActivatedCore): ActionUpdater.UpdateNextAction Exception", ex);
+		}
 
-			bool canDoAction = ActionUpdater.CanDoAction();
+		bool canDoAction = false;
+		try
+		{
+			canDoAction = ActionUpdater.CanDoAction();
+		}
+		catch (Exception ex)
+		{
+			LogOnce("(RSRActivatedCore): ActionUpdater.CanDoAction Exception", ex);
+		}
+
+		try
+		{
 			MovingUpdater.UpdateCanMove(canDoAction);
+		}
+		catch (Exception ex)
+		{
+			LogOnce("(RSRActivatedCore): MovingUpdater.UpdateCanMove Exception", ex);
+		}
 
 			if (canDoAction)
 			{
@@ -193,6 +226,22 @@ internal static class MajorUpdater
 				RSCommands.UpdateTargetFromNextAction();
 			}
 
+		// In Teaching Mode with auto-target enabled, also update the player's target so it matches
+		// the rotation's suggestion (important for tanks/healers where the optimal target varies).
+		if (!DataCenter.IsTargetOnly && Service.Config.TeachingMode && Service.Config.TeachingModeAutoTarget && DataCenter.InCombat)
+		{
+			try
+			{
+				RSCommands.UpdateTargetFromNextAction();
+			}
+			catch (Exception ex)
+			{
+				LogOnce("(RSRActivatedCore): RSCommands.UpdateTargetFromNextAction (TeachingMode) Exception", ex);
+			}
+		}
+
+		try
+		{
 			Wrath_IPCSubscriber.DisableAutoRotation();
 		}
 		catch (Exception ex)

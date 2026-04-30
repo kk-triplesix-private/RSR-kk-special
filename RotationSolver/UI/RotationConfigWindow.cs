@@ -1,4 +1,4 @@
-﻿using Dalamud.Common;
+using Dalamud.Common;
 using Dalamud.Common.Game;
 using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Colors;
@@ -64,9 +64,10 @@ public partial class RotationConfigWindow : Window
 	[
 	"Abracon",
 	"Akurosuki",
+	"Alex",
+	"Anguish",
 	"Aniane",
-	"Baliha",
-	"BangPowNyoom",
+	"Bang Pow Nyoom",
 	"Biscuit",
 	"catfourteen",
 	"Chaos_co",
@@ -83,7 +84,6 @@ public partial class RotationConfigWindow : Window
 	"kuromiromi",
 	"Lemon",
 	"LouBird",
-	"Lyn Undercroft",
 	"Miracle Ace",
 	"Miri",
 	"Moniika",
@@ -95,6 +95,10 @@ public partial class RotationConfigWindow : Window
 	"Savage",
 	"smf26",
 	"Vaex_Darastrix",
+	"vivi",
+	"yang",
+	"Yana",
+	"Zyllius",
 	"KuwoBlack"
 	];
 

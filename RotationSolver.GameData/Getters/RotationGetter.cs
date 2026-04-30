@@ -6,7 +6,12 @@ namespace RotationSolver.GameData.Getters;
 /// <summary>
 /// Provides methods to generate rotation code for a specific job.
 /// </summary>
-internal class RotationGetter
+/// <remarks>
+/// Initializes a new instance of the <see cref="RotationGetter"/> class.
+/// </remarks>
+/// <param name="gameData">The game data.</param>
+/// <param name="job">The job.</param>
+internal class RotationGetter(Lumina.GameData gameData, ClassJob job)
 {
 	private readonly Lumina.GameData gameData;
 	private readonly ClassJob job;

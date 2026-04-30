@@ -991,29 +991,29 @@ public static class ObjectHelper
 			if (CharnelCell)
 			{
 				// Heel (on target) vs Hell (on player) pairs
-				StatusID HeelInACell1 = (StatusID)4739;
-				StatusID HellInACell1 = (StatusID)4731;
+				StatusID HeelInACell1 = StatusID.HeelOfTheCell;
+				StatusID HellInACell1 = StatusID.HellInACell;
 
-				StatusID HeelInACell2 = (StatusID)4740;
-				StatusID HellInACell2 = (StatusID)4732;
+				StatusID HeelInACell2 = StatusID.HeelOfTheCell_4740;
+				StatusID HellInACell2 = StatusID.HellInACell_4732;
 
-				StatusID HeelInACell3 = (StatusID)4741;
-				StatusID HellInACell3 = (StatusID)4733;
+				StatusID HeelInACell3 = StatusID.HeelOfTheCell_4741;
+				StatusID HellInACell3 = StatusID.HellInACell_4733;
 
-				StatusID HeelInACell4 = (StatusID)4742;
-				StatusID HellInACell4 = (StatusID)4734;
+				StatusID HeelInACell4 = StatusID.HeelOfTheCell_4742;
+				StatusID HellInACell4 = StatusID.HellInACell_4734;
 
-				StatusID HeelInACell5 = (StatusID)4743;
-				StatusID HellInACell5 = (StatusID)4735;
+				StatusID HeelInACell5 = StatusID.HeelOfTheCell_4743;
+				StatusID HellInACell5 = StatusID.HellInACell_4735;
 
-				StatusID HeelInACell6 = (StatusID)4744;
-				StatusID HellInACell6 = (StatusID)4736;
+				StatusID HeelInACell6 = StatusID.HeelOfTheCell_4744;
+				StatusID HellInACell6 = StatusID.HellInACell_4736;
 
-				StatusID HeelInACell7 = (StatusID)4745;
-				StatusID HellInACell7 = (StatusID)4737;
+				StatusID HeelInACell7 = StatusID.HeelOfTheCell_4745;
+				StatusID HellInACell7 = StatusID.HellInACell_4737;
 
-				StatusID HeelInACell8 = (StatusID)4746;
-				StatusID HellInACell8 = (StatusID)4738;
+				StatusID HeelInACell8 = StatusID.HeelOfTheCell_4746;
+				StatusID HellInACell8 = StatusID.HellInACell_4738;
 
 				// Iterate all Heel/Hell pairs; priority if target has Heel and player does have corresponding Hell
 				foreach (var (heel, hell) in new (StatusID heel, StatusID hell)[]
