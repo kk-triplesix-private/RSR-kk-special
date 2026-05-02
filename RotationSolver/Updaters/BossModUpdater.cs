@@ -73,7 +73,7 @@ internal static class BossModUpdater
 			float damageIn = SafeFloat(BMRTimeline_IPCSubscriber.NextDamageIn);
 			int damageType = BMRTimeline_IPCSubscriber.NextDamageType?.Invoke() ?? 0;
 			DataCenter.BMRNextDamageIn = damageIn;
-			DataCenter.BMRNextDamageType = damageType;
+			DataCenter.BMRNextDamageType = (PredictedDamageType)damageType;
 			DataCenter.BMRDebugGenericDamageIn = damageIn;
 			DataCenter.BMRDebugGenericDamageType = damageType;
 
@@ -132,7 +132,7 @@ internal static class BossModUpdater
 			DataCenter.BMRNextTankbusterIn = Math.Min(Math.Min(timelineTankbuster, hintsTankbuster), genericTankbuster);
 
 			DataCenter.BMRSpecialModeIn = SafeFloat(BMRTimeline_IPCSubscriber.SpecialModeIn);
-			DataCenter.BMRSpecialModeType = BMRTimeline_IPCSubscriber.SpecialModeType?.Invoke() ?? 0;
+			DataCenter.BMRSpecialModeType = (SpecialMode)(BMRTimeline_IPCSubscriber.SpecialModeType?.Invoke() ?? 0);
 			DataCenter.BMRDebugTimelineWalk = BMRTimeline_IPCSubscriber.DebugTimelineWalk?.Invoke();
 		}
 		catch (Exception ex)
