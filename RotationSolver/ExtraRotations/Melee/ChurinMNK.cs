@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using RotationSolver.Updaters;
+﻿using RotationSolver.Updaters;
+using System.ComponentModel;
 
 namespace RotationSolver.ExtraRotations.Melee;
 
