@@ -3248,8 +3248,36 @@ public static class ObjectHelper
 			return float.MaxValue;
 		}
 
-		float distance = Vector3.Distance(Player.Object.Position, battleChara.Position) - (Player.Object.HitboxRadius + battleChara.HitboxRadius);
-		return distance;
+		// Use XZ-plane (horizontal) distance only — the game engine measures action range
+		// purely on the horizontal plane, ignoring Y-axis differences.
+		var playerPos = Player.Object.Position;
+		var targetPos = battleChara.Position;
+		float dx = targetPos.X - playerPos.X;
+		float dz = targetPos.Z - playerPos.Z;
+		float distance = MathF.Sqrt(dx * dx + dz * dz) - (Player.Object.HitboxRadius + battleChara.HitboxRadius);
+		return MathF.Max(0f, distance);
+	}
+
+	/// <summary>
+	/// The distance from <paramref name="battleChara"/> to the player's pet
+	/// </summary>
+	/// <param name="battleChara"></param>
+	/// <returns></returns>
+	public static float DistanceToPet(IBattleChara battleChara)
+	{
+		if (battleChara == null)
+		{
+			return float.MaxValue;
+		}
+		var pet = DataCenter.GetPet();
+		if (pet == null)
+		{
+			return float.MaxValue;
+		}
+
+		float pdx = battleChara.Position.X - pet.Position.X;
+		float pdz = battleChara.Position.Z - pet.Position.Z;
+		return MathF.Max(0f, MathF.Sqrt(pdx * pdx + pdz * pdz) - battleChara.HitboxRadius);
 	}
 
 	/// <summary>

@@ -269,7 +269,7 @@ internal static class DataCenter
 				Service.Config.TargetingTypes.Add(TargetingType.LowHP);
 				Service.Config.TargetingTypes.Add(TargetingType.HighHP);
 				Service.Config.TargetingTypes.Add(TargetingType.Small);
-				Service.Config.TargetingTypes.Add(TargetingType.Big);
+			 Service.Config.TargetingTypes.Add(TargetingType.Big);
 				Service.Config.Save();
 			}
 
