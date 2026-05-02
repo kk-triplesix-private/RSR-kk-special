@@ -469,6 +469,13 @@ public struct ActionTargetInfo(IBaseAction action)
 
 		try
 		{
+			if (DataCenter.IsPvP && (!action.Setting.IgnoreGuard || (DataCenter.Job == Job.BLM && !action.Setting.IgnoreGuard && !StatusHelper.PlayerHasStatus(true, StatusID.WreathOfFire))))
+			{
+				if (battleChara.HasStatus(false, StatusID.Guard) && !battleChara.WillStatusEnd((float)action.Info.CastTime, false, StatusID.Guard))
+				{
+					return false;
+				}
+			}
 			if (action.Info.HasAttackType(AttackType.Magic))
 			{
 				if (battleChara.HasStatus(false, StatusHelper.MagicResistance))
@@ -3042,7 +3049,7 @@ public struct ActionTargetInfo(IBaseAction action)
 			}
 
 			// Filter out characters marked with stop markers
-			if (Service.Config.FilterStopMark && !DataCenter.IsPvP)
+			if (Service.Config.FilterStopMark2 && !DataCenter.IsPvP)
 			{
 				IEnumerable<IBattleChara> filteredCharacters = MarkingHelper.FilterStopCharacters(battleChara);
 				// Manual Any() check
