@@ -624,6 +624,10 @@ public sealed class ChurinDNC : DancerRotation
     private IAction UseActiveStandard => ActiveStandard;
     private bool AboutToDance => CanUseTechStep || CanUseActiveStandard;
 
+    #endregion
+
+    #region Potions
+
     /// <summary>
     /// Determines if the conditions are met to use either
     /// Technical Step or Standard Step based on the player's current status,
