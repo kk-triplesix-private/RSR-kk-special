@@ -170,6 +170,12 @@ public class ActionSetting
 	public bool IsSlowSpell { get; set; } = false;
 
 	/// <summary>
+	/// When true, this PvP action ignores Guard on the target — used by Cancel-On-Guard logic
+	/// (added back-port from upstream 2c080bbc to support cherry-picked bdfad3c4 PvP-Guard cancel).
+	/// </summary>
+	public bool IgnoreGuard { get; set; } = false;
+
+	/// <summary>
 	/// Does this action primarily apply <b>Petrification</b>? When true, it is skipped against mobs not vulnerable to Petrification in the Masked Carnivale.
 	/// </summary>
 	public bool IsPetrificationSpell { get; set; } = false;
