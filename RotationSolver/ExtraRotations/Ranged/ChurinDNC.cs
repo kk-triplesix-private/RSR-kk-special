@@ -632,6 +632,10 @@ public sealed class ChurinDNC : DancerRotation
 
     #region Potions
 
+    #endregion
+
+    #region Potions
+
     /// <summary>
     /// Determines if the conditions are met to use either
     /// Technical Step or Standard Step based on the player's current status,
