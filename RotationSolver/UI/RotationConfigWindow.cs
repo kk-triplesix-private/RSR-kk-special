@@ -15,6 +15,7 @@ using ECommons.ImGuiMethods;
 using ECommons.Logging;
 using ECommons.Reflection;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Common.Component.BGCollision;
@@ -4292,7 +4293,9 @@ public partial class RotationConfigWindow : Window
 			ImGui.Text($"IsOCBlindImmuneTarget: {battleChara.IsOCBlindImmuneTarget()}");
 			ImGui.Text($"IsOCParalysisImmuneTarget: {battleChara.IsOCParalysisImmuneTarget()}");
 			ImGui.Spacing();
-			ImGui.Text($"IsM9SavageImmune: {battleChara.IsM9SavageImmune()}");
+			ImGui.Text("AST Card Targets (Preview):");
+			ImGui.Text($"- The Spear: {spear?.Name ?? "None"}");
+			ImGui.Text($"- The Balance: {balance?.Name ?? "None"}");
 			ImGui.Spacing();
 			ImGui.Text($"Is Current Focus Target: {battleChara.IsFocusTarget()}");
 			ImGui.Text($"TTK: {battleChara.GetTTK()}");
@@ -4350,8 +4353,18 @@ public partial class RotationConfigWindow : Window
 			{
 				if (Player.Object != null)
 				{
+					if (Player.Object == null) continue;
 					string source = status.SourceId == Player.Object.GameObjectId ? "You" : Svc.Objects.SearchById(status.SourceId) == null ? "None" : "Others";
-					ImGui.Text($"{status.GameData.Value.Name}: {status.StatusId} From: {source}");
+					byte stacks = battleChara.StatusStack(true, (StatusID)status.StatusId);
+					string stackDisplay = stacks == byte.MaxValue ? "N/A" : stacks.ToString();
+					string timeDisplay = status.RemainingTime <= 0f ? "Perm" : $"{status.RemainingTime:F1}s";
+
+					ImGui.TableNextRow();
+					_ = ImGui.TableNextColumn(); ImGui.TextUnformatted(status.GameData.Value.Name.ToString());
+					_ = ImGui.TableNextColumn(); ImGui.TextUnformatted(status.StatusId.ToString());
+					_ = ImGui.TableNextColumn(); ImGui.TextUnformatted(source);
+					_ = ImGui.TableNextColumn(); ImGui.TextUnformatted(stackDisplay);
+					_ = ImGui.TableNextColumn(); ImGui.TextUnformatted(timeDisplay);
 				}
 			}
 		}
