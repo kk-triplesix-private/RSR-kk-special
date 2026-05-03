@@ -823,6 +823,17 @@ public sealed class SMN_Dynamic : SummonerRotation
         if (UmbralImpulsePvE.CanUse(out act)) return true;
         if (AstralImpulsePvE.CanUse(out act)) return true;
 
+        // Lag-Guard: JobGauge meldet aktiven Big Summon, aber InBahamut/InPhoenix/InSolarBahamut
+        // sind alle false. Ursache: InSolarBahamut basiert auf Service.GetAdjustedActionId
+        // (AstralFlow→Sunflare UI-Mapping) und kann beim Server↔Client-Sync einen Frame
+        // hinterherhinken. Statt durchzufallen auf RuinIII-Filler eine Frame warten.
+        if (SummonTimeRaw > 0 && !InBahamut && !InPhoenix && !InSolarBahamut)
+        {
+            LogDecision($"BigSummon timer={SummonTimeRaw:F2}s aber trance-flags=false → 1 Frame warten (UI-Lag)");
+            act = null;
+            return false;
+        }
+
         // Smart Ruin IV Logik: Ruin III vs Ruin IV Entscheidung
         // FFLogs-Analyse: Top-Spieler nutzen Ruin IV opportunistisch bei Bewegung,
         // nicht als erzwungenen Dump vor Big Summon. Ruin III wird bei Stillstand bevorzugt.
@@ -859,10 +870,16 @@ public sealed class SMN_Dynamic : SummonerRotation
             }
         }
 
-        // Filler GCDs
-        if (RuinIiiPvE.EnoughLevel && RuinIiiPvE.CanUse(out act)) return true;
-        if (!RuinIiiPvE.Info.EnoughLevelAndQuest() && RuinIiPvE.EnoughLevel && RuinIiPvE.CanUse(out act)) return true;
-        if (!RuinIiPvE.Info.EnoughLevelAndQuest() && RuinPvE.CanUse(out act)) return true;
+        // Filler GCDs - hard-gate über JobGauge.SummonTimerRemaining (robust gegen InSolarBahamut UI-Lag).
+        // RuinIII/II/I haben in SummonerRotation.cs nur ActionCheck=!InBahamut && !InPhoenix - kein
+        // !InSolarBahamut-Schutz. Ohne dieses Gate würde RuinIII während Solar-Bahamut-Lag den
+        // UmbralImpulse-GCD (Schattenimpuls) klauen.
+        if (SummonTimeRaw <= 0)
+        {
+            if (RuinIiiPvE.EnoughLevel && RuinIiiPvE.CanUse(out act)) return true;
+            if (!RuinIiiPvE.Info.EnoughLevelAndQuest() && RuinIiPvE.EnoughLevel && RuinIiPvE.CanUse(out act)) return true;
+            if (!RuinIiPvE.Info.EnoughLevelAndQuest() && RuinPvE.CanUse(out act)) return true;
+        }
 
         return base.GeneralGCD(out act);
     }
