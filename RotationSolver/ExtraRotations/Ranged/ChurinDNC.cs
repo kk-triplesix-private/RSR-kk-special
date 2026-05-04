@@ -648,7 +648,9 @@ public sealed class ChurinDNC : DancerRotation
 
     #region Potions
 
-    #endregion
+	private bool TryUseProcs(out IAction? act)
+	{
+		act = null;
 
     #region Potions
 
