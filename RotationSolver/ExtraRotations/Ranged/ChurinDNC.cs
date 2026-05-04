@@ -624,7 +624,9 @@ public sealed class ChurinDNC : DancerRotation
     private IAction UseActiveStandard => ActiveStandard;
     private bool AboutToDance => CanUseTechStep || CanUseActiveStandard;
 
-    #endregion
+	private bool TryUseProcs(out IAction? act)
+	{
+		act = null;
 
     #region Potions
 

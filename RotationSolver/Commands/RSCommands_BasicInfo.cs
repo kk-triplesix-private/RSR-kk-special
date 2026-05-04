@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.Command;
 using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using RotationSolver.Data;
 
 namespace RotationSolver.Commands
