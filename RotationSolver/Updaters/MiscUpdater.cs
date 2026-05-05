@@ -4,22 +4,19 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using ECommons.DalamudServices;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
-using RotationSolver.Basic.Configuration;
 using RotationSolver.Commands;
 
 namespace RotationSolver.Updaters;
 
 internal static class MiscUpdater
 {
-
 	internal static void UpdateMisc()
 	{
 		UpdateEntry();
-		UpdateCancelCast();
+		CancelCastUpdater.UpdateCancelCast();
 	}
 
 	private static IDtrBarEntry? _dtrEntry;
@@ -227,7 +224,7 @@ internal static class MiscUpdater
 		});
 	}
 
-	private static unsafe bool IsActionSlotRight(ActionBarSlot slot, RaptureHotbarModule.HotbarSlot? hot, uint actionID)
+	private static bool IsActionSlotRight(ActionBarSlot slot, RaptureHotbarModule.HotbarSlot? hot, uint actionID)
 	{
 		if (hot.HasValue)
 		{
@@ -255,7 +252,7 @@ internal static class MiscUpdater
 		return Service.GetAdjustedActionId((uint)slot.ActionId) == actionID;
 	}
 
-	private unsafe delegate bool ActionBarAction(ActionBarSlot bar, RaptureHotbarModule.HotbarSlot? hot, uint highLightID);
+	private delegate bool ActionBarAction(ActionBarSlot bar, RaptureHotbarModule.HotbarSlot? hot, uint highLightID);
 	private unsafe delegate bool ActionBarPredicate(ActionBarSlot bar, RaptureHotbarModule.HotbarSlot* hot);
 	private static unsafe void LoopAllSlotBar(ActionBarAction doingSomething)
 	{
@@ -309,7 +306,7 @@ internal static class MiscUpdater
 		}
 	}
 
-	public static unsafe void Dispose()
+	public static void Dispose()
 	{
 		if (_dtrEntry?.Title != null)
 		{

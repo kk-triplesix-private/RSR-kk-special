@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace RotationSolver.ExtraRotations.Healer;
@@ -35,8 +33,70 @@ public sealed class BeirutaAST : AstrologianRotation
         [Description("Balance")] ThreeGcd,
     }
 
-    [RotationConfig(CombatType.PvE, Name = "Automatically upgrade Horoscope with Helios/Aspected Helios")]
-    public bool AutoUpgradeHoroscope { get; set; } = true;
+	[RotationConfig(CombatType.PvE, Name = "Prioritize Microcosmos over all other healing when available")]
+	public bool MicroPrio { get; set; } = false;
+
+	[Range(4, 20, ConfigUnitType.Seconds)]
+	[RotationConfig(CombatType.PvE, Name = "Use Earthly Star during countdown timer.")]
+	public float UseEarthlyStarTime { get; set; } = 4;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Aspected Benefic")]
+	public float AspectedBeneficHeal { get; set; } = 0.5f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Synastry")]
+	public float SynastryHeal { get; set; } = 0.5f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold among party member needed to pop Horoscope)")]
+	public float HoroscopeHeal { get; set; } = 0.6f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold among party member needed to pop Microcosmos")]
+	public float MicrocosmosHeal { get; set; } = 0.5f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to detonate Earthly Star (when Giant Dominance)")]
+	public float StellarDetonationHeal { get; set; } = 0.7f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to use Celestial Opposition (only when NOT holding Giant Dominance)")]
+	public float CelestialOppositionHeal { get; set; } = 0.7f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to use Lady Of Crowns")]
+	public float LadyOfHeals { get; set; } = 0.8f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity 3rd charge")]
+	public float EssentialDignityThird { get; set; } = 0.7f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity 2nd charge")]
+	public float EssentialDignitySecond { get; set; } = 0.5f;
+
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity last charge")]
+	public float EssentialDignityLast { get; set; } = 0.3f;
+
+	[RotationConfig(CombatType.PvE, Name = "Prioritize Essential Dignity over single target GCD heals when available")]
+	public EssentialPrioStrategy EssentialPrio2 { get; set; } = EssentialPrioStrategy.AnyCharges;
+
+	public enum EssentialPrioStrategy : byte
+	{
+		[Description("Ignore setting")]
+		UseGCDs,
+
+		[Description("When capped")]
+		CappedCharges,
+
+		[Description("Any charges")]
+		AnyCharges,
+	}
+
+	[RotationConfig(CombatType.PvE, Name = "Early moving Combust refresh")]
+	public MovingCombustRefreshOption MovingCombustRefresh { get; set; } = MovingCombustRefreshOption.Disable;
 
     [RotationConfig(CombatType.PvE, Name = "Enable Swiftcast Restriction Logic to attempt to prevent actions other than Raise when you have swiftcast")]
     public bool SwiftLogic { get; set; } = true;
@@ -57,45 +117,48 @@ public sealed class BeirutaAST : AstrologianRotation
     [RotationConfig(CombatType.PvE, Name = "Prioritize Microcosmos over all other healing when available")]
     public bool MicroPrio { get; set; } = false;
 
-    [Range(4, 20, ConfigUnitType.Seconds)]
-    [RotationConfig(CombatType.PvE, Name = "Use Earthly Star during countdown timer.")]
-    public float UseEarthlyStarTime { get; set; } = 4;
+	private float _lastLightspeedUseCombatTime = float.MinValue;
+	private float _lastSwiftcastUseCombatTime = float.MinValue;
+	private float _lastMovementPreferredLockingActionCombatTime = float.MinValue;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Aspected Benefic")]
-    public float AspectedBeneficHeal { get; set; } = 0.5f;
+	private bool CardsUnderDivinationOnly { get; set; } = true;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Synastry")]
-    public float SynastryHeal { get; set; } = 0.5f;
+	#endregion
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold among party member needed to pop Horoscope)")]
-    public float HoroscopeHeal { get; set; } = 0.6f;
+	#region Simple Properties
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold among party member needed to pop Microcosmos")]
-    public float MicrocosmosHeal { get; set; } = 0.5f;
+	private float OpenWindowSeconds => OpenWindow switch
+	{
+		OpenWindowGcd.ZeroGcd => 0f,
+		OpenWindowGcd.OneGcd => 2.2f,
+		OpenWindowGcd.TwoGcd => 5.1f,
+		OpenWindowGcd.ThreeGcd => 7.2f,
+		_ => 5.5f,
+	};
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to detonate Earthly Star (when Giant Dominance)")]
-    public float StellarDetonationHeal { get; set; } = 0.7f;
+	private bool IsOpen => InCombat && CombatTime < OpenWindowSeconds;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to use Celestial Opposition (only when NOT holding Giant Dominance)")]
-    public float CelestialOppositionHeal { get; set; } = 0.7f;
+	private bool InFirst15sAfterNeutralSect =>
+		_neutralSectUsedAtMs != 0 &&
+		Environment.TickCount64 - _neutralSectUsedAtMs <= NeutralSectEarlyMs;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum average HP threshold among party members needed to use Lady Of Crowns")]
-    public float LadyOfHeals { get; set; } = 0.8f;
+	private bool InFirst5sAfterDivination =>
+		_divinationUsedAtMs != 0 &&
+		Environment.TickCount64 - _divinationUsedAtMs < DivinationFirst5sMs;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity 3rd charge")]
-    public float EssentialDignityThird { get; set; } = 0.7f;
+	private bool OracleGatedByDivination => InFirst5sAfterDivination;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity 2nd charge")]
-    public float EssentialDignitySecond { get; set; } = 0.5f;
+	private bool HasHeliosConjunction => StatusHelper.PlayerHasStatus(true, StatusID.HeliosConjunction);
+	private bool HasAspectedHelios => StatusHelper.PlayerHasStatus(true, StatusID.AspectedHelios);
+	private bool HasDivining => StatusHelper.PlayerHasStatus(true, StatusID.Divining);
+	private bool HasHoroscopeHelios => StatusHelper.PlayerHasStatus(true, StatusID.HoroscopeHelios);
+	private bool HasHoroscope => StatusHelper.PlayerHasStatus(true, StatusID.Horoscope);
+
+	private bool HasHealingLockout => HasMacrocosmos || HasGiantDominance || HasEarthlyDominance;
+
+	private bool HasSufficientMovement =>
+		IsMoving &&
+		MovingTime > MovementTimeThreshold;
 
     [Range(0, 1, ConfigUnitType.Percent)]
     [RotationConfig(CombatType.PvE, Name = "Minimum HP threshold party member needs to be to use Essential Dignity last charge")]

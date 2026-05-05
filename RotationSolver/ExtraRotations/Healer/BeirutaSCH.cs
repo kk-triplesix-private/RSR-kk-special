@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace RotationSolver.ExtraRotations.Healer;
 
@@ -8,7 +6,7 @@ namespace RotationSolver.ExtraRotations.Healer;
 [SourceCode(Path = "main/ExtraRotations/Healer/BeirutaSCH.cs")]
 public sealed class BeirutaSCH : ScholarRotation
 {
-    #region Config Options
+	#region Config Options
 
     [RotationConfig(CombatType.PvE, Name =
         "Please note that this rotation is optimised for high-end encounters.\n" +
@@ -48,48 +46,26 @@ public sealed class BeirutaSCH : ScholarRotation
     [RotationConfig(CombatType.PvE, Name = "Party HP percent threshold to use Emergency Tactics with Succor")]
     public float EmergencyTacticsHeal { get; set; } = 0.4f;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Consolation")]
-    public float ConsolationHeal { get; set; } = 0.8f;
+	[RotationConfig(CombatType.PvE, Name = "Use Swiftcast for movement")]
+	public bool UseSwiftcastForMovement { get; set; } = true;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to prioritize Indomitability and instant heals over heal-over-time effects")]
-    public float EmergencyHealPercent { get; set; } = 0.1f;
+	[RotationConfig(CombatType.PvE, Name = "Use Swiftcast on Adloquium")]
+	public bool UseSwiftcastOnAdloquium { get; set; } = true;
 
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Whispering Dawn or Angel's Whisper")]
-    public float WhisperingDawnHeal { get; set; } = 0.6f;
-
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Fey Blessing when Whispering Dawn or Angel's Whisper is missing")]
-    public float FeyBlessingHeal { get; set; } = 0.7f;
-
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Indomitability")]
-    public float IndomitabilityHeal { get; set; } = 0.3f;
-
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum average party HP required before using single-target oGCDs on non-tanks")]
-    public float SingleAbilityNonTankPartyAverageGate { get; set; } = 0.8f;
-
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Emergency Tactics Succor in HealAreaGCD")]
-    public float HealAreaGcdEmergencyTacticsHeal { get; set; } = 0.3f;
-
-    [Range(0, 1, ConfigUnitType.Percent)]
-    [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Accession in HealAreaGCD")]
-    public float HealAreaGcdAccessionHeal { get; set; } = 0.6f;
+	[Range(0, 5, ConfigUnitType.Seconds, 0.1f)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum movement time before allowing movement-based actions")]
+	public float MovementTimeThreshold { get; set; } = 0.9f;
 
     [Range(0, 1, ConfigUnitType.Percent)]
     [RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Accession in HealAreaGCD while moving and not under Emergency Tactics")]
     public float HealAreaGcdMovingAccessionHeal { get; set; } = 0.8f;
 
-    [Range(0, 10000, ConfigUnitType.None)]
-    [RotationConfig(CombatType.PvE, Name = "Minimum MP before prioritizing emergency healing and rezzing (willing to use Seraphism sooner)")]
-    public int EmergencyHealingMPThreshold { get; set; } = 2000;
+	[RotationConfig(CombatType.PvE, Name = "Prioritise Aetherflow before Dissipation")]
+	public bool PrioritizeAetherflowOverDissipation { get; set; } = false;
 
-    [RotationConfig(CombatType.PvE, Name = "Enable Swiftcast restriction: only allow Raise while Swiftcast is active")]
-    public bool SwiftLogic { get; set; } = true;
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Party HP percent threshold to use Emergency Tactics with Succor")]
+	public float EmergencyTacticsHeal { get; set; } = 0.4f;
 
     [RotationConfig(CombatType.PvE, Name = "Countdown opener configuration")]
 public CountdownOpenerStrategy CountdownOpener { get; set; } =
@@ -113,31 +89,37 @@ public enum CountdownOpenerStrategy : byte
     None = 4,
 }
 
-    [RotationConfig(CombatType.PvE, Name = "How to control Deployment Tactics usage")]
-    public DeploymentTacticsUsageStrategy DeploymentTacticsUsage { get; set; } = DeploymentTacticsUsageStrategy.ProtractionControl;
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Whispering Dawn or Angel's Whisper")]
+	public float WhisperingDawnHeal { get; set; } = 0.6f;
 
-    [RotationConfig(CombatType.PvE, Name = "Only use Deployment Tactics on Critical Shields?")]
-    public bool OnlyUseDeploymentTacticsOnCriticalShields { get; set; } = true;
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Fey Blessing when Whispering Dawn or Angel's Whisper is missing")]
+	public float FeyBlessingHeal { get; set; } = 0.7f;
 
-    public enum DeploymentTacticsUsageStrategy : byte
-    {
-        [Description("Controlled by having Protraction on self (configured by below option)")]
-        ProtractionControl,
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Indomitability")]
+	public float IndomitabilityHeal { get; set; } = 0.3f;
 
-        [Description("Controlled by having Recitation (always crit)")]
-        RecitationControl,
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum average party HP required before using single-target oGCDs on non-tanks")]
+	public float SingleAbilityNonTankPartyAverageGate { get; set; } = 0.8f;
 
-        [Description("Controlled by both (allow non-crit)")]
-        BothControl,
-    }
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Emergency Tactics Succor in HealAreaGCD")]
+	public float HealAreaGcdEmergencyTacticsHeal { get; set; } = 0.3f;
 
-    #endregion
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Accession in HealAreaGCD")]
+	public float HealAreaGcdAccessionHeal { get; set; } = 0.6f;
 
-    #region Constants / Fields
+	[Range(0, 1, ConfigUnitType.Percent)]
+	[RotationConfig(CombatType.PvE, Name = "Average party HP percent to use Accession in HealAreaGCD while moving and not under Emergency Tactics")]
+	public float HealAreaGcdMovingAccessionHeal { get; set; } = 0.8f;
 
-    private const long ChainStratagemBanefulBlockMs = 5_000;
-    private const long ChainStratagemDotRefreshMs = 20_000;
-    private const long DeploymentTacticsAfterAdloquiumWindowMs = 5_000;
+	[Range(0, 10000, ConfigUnitType.None)]
+	[RotationConfig(CombatType.PvE, Name = "Minimum MP before prioritizing emergency healing and rezzing (willing to use Seraphism sooner)")]
+	public int EmergencyHealingMPThreshold { get; set; } = 2000;
 
     private const float ChainStratagemDotRefreshSeconds = 11f;
     private const float AetherpactRemoveHpThreshold = 0.9f;
@@ -145,8 +127,9 @@ public enum CountdownOpenerStrategy : byte
     private const float ExcogHealHpThreshold = 0.4f;
     private const float BallparkDamagePercent = 0.08f;
 
-    private const int DotOffsetMobs = 1;
-    private const int MinimumFairyGaugeForLinkPriority = 70;
+	[RotationConfig(CombatType.PvE, Name = "Countdown opener configuration")]
+	public CountdownOpenerStrategy CountdownOpener { get; set; } =
+	CountdownOpenerStrategy.RecitationAdloquiumDeploymentTactics;
 
     private const bool UseDissipationDuringBurst = true;
     private const bool EnableBallparkTtkEstimator = true;
@@ -155,17 +138,16 @@ public enum CountdownOpenerStrategy : byte
     private long _adloquiumUsedAtMs;
     private float _lastSwiftcastLockingActionCombatTime = float.MinValue;
 
-    #endregion
+	#endregion
 
-    #region Simple Status Helpers
+	#region Overrides
 
     private bool HasGalvanize => StatusHelper.PlayerHasStatus(true, StatusID.Galvanize);
     private bool HasProtraction => StatusHelper.PlayerHasStatus(true, StatusID.Protraction);
     private bool HasMacrocosmos => StatusHelper.PlayerHasStatus(true, StatusID.Macrocosmos);
     private bool HasSeraphism => StatusHelper.PlayerHasStatus(true, StatusID.Seraphism);
 
-    private bool HasWhisperingDawn => HasPartyMemberWithOwnStatus(StatusID.WhisperingDawn);
-    private bool HasAngelsWhisper => HasPartyMemberWithOwnStatus(StatusID.AngelsWhisper);
+	public override bool CanHealAreaSpell => base.CanHealAreaSpell;
 
     private bool HasSufficientMovement =>
         IsMoving &&

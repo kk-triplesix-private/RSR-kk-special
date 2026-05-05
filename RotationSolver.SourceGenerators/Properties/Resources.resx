@@ -43087,8 +43087,8 @@ public abstract partial class CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public virtual IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        SprintPvE, TeleportPvE, ReturnPvE, DecipherPvE, DigPvE, RampartPvE, ProvokePvE, ReprisalPvE, ShirkPvE, InterjectPvE, LowBlowPvE, SecondWindPvE, BloodbathPvE, TrueNorthPvE, ArmsLengthPvE, FeintPvE, HeadGrazePvE, FootGrazePvE, LegGrazePvE, PelotonPvE, SurecastPvE, AddlePvE, SwiftcastPvE, LucidDreamingPvE, EsunaPvE, RescuePvE, LegSweepPvE, OpticalSightPvP, SpinCrusherPvP, LaserXSwordPvP, _3000TonzeMissilePvP, SteamReleasePvP, FlarethrowerPvP, DoubleRocketPunchPvP, MegaBeamPvP, CeruleumRefillPvP, DismountPvP, ReposePvE, SleepPvE, GuardPvP, StandardissueElixirPvP, PurifyPvP, SprintPvP, IsleReturnPvE, RecuperatePvP, IsleSprintPvE, OccultReturnPvE, StellarReturnPvE, RampagePvP, RampartPvP, FullSwingPvP, BloodbathPvP, SwiftPvP, SmitePvP, DervishPvP, BraveryPvP, EagleEyeShotPvP, CometPvP, RustPvP, HaelanPvP, StoneskinIiPvP, DiabrosisPvP, PhantomDartPvP,
-        
+    	SprintPvE, TeleportPvE, ReturnPvE, DecipherPvE, DigPvE, RampartPvE, ProvokePvE, ReprisalPvE, ShirkPvE, InterjectPvE, LowBlowPvE, SecondWindPvE, BloodbathPvE, TrueNorthPvE, ArmsLengthPvE, FeintPvE, HeadGrazePvE, FootGrazePvE, LegGrazePvE, PelotonPvE, SurecastPvE, AddlePvE, SwiftcastPvE, LucidDreamingPvE, EsunaPvE, RescuePvE, LegSweepPvE, OpticalSightPvP, SpinCrusherPvP, LaserXSwordPvP, _3000TonzeMissilePvP, SteamReleasePvP, FlarethrowerPvP, DoubleRocketPunchPvP, MegaBeamPvP, CeruleumRefillPvP, DismountPvP, ReposePvE, SleepPvE, GuardPvP, StandardissueElixirPvP, PurifyPvP, SprintPvP, IsleReturnPvE, RecuperatePvP, IsleSprintPvE, OccultReturnPvE, StellarReturnPvE, RampagePvP, RampartPvP, FullSwingPvP, BloodbathPvP, SwiftPvP, SmitePvP, DervishPvP, BraveryPvP, EagleEyeShotPvP, CometPvP, RustPvP, HaelanPvP, StoneskinIiPvP, DiabrosisPvP, PhantomDartPvP,
+    	
     ];
 #endregion
 
@@ -43315,8 +43315,8 @@ public abstract partial class CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public  IBaseItem[] AllItems =&gt; _AllItems ??= [
-        BottleOfElixir, BottleOfHielixir, BottleOfAntidote, BottleOfEyeDrops, BottleOfEchoDrops, BottleOfSmellingSalts, BottleOfSpineDrops, GoldNeedle, TuftOfPhoenixDown, FireWardPotion, IceWardPotion, WindWardPotion, EarthWardPotion, LightningWardPotion, WaterWardPotion, FireWardHipotion, IceWardHipotion, WindWardHipotion, EarthWardHipotion, LightningWardHipotion, WaterWardHipotion, FireWardMegapotion, IceWardMegapotion, WindWardMegapotion, EarthWardMegapotion, LightningWardMegapotion, WaterWardMegapotion, VialOfCordial, PhialOfRetainerFantasia, VialOfWateredCordial, OccultPotion,
-        
+    	BottleOfElixir, BottleOfHielixir, BottleOfAntidote, BottleOfEyeDrops, BottleOfEchoDrops, BottleOfSmellingSalts, BottleOfSpineDrops, GoldNeedle, TuftOfPhoenixDown, FireWardPotion, IceWardPotion, WindWardPotion, EarthWardPotion, LightningWardPotion, WaterWardPotion, FireWardHipotion, IceWardHipotion, WindWardHipotion, EarthWardHipotion, LightningWardHipotion, WaterWardHipotion, FireWardMegapotion, IceWardMegapotion, WindWardMegapotion, EarthWardMegapotion, LightningWardMegapotion, WaterWardMegapotion, VialOfCordial, PhialOfRetainerFantasia, VialOfWateredCordial, OccultPotion,
+    	
     ];
 #endregion
 }</value>
@@ -56260,8 +56260,8 @@ public abstract partial class PaladinRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        FastBladePvE, RiotBladePvE, ShieldBashPvE, SentinelPvE, FightOrFlightPvE, RageOfHalonePvE, BulwarkPvE, CircleOfScornPvE, ShieldLobPvE, CoverPvE, IronWillPvE, SpiritsWithinPvE, HallowedGroundPvE, GoringBladePvE, RoyalAuthorityPvE, DivineVeilPvE, ClemencyPvE, SheltronPvE, TotalEclipsePvE, InterventionPvE, RequiescatPvE, HolySpiritPvE, PassageOfArmsPvE, ProminencePvE, HolyCirclePvE, ConfiteorPvE, AtonementPvE, IntervenePvE, HolySheltronPvE, ExpiacionPvE, BladeOfFaithPvE, BladeOfTruthPvE, BladeOfValorPvE, FastBladePvP, RiotBladePvP, RoyalAuthorityPvP, AtonementPvP, HolySpiritPvP, IntervenePvP, GuardianPvP, HolySheltronPvP, BladeOfFaithPvP, BladeOfTruthPvP, BladeOfValorPvP, ReleaseIronWillPvE, SupplicationPvE, SepulchrePvE, GuardianPvE, ImperatorPvE, BladeOfHonorPvE, SupplicationPvP, SepulchrePvP, ShieldSmitePvP, ImperatorPvP, ConfiteorPvP,
-        ..base.AllBaseActions,
+    	FastBladePvE, RiotBladePvE, ShieldBashPvE, SentinelPvE, FightOrFlightPvE, RageOfHalonePvE, BulwarkPvE, CircleOfScornPvE, ShieldLobPvE, CoverPvE, IronWillPvE, SpiritsWithinPvE, HallowedGroundPvE, GoringBladePvE, RoyalAuthorityPvE, DivineVeilPvE, ClemencyPvE, SheltronPvE, TotalEclipsePvE, InterventionPvE, RequiescatPvE, HolySpiritPvE, PassageOfArmsPvE, ProminencePvE, HolyCirclePvE, ConfiteorPvE, AtonementPvE, IntervenePvE, HolySheltronPvE, ExpiacionPvE, BladeOfFaithPvE, BladeOfTruthPvE, BladeOfValorPvE, FastBladePvP, RiotBladePvP, RoyalAuthorityPvP, AtonementPvP, HolySpiritPvP, IntervenePvP, GuardianPvP, HolySheltronPvP, BladeOfFaithPvP, BladeOfTruthPvP, BladeOfValorPvP, ReleaseIronWillPvE, SupplicationPvE, SepulchrePvE, GuardianPvE, ImperatorPvE, BladeOfHonorPvE, SupplicationPvP, SepulchrePvP, ShieldSmitePvP, ImperatorPvP, ConfiteorPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _ShieldWallPvECreator = new(() =&gt; 
@@ -56481,8 +56481,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; PhalanxPvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        DivineMagicMasteryTrait, OathMasteryTrait, ChivalryTrait, RageOfHaloneMasteryTrait, EnhancedProminenceTrait, EnhancedSheltronTrait, EnhancedRequiescatTrait, SwordOathTrait, SheltronMasteryTrait, EnhancedInterventionTrait, DivineMagicMasteryIiTrait, SpiritsWithinMasteryTrait, EnhancedDivineVeilTrait, MeleeMasteryTrait, SentinelMasteryTrait, RequiescatMasteryTrait, EnhancedBladeOfValorTrait, MeleeMasteryIiTrait, EnhancedFightOrFlightTrait,
-        ..base.AllTraits,
+    	DivineMagicMasteryTrait, OathMasteryTrait, ChivalryTrait, RageOfHaloneMasteryTrait, EnhancedProminenceTrait, EnhancedSheltronTrait, EnhancedRequiescatTrait, SwordOathTrait, SheltronMasteryTrait, EnhancedInterventionTrait, DivineMagicMasteryIiTrait, SpiritsWithinMasteryTrait, EnhancedDivineVeilTrait, MeleeMasteryTrait, SentinelMasteryTrait, RequiescatMasteryTrait, EnhancedBladeOfValorTrait, MeleeMasteryIiTrait, EnhancedFightOrFlightTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -57745,8 +57745,8 @@ public abstract partial class MonkRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        BootshinePvE, TrueStrikePvE, SnapPunchPvE, TwinSnakesPvE, ArmOfTheDestroyerPvE, MantraPvE, DemolishPvE, PerfectBalancePvE, RockbreakerPvE, DragonKickPvE, TornadoKickPvE, ElixirFieldPvE, TheForbiddenChakraPvE, FormShiftPvE, RiddleOfEarthPvE, RiddleOfFirePvE, BrotherhoodPvE, FourpointFuryPvE, EnlightenmentPvE, SixsidedStarPvE, SteelPeakPvE, ThunderclapPvE, HowlingFistPvE, MasterfulBlitzPvE, CelestialRevolutionPvE, RiddleOfWindPvE, ShadowOfTheDestroyerPvE, RisingPhoenixPvE, PhantomRushPvE, FlintStrikePvE, DragonKickPvP, TwinSnakesPvP, DemolishPvP, PhantomRushPvP, RisingPhoenixPvP, RiddleOfEarthPvP, EarthsReplyPvP, ThunderclapPvP, SteeledMeditationPvE, InspiritedMeditationPvE, ForbiddenMeditationPvE, EnlightenedMeditationPvE, EarthsReplyPvE, LeapingOpoPvE, RisingRaptorPvE, PouncingCoeurlPvE, ElixirBurstPvE, WindsReplyPvE, FiresReplyPvE, LeapingOpoPvP, RisingRaptorPvP, PouncingCoeurlPvP, FiresReplyPvP, WindsReplyPvP,
-        ..base.AllBaseActions,
+    	BootshinePvE, TrueStrikePvE, SnapPunchPvE, TwinSnakesPvE, ArmOfTheDestroyerPvE, MantraPvE, DemolishPvE, PerfectBalancePvE, RockbreakerPvE, DragonKickPvE, TornadoKickPvE, ElixirFieldPvE, TheForbiddenChakraPvE, FormShiftPvE, RiddleOfEarthPvE, RiddleOfFirePvE, BrotherhoodPvE, FourpointFuryPvE, EnlightenmentPvE, SixsidedStarPvE, SteelPeakPvE, ThunderclapPvE, HowlingFistPvE, MasterfulBlitzPvE, CelestialRevolutionPvE, RiddleOfWindPvE, ShadowOfTheDestroyerPvE, RisingPhoenixPvE, PhantomRushPvE, FlintStrikePvE, DragonKickPvP, TwinSnakesPvP, DemolishPvP, PhantomRushPvP, RisingPhoenixPvP, RiddleOfEarthPvP, EarthsReplyPvP, ThunderclapPvP, SteeledMeditationPvE, InspiritedMeditationPvE, ForbiddenMeditationPvE, EnlightenedMeditationPvE, EarthsReplyPvE, LeapingOpoPvE, RisingRaptorPvE, PouncingCoeurlPvE, ElixirBurstPvE, WindsReplyPvE, FiresReplyPvE, LeapingOpoPvP, RisingRaptorPvP, PouncingCoeurlPvP, FiresReplyPvP, WindsReplyPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -57956,8 +57956,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; MeteodrivePvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        DeepMeditationTrait, DeepMeditationIiTrait, EnhancedGreasedLightningIiTrait, EnhancedGreasedLightningIiiTrait, SteelPeakMasteryTrait, HowlingFistMasteryTrait, ArmOfTheDestroyerMasteryTrait, EnhancedThunderclapTrait, EnhancedBrotherhoodTrait, EnhancedPerfectBalanceTrait, FlintStrikeMasteryTrait, TornadoKickMasteryTrait, MeleeMasteryTrait, BeastChakraMasteryTrait, EnhancedRiddleOfWindTrait, EnhancedRiddleOfFireTrait, MeleeMasteryIiTrait,
-        ..base.AllTraits,
+    	DeepMeditationTrait, DeepMeditationIiTrait, EnhancedGreasedLightningIiTrait, EnhancedGreasedLightningIiiTrait, SteelPeakMasteryTrait, HowlingFistMasteryTrait, ArmOfTheDestroyerMasteryTrait, EnhancedThunderclapTrait, EnhancedBrotherhoodTrait, EnhancedPerfectBalanceTrait, FlintStrikeMasteryTrait, TornadoKickMasteryTrait, MeleeMasteryTrait, BeastChakraMasteryTrait, EnhancedRiddleOfWindTrait, EnhancedRiddleOfFireTrait, MeleeMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -59036,8 +59036,8 @@ public abstract partial class WarriorRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        HeavySwingPvE, MaimPvE, BerserkPvE, ThrillOfBattlePvE, OverpowerPvE, StormsPathPvE, HolmgangPvE, VengeancePvE, StormsEyePvE, TomahawkPvE, DefiancePvE, InnerBeastPvE, SteelCyclonePvE, InfuriatePvE, FellCleavePvE, DecimatePvE, RawIntuitionPvE, EquilibriumPvE, OnslaughtPvE, UpheavalPvE, ShakeItOffPvE, InnerReleasePvE, MythrilTempestPvE, ChaoticCyclonePvE, NascentFlashPvE, InnerChaosPvE, BloodwhettingPvE, OrogenyPvE, PrimalRendPvE, HeavySwingPvP, MaimPvP, StormsPathPvP, InnerChaosPvP, FellCleavePvP, OnslaughtPvP, OrogenyPvP, BlotaPvP, BloodwhettingPvP, PrimalRendPvP, ChaoticCyclonePvP, ReleaseDefiancePvE, DamnationPvE, PrimalWrathPvE, PrimalRuinationPvE, PrimalRuinationPvP, PrimalWrathPvP,
-        ..base.AllBaseActions,
+    	HeavySwingPvE, MaimPvE, BerserkPvE, ThrillOfBattlePvE, OverpowerPvE, StormsPathPvE, HolmgangPvE, VengeancePvE, StormsEyePvE, TomahawkPvE, DefiancePvE, InnerBeastPvE, SteelCyclonePvE, InfuriatePvE, FellCleavePvE, DecimatePvE, RawIntuitionPvE, EquilibriumPvE, OnslaughtPvE, UpheavalPvE, ShakeItOffPvE, InnerReleasePvE, MythrilTempestPvE, ChaoticCyclonePvE, NascentFlashPvE, InnerChaosPvE, BloodwhettingPvE, OrogenyPvE, PrimalRendPvE, HeavySwingPvP, MaimPvP, StormsPathPvP, InnerChaosPvP, FellCleavePvP, OnslaughtPvP, OrogenyPvP, BlotaPvP, BloodwhettingPvP, PrimalRendPvP, ChaoticCyclonePvP, ReleaseDefiancePvE, DamnationPvE, PrimalWrathPvE, PrimalRuinationPvE, PrimalRuinationPvP, PrimalWrathPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _ShieldWallPvECreator = new(() =&gt; 
@@ -59252,8 +59252,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; PrimalScreamPv
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        EnhancedInfuriateTrait, BerserkMasteryTrait, TheBeastWithinTrait, InnerBeastMasteryTrait, SteelCycloneMasteryTrait, NascentChaosTrait, MasteringTheBeastTrait, EnhancedThrillOfBattleTrait, EnhancedShakeItOffTrait, RawIntuitionMasteryTrait, EnhancedNascentFlashTrait, EnhancedEquilibriumTrait, EnhancedOnslaughtTrait, MeleeMasteryTrait, VengeanceMasteryTrait, EnhancedInnerReleaseTrait, EnhancedPrimalRendTrait, MeleeMasteryIiTrait,
-        ..base.AllTraits,
+    	EnhancedInfuriateTrait, BerserkMasteryTrait, TheBeastWithinTrait, InnerBeastMasteryTrait, SteelCycloneMasteryTrait, NascentChaosTrait, MasteringTheBeastTrait, EnhancedThrillOfBattleTrait, EnhancedShakeItOffTrait, RawIntuitionMasteryTrait, EnhancedNascentFlashTrait, EnhancedEquilibriumTrait, EnhancedOnslaughtTrait, MeleeMasteryTrait, VengeanceMasteryTrait, EnhancedInnerReleaseTrait, EnhancedPrimalRendTrait, MeleeMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -60332,8 +60332,8 @@ public abstract partial class DragoonRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        TrueThrustPvE, VorpalThrustPvE, LifeSurgePvE, FullThrustPvE, LanceChargePvE, DoomSpikePvE, DisembowelPvE, ChaosThrustPvE, PiercingTalonPvE, JumpPvE, ElusiveJumpPvE, DragonfireDivePvE, FangAndClawPvE, GeirskogulPvE, WheelingThrustPvE, BattleLitanyPvE, SonicThrustPvE, MirageDivePvE, NastrondPvE, CoerthanTormentPvE, HighJumpPvE, RaidenThrustPvE, StardiverPvE, DraconianFuryPvE, HeavensThrustPvE, ChaoticSpringPvE, WyrmwindThrustPvE, RaidenThrustPvP, FangAndClawPvP, WheelingThrustPvP, HeavensThrustPvP, ChaoticSpringPvP, GeirskogulPvP, NastrondPvP, HighJumpPvP, ElusiveJumpPvP, WyrmwindThrustPvP, HorridRoarPvP, WingedGlidePvE, DrakesbanePvE, RiseOfTheDragonPvE, LanceBarragePvE, SpiralBlowPvE, StarcrossPvE, DrakesbanePvP, StarcrossPvP,
-        ..base.AllBaseActions,
+    	TrueThrustPvE, VorpalThrustPvE, LifeSurgePvE, FullThrustPvE, LanceChargePvE, DoomSpikePvE, DisembowelPvE, ChaosThrustPvE, PiercingTalonPvE, JumpPvE, ElusiveJumpPvE, DragonfireDivePvE, FangAndClawPvE, GeirskogulPvE, WheelingThrustPvE, BattleLitanyPvE, SonicThrustPvE, MirageDivePvE, NastrondPvE, CoerthanTormentPvE, HighJumpPvE, RaidenThrustPvE, StardiverPvE, DraconianFuryPvE, HeavensThrustPvE, ChaoticSpringPvE, WyrmwindThrustPvE, RaidenThrustPvP, FangAndClawPvP, WheelingThrustPvP, HeavensThrustPvP, ChaoticSpringPvP, GeirskogulPvP, NastrondPvP, HighJumpPvP, ElusiveJumpPvP, WyrmwindThrustPvP, HorridRoarPvP, WingedGlidePvE, DrakesbanePvE, RiseOfTheDragonPvE, LanceBarragePvE, SpiralBlowPvE, StarcrossPvE, DrakesbanePvP, StarcrossPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -60523,8 +60523,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SkyHighPvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        LifeOfTheDragonTrait, LanceMasteryTrait, JumpMasteryTrait, EnhancedJumpTrait, EnhancedCoerthanTormentTrait, LanceMasteryIiTrait, EnhancedLifeSurgeTrait, LanceMasteryIiiTrait, EnhancedWingedGlideTrait, EnhancedDragonfireDiveTrait, LanceMasteryIvTrait, EnhancedStardiverTrait, MeleeMasteryTrait,
-        ..base.AllTraits,
+    	LifeOfTheDragonTrait, LanceMasteryTrait, JumpMasteryTrait, EnhancedJumpTrait, EnhancedCoerthanTormentTrait, LanceMasteryIiTrait, EnhancedLifeSurgeTrait, LanceMasteryIiiTrait, EnhancedWingedGlideTrait, EnhancedDragonfireDiveTrait, LanceMasteryIvTrait, EnhancedStardiverTrait, MeleeMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -61603,8 +61603,8 @@ public abstract partial class BardRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        HeavyShotPvE, StraightShotPvE, VenomousBitePvE, RagingStrikesPvE, QuickNockPvE, BarragePvE, BloodletterPvE, RepellingShotPvE, WindbitePvE, MagesBalladPvE, ArmysPaeonPvE, RainOfDeathPvE, BattleVoicePvE, EmpyrealArrowPvE, TheWanderersMinuetPvE, IronJawsPvE, TheWardensPaeanPvE, SidewinderPvE, PitchPerfectPvE, TroubadourPvE, CausticBitePvE, StormbitePvE, NaturesMinnePvE, RefulgentArrowPvE, ShadowbitePvE, BurstShotPvE, ApexArrowPvE, LadonsbitePvE, BlastArrowPvE, RadiantFinalePvE, PowerfulShotPvP, PitchPerfectPvP, ApexArrowPvP, BlastArrowPvP, SilentNocturnePvP, RepellingShotPvP, TheWardensPaeanPvP, WideVolleyPvE, HeartbreakShotPvE, ResonantArrowPvE, RadiantEncorePvE, HarmonicArrowPvP, EncoreOfLightPvP,
-        ..base.AllBaseActions,
+    	HeavyShotPvE, StraightShotPvE, VenomousBitePvE, RagingStrikesPvE, QuickNockPvE, BarragePvE, BloodletterPvE, RepellingShotPvE, WindbitePvE, MagesBalladPvE, ArmysPaeonPvE, RainOfDeathPvE, BattleVoicePvE, EmpyrealArrowPvE, TheWanderersMinuetPvE, IronJawsPvE, TheWardensPaeanPvE, SidewinderPvE, PitchPerfectPvE, TroubadourPvE, CausticBitePvE, StormbitePvE, NaturesMinnePvE, RefulgentArrowPvE, ShadowbitePvE, BurstShotPvE, ApexArrowPvE, LadonsbitePvE, BlastArrowPvE, RadiantFinalePvE, PowerfulShotPvP, PitchPerfectPvP, ApexArrowPvP, BlastArrowPvP, SilentNocturnePvP, RepellingShotPvP, TheWardensPaeanPvP, WideVolleyPvE, HeartbreakShotPvE, ResonantArrowPvE, RadiantEncorePvE, HarmonicArrowPvP, EncoreOfLightPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BigShotPvECreator = new(() =&gt; 
@@ -61819,8 +61819,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; FinalFantasiaP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        BiteMasteryTrait, EnhancedEmpyrealArrowTrait, StraightShotMasteryTrait, BiteMasteryIiTrait, HeavyShotMasteryTrait, EnhancedArmysPaeonTrait, SoulVoiceTrait, QuickNockMasteryTrait, EnhancedBloodletterTrait, EnhancedApexArrowTrait, EnhancedTroubadourTrait, MinstrelsCodaTrait, WideVolleyMasteryTrait, BloodletterMasteryTrait, EnhancedBarrageTrait, EnhancedTroubadourIiTrait, EnhancedRadiantFinaleTrait, RangedMasteryTrait,
-        ..base.AllTraits,
+    	BiteMasteryTrait, EnhancedEmpyrealArrowTrait, StraightShotMasteryTrait, BiteMasteryIiTrait, HeavyShotMasteryTrait, EnhancedArmysPaeonTrait, SoulVoiceTrait, QuickNockMasteryTrait, EnhancedBloodletterTrait, EnhancedApexArrowTrait, EnhancedTroubadourTrait, MinstrelsCodaTrait, WideVolleyMasteryTrait, BloodletterMasteryTrait, EnhancedBarrageTrait, EnhancedTroubadourIiTrait, EnhancedRadiantFinaleTrait, RangedMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -62876,8 +62876,8 @@ public abstract partial class WhiteMageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        StonePvE, CurePvE, AeroPvE, MedicaPvE, RaisePvE, StoneIiPvE, CureIiiPvE, AeroIiPvE, MedicaIiPvE, CureIiPvE, PresenceOfMindPvE, RegenPvE, HolyPvE, BenedictionPvE, StoneIiiPvE, AsylumPvE, TetragrammatonPvE, AssizePvE, ThinAirPvE, StoneIvPvE, DivineBenisonPvE, PlenaryIndulgencePvE, AfflatusSolacePvE, DiaPvE, GlarePvE, AfflatusRapturePvE, AfflatusMiseryPvE, TemperancePvE, GlareIiiPvE, HolyIiiPvE, AquaveilPvE, LiturgyOfTheBellPvE, GlareIiiPvP, CureIiPvP, CureIiiPvP, AfflatusMiseryPvP, AquaveilPvP, MiracleOfNaturePvP, SeraphStrikePvP, AetherialShiftPvE, GlareIvPvE, MedicaIiiPvE, DivineCaressPvE, GlareIvPvP,
-        ..base.AllBaseActions,
+    	StonePvE, CurePvE, AeroPvE, MedicaPvE, RaisePvE, StoneIiPvE, CureIiiPvE, AeroIiPvE, MedicaIiPvE, CureIiPvE, PresenceOfMindPvE, RegenPvE, HolyPvE, BenedictionPvE, StoneIiiPvE, AsylumPvE, TetragrammatonPvE, AssizePvE, ThinAirPvE, StoneIvPvE, DivineBenisonPvE, PlenaryIndulgencePvE, AfflatusSolacePvE, DiaPvE, GlarePvE, AfflatusRapturePvE, AfflatusMiseryPvE, TemperancePvE, GlareIiiPvE, HolyIiiPvE, AquaveilPvE, LiturgyOfTheBellPvE, GlareIiiPvP, CureIiPvP, CureIiiPvP, AfflatusMiseryPvP, AquaveilPvP, MiracleOfNaturePvP, SeraphStrikePvP, AetherialShiftPvE, GlareIvPvE, MedicaIiiPvE, DivineCaressPvE, GlareIvPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _HealingWindPvECreator = new(() =&gt; 
@@ -63082,8 +63082,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; AfflatusPurgat
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        StoneMasteryIiTrait, StoneMasteryIiiTrait, SecretOfTheLilyTrait, AeroMasteryIiTrait, StoneMasteryIvTrait, TranscendentAfflatusTrait, EnhancedAsylumTrait, GlareMasteryTrait, HolyMasteryTrait, EnhancedHealingMagicTrait, EnhancedDivineBenisonTrait, EnhancedPresenceOfMindTrait, MedicaMasteryTrait, EnhancedTetragrammatonTrait, EnhancedTemperanceTrait, WhiteMagicMasteryTrait,
-        ..base.AllTraits,
+    	StoneMasteryIiTrait, StoneMasteryIiiTrait, SecretOfTheLilyTrait, AeroMasteryIiTrait, StoneMasteryIvTrait, TranscendentAfflatusTrait, EnhancedAsylumTrait, GlareMasteryTrait, HolyMasteryTrait, EnhancedHealingMagicTrait, EnhancedDivineBenisonTrait, EnhancedPresenceOfMindTrait, MedicaMasteryTrait, EnhancedTetragrammatonTrait, EnhancedTemperanceTrait, WhiteMagicMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -64346,8 +64346,8 @@ public abstract partial class BlackMageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        FirePvE, BlizzardPvE, ThunderPvE, FireIiPvE, TransposePvE, FireIiiPvE, ThunderIiiPvE, BlizzardIiiPvE, AetherialManipulationPvE, ScathePvE, ManawardPvE, ManafontPvE, FreezePvE, FlarePvE, LeyLinesPvE, BlizzardIvPvE, FireIvPvE, BetweenTheLinesPvE, ThunderIvPvE, TriplecastPvE, FoulPvE, ThunderIiPvE, DespairPvE, UmbralSoulPvE, XenoglossyPvE, BlizzardIiPvE, HighFireIiPvE, HighBlizzardIiPvE, AmplifierPvE, ParadoxPvE, FirePvP, FireIvPvP, FlarePvP, BlizzardPvP, BlizzardIvPvP, FreezePvP, BurstPvP, XenoglossyPvP, AetherialManipulationPvP, ParadoxPvP, FireIiiPvP, BlizzardIiiPvP, HighThunderPvE, HighThunderIiPvE, RetracePvE, FlareStarPvE, HighFireIiPvP, HighBlizzardIiPvP, ElementalWeavePvP, WreathOfFirePvP, WreathOfIcePvP, FlareStarPvP, FrostStarPvP, LethargyPvP,
-        ..base.AllBaseActions,
+    	FirePvE, BlizzardPvE, ThunderPvE, FireIiPvE, TransposePvE, FireIiiPvE, ThunderIiiPvE, BlizzardIiiPvE, AetherialManipulationPvE, ScathePvE, ManawardPvE, ManafontPvE, FreezePvE, FlarePvE, LeyLinesPvE, BlizzardIvPvE, FireIvPvE, BetweenTheLinesPvE, ThunderIvPvE, TriplecastPvE, FoulPvE, ThunderIiPvE, DespairPvE, UmbralSoulPvE, XenoglossyPvE, BlizzardIiPvE, HighFireIiPvE, HighBlizzardIiPvE, AmplifierPvE, ParadoxPvE, FirePvP, FireIvPvP, FlarePvP, BlizzardPvP, BlizzardIvPvP, FreezePvP, BurstPvP, XenoglossyPvP, AetherialManipulationPvP, ParadoxPvP, FireIiiPvP, BlizzardIiiPvP, HighThunderPvE, HighThunderIiPvE, RetracePvE, FlareStarPvE, HighFireIiPvP, HighBlizzardIiPvP, ElementalWeavePvP, WreathOfFirePvP, WreathOfIcePvP, FlareStarPvP, FrostStarPvP, LethargyPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _SkyshardPvECreator = new(() =&gt; 
@@ -64557,8 +64557,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SoulResonanceP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        ThunderMasteryTrait, ThunderMasteryIiTrait, EnhancedEnochianTrait, UmbralHeartTrait, EnhancedPolyglotTrait, EnhancedEnochianIiTrait, EnochianTrait, EnhancedFoulTrait, AspectMasteryIvTrait, EnhancedManafontTrait, AspectMasteryVTrait, EnhancedEnochianIiiTrait, ThunderMasteryIiiTrait, EnhancedLeyLinesTrait, EnhancedPolyglotIiTrait, EnhancedAstralFireTrait, EnhancedEnochianIvTrait,
-        ..base.AllTraits,
+    	ThunderMasteryTrait, ThunderMasteryIiTrait, EnhancedEnochianTrait, UmbralHeartTrait, EnhancedPolyglotTrait, EnhancedEnochianIiTrait, EnochianTrait, EnhancedFoulTrait, AspectMasteryIvTrait, EnhancedManafontTrait, AspectMasteryVTrait, EnhancedEnochianIiiTrait, ThunderMasteryIiiTrait, EnhancedLeyLinesTrait, EnhancedPolyglotIiTrait, EnhancedAstralFireTrait, EnhancedEnochianIvTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -66787,8 +66787,8 @@ public abstract partial class SummonerRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        RuinPvE, RuinIiPvE, ResurrectionPvE, FesterPvE, PainflarePvE, RuinIiiPvE, DreadwyrmTrancePvE, DeathflarePvE, RuinIvPvE, SummonBahamutPvE, WyrmwavePvE, EnkindleBahamutPvE, AkhMornPvE, PhysickPvE, EnergyDrainPvE, EnergySiphonPvE, OutburstPvE, FountainOfFirePvE, BrandOfPurgatoryPvE, EnkindlePhoenixPvE, EverlastingFlightPvE, RevelationPvE, ScarletFlamePvE, SummonCarbunclePvE, RadiantAegisPvE, AetherchargePvE, SearingLightPvE, SummonRubyPvE, SummonTopazPvE, SummonEmeraldPvE, SummonIfritPvE, SummonTitanPvE, SummonGarudaPvE, RubyRuinPvE, TopazRuinPvE, EmeraldRuinPvE, RubyRuinIiPvE, TopazRuinIiPvE, EmeraldRuinIiPvE, RubyOutburstPvE, TopazOutburstPvE, EmeraldOutburstPvE, RubyRuinIiiPvE, TopazRuinIiiPvE, EmeraldRuinIiiPvE, AstralImpulsePvE, AstralFlarePvE, AstralFlowPvE, RubyRitePvE, TopazRitePvE, EmeraldRitePvE, TridisasterPvE, RubyDisasterPvE, TopazDisasterPvE, EmeraldDisasterPvE, RekindlePvE, SummonPhoenixPvE, RubyCatastrophePvE, TopazCatastrophePvE, EmeraldCatastrophePvE, CrimsonCyclonePvE, MountainBusterPvE, SlipstreamPvE, SummonIfritIiPvE, SummonTitanIiPvE, SummonGarudaIiPvE, GemshinePvE, PreciousBrilliancePvE, CrimsonStrikePvE, RuinIiiPvP, AstralImpulsePvP, FountainOfFirePvP, CrimsonCyclonePvP, CrimsonStrikePvP, SlipstreamPvP, RadiantAegisPvP, MountainBusterPvP, MegaflarePvP, WyrmwavePvP, EverlastingFlightPvP, ScarletFlamePvP, NecrotizePvE, SearingFlashPvE, SummonSolarBahamutPvE, LuxwavePvE, UmbralImpulsePvE, UmbralFlarePvE, SunflarePvE, LuxSolarisPvE, EnkindleSolarBahamutPvE, ExodusPvE, RuinIvPvP, NecrotizePvP, DeathflarePvP, BrandOfPurgatoryPvP,
-        ..base.AllBaseActions,
+    	RuinPvE, RuinIiPvE, ResurrectionPvE, FesterPvE, PainflarePvE, RuinIiiPvE, DreadwyrmTrancePvE, DeathflarePvE, RuinIvPvE, SummonBahamutPvE, WyrmwavePvE, EnkindleBahamutPvE, AkhMornPvE, PhysickPvE, EnergyDrainPvE, EnergySiphonPvE, OutburstPvE, FountainOfFirePvE, BrandOfPurgatoryPvE, EnkindlePhoenixPvE, EverlastingFlightPvE, RevelationPvE, ScarletFlamePvE, SummonCarbunclePvE, RadiantAegisPvE, AetherchargePvE, SearingLightPvE, SummonRubyPvE, SummonTopazPvE, SummonEmeraldPvE, SummonIfritPvE, SummonTitanPvE, SummonGarudaPvE, RubyRuinPvE, TopazRuinPvE, EmeraldRuinPvE, RubyRuinIiPvE, TopazRuinIiPvE, EmeraldRuinIiPvE, RubyOutburstPvE, TopazOutburstPvE, EmeraldOutburstPvE, RubyRuinIiiPvE, TopazRuinIiiPvE, EmeraldRuinIiiPvE, AstralImpulsePvE, AstralFlarePvE, AstralFlowPvE, RubyRitePvE, TopazRitePvE, EmeraldRitePvE, TridisasterPvE, RubyDisasterPvE, TopazDisasterPvE, EmeraldDisasterPvE, RekindlePvE, SummonPhoenixPvE, RubyCatastrophePvE, TopazCatastrophePvE, EmeraldCatastrophePvE, CrimsonCyclonePvE, MountainBusterPvE, SlipstreamPvE, SummonIfritIiPvE, SummonTitanIiPvE, SummonGarudaIiPvE, GemshinePvE, PreciousBrilliancePvE, CrimsonStrikePvE, RuinIiiPvP, AstralImpulsePvP, FountainOfFirePvP, CrimsonCyclonePvP, CrimsonStrikePvP, SlipstreamPvP, RadiantAegisPvP, MountainBusterPvP, MegaflarePvP, WyrmwavePvP, EverlastingFlightPvP, ScarletFlamePvP, NecrotizePvE, SearingFlashPvE, SummonSolarBahamutPvE, LuxwavePvE, UmbralImpulsePvE, UmbralFlarePvE, SunflarePvE, LuxSolarisPvE, EnkindleSolarBahamutPvE, ExodusPvE, RuinIvPvP, NecrotizePvP, DeathflarePvP, BrandOfPurgatoryPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _SkyshardPvECreator = new(() =&gt; 
@@ -67013,8 +67013,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SummonBahamutP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        EnhancedDreadwyrmTranceTrait, RubySummoningMasteryTrait, TopazSummoningMasteryTrait, EmeraldSummoningMasteryTrait, EnkindleTrait, RuinMasteryIiTrait, AetherchargeMasteryTrait, EnhancedEnergySiphonTrait, RuinMasteryIiiTrait, OutburstMasteryTrait, OutburstMasteryIiTrait, RuinMasteryIvTrait, EnhancedRadiantAegisTrait, EnkindleIiTrait, EnhancedSummonBahamutTrait, ElementalMasteryTrait, EnhancedFesterTrait, EnhancedSearingLightTrait, EnhancedSummonBahamutIiTrait, ArcaneMasteryTrait,
-        ..base.AllTraits,
+    	EnhancedDreadwyrmTranceTrait, RubySummoningMasteryTrait, TopazSummoningMasteryTrait, EmeraldSummoningMasteryTrait, EnkindleTrait, RuinMasteryIiTrait, AetherchargeMasteryTrait, EnhancedEnergySiphonTrait, RuinMasteryIiiTrait, OutburstMasteryTrait, OutburstMasteryIiTrait, RuinMasteryIvTrait, EnhancedRadiantAegisTrait, EnkindleIiTrait, EnhancedSummonBahamutTrait, ElementalMasteryTrait, EnhancedFesterTrait, EnhancedSearingLightTrait, EnhancedSummonBahamutIiTrait, ArcaneMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -68277,8 +68277,8 @@ public abstract partial class ScholarRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        AetherflowPvE, EnergyDrainPvE, ResurrectionPvE, AdloquiumPvE, SuccorPvE, SacredSoilPvE, LustratePvE, PhysickPvE, EmbracePvE, IndomitabilityPvE, BroilPvE, DeploymentTacticsPvE, EmergencyTacticsPvE, DissipationPvE, ExcogitationPvE, BroilIiPvE, ChainStratagemPvE, AetherpactPvE, DissolveUnionPvE, WhisperingDawnPvE, FeyIlluminationPvE, ArtOfWarPvE, BiolysisPvE, BroilIiiPvE, RecitationPvE, FeyBlessingPvE, SummonSeraphPvE, ConsolationPvE, SeraphicVeilPvE, SummonEosPvE, BioPvE, BioIiPvE, RuinPvE, RuinIiPvE, BroilIvPvE, ArtOfWarIiPvE, ProtractionPvE, ExpedientPvE, BroilIvPvP, AdloquiumPvP, BiolysisPvP, DeploymentTacticsPvP, ExpedientPvP, SummonSeraphPvP, SeraphicVeilPvP, ChainStratagemPvP, BanefulImpactionPvE, ConcitationPvE, SeraphismPvE, ManifestationPvE, AccessionPvE, SeraphicHaloPvP, AccessionPvP,
-        ..base.AllBaseActions,
+    	AetherflowPvE, EnergyDrainPvE, ResurrectionPvE, AdloquiumPvE, SuccorPvE, SacredSoilPvE, LustratePvE, PhysickPvE, EmbracePvE, IndomitabilityPvE, BroilPvE, DeploymentTacticsPvE, EmergencyTacticsPvE, DissipationPvE, ExcogitationPvE, BroilIiPvE, ChainStratagemPvE, AetherpactPvE, DissolveUnionPvE, WhisperingDawnPvE, FeyIlluminationPvE, ArtOfWarPvE, BiolysisPvE, BroilIiiPvE, RecitationPvE, FeyBlessingPvE, SummonSeraphPvE, ConsolationPvE, SeraphicVeilPvE, SummonEosPvE, BioPvE, BioIiPvE, RuinPvE, RuinIiPvE, BroilIvPvE, ArtOfWarIiPvE, ProtractionPvE, ExpedientPvE, BroilIvPvP, AdloquiumPvP, BiolysisPvP, DeploymentTacticsPvP, ExpedientPvP, SummonSeraphPvP, SeraphicVeilPvP, ChainStratagemPvP, BanefulImpactionPvE, ConcitationPvE, SeraphismPvE, ManifestationPvE, AccessionPvE, SeraphicHaloPvP, AccessionPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _HealingWindPvECreator = new(() =&gt; 
@@ -68473,8 +68473,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SeraphismPvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        BroilMasteryIiTrait, BroilMasteryTrait, CorruptionMasteryIiTrait, BroilMasteryIiiTrait, EnhancedSacredSoilTrait, CorruptionMasteryTrait, BroilMasteryIvTrait, ArtOfWarMasteryTrait, EnhancedHealingMagicTrait, EnhancedDeploymentTacticsTrait, EnhancedChainStratagemTrait, SuccorMasteryTrait, EnhancedRecitationTrait, TacticiansMasteryTrait,
-        ..base.AllTraits,
+    	BroilMasteryIiTrait, BroilMasteryTrait, CorruptionMasteryIiTrait, BroilMasteryIiiTrait, EnhancedSacredSoilTrait, CorruptionMasteryTrait, BroilMasteryIvTrait, ArtOfWarMasteryTrait, EnhancedHealingMagicTrait, EnhancedDeploymentTacticsTrait, EnhancedChainStratagemTrait, SuccorMasteryTrait, EnhancedRecitationTrait, TacticiansMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -70174,8 +70174,8 @@ public abstract partial class NinjaRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        SpinningEdgePvE, ShadeShiftPvE, GustSlashPvE, HidePvE, AssassinatePvE, ThrowingDaggerPvE, MugPvE, DeathBlossomPvE, AeolianEdgePvE, TrickAttackPvE, TenPvE, NinjutsuPvE, ChiPvE, ShukuchiPvE, JinPvE, KassatsuPvE, FumaShurikenPvE, KatonPvE, RaitonPvE, HyotonPvE, HutonPvE, DotonPvE, SuitonPvE, RabbitMediumPvE, ArmorCrushPvE, DreamWithinADreamPvE, HellfrogMediumPvE, BhavacakraPvE, TenChiJinPvE, HakkeMujinsatsuPvE, MeisuiPvE, GokaMekkyakuPvE, HyoshoRanryuPvE, BunshinPvE, PhantomKamaitachiPvE, HollowNozuchiPvE, ForkedRaijuPvE, FleetingRaijuPvE, SpinningEdgePvP, GustSlashPvP, AeolianEdgePvP, AssassinatePvP, GokaMekkyakuPvP, FumaShurikenPvP, HyoshoRanryuPvP, ThreeMudraPvP, MeisuiPvP, ForkedRaijuPvP, BunshinPvP, HutonPvP, ShukuchiPvP, DotonPvP, HollowNozuchiPvP, FleetingRaijuPvP, DokumoriPvE, KunaisBanePvE, DeathfrogMediumPvE, ZeshoMeppoPvE, TenriJindoPvE, DokumoriPvP, ZeshoMeppoPvP,
-        ..base.AllBaseActions,
+    	SpinningEdgePvE, ShadeShiftPvE, GustSlashPvE, HidePvE, AssassinatePvE, ThrowingDaggerPvE, MugPvE, DeathBlossomPvE, AeolianEdgePvE, TrickAttackPvE, TenPvE, NinjutsuPvE, ChiPvE, ShukuchiPvE, JinPvE, KassatsuPvE, FumaShurikenPvE, KatonPvE, RaitonPvE, HyotonPvE, HutonPvE, DotonPvE, SuitonPvE, RabbitMediumPvE, ArmorCrushPvE, DreamWithinADreamPvE, HellfrogMediumPvE, BhavacakraPvE, TenChiJinPvE, HakkeMujinsatsuPvE, MeisuiPvE, GokaMekkyakuPvE, HyoshoRanryuPvE, BunshinPvE, PhantomKamaitachiPvE, HollowNozuchiPvE, ForkedRaijuPvE, FleetingRaijuPvE, SpinningEdgePvP, GustSlashPvP, AeolianEdgePvP, AssassinatePvP, GokaMekkyakuPvP, FumaShurikenPvP, HyoshoRanryuPvP, ThreeMudraPvP, MeisuiPvP, ForkedRaijuPvP, BunshinPvP, HutonPvP, ShukuchiPvP, DotonPvP, HollowNozuchiPvP, FleetingRaijuPvP, DokumoriPvE, KunaisBanePvE, DeathfrogMediumPvE, ZeshoMeppoPvE, TenriJindoPvE, DokumoriPvP, ZeshoMeppoPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -70385,8 +70385,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SeitonTenchuPv
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        ShukihoTrait, EnhancedShukuchiTrait, EnhancedKassatsuTrait, EnhancedShukuchiIiTrait, ShukihoIiTrait, ShukihoIiiTrait, EnhancedMeisuiTrait, EnhancedRaitonTrait, AdeptAssassinationTrait, MeleeMasteryTrait, MeleeMasteryIiTrait, IncreaseAttackSpeedTrait, MugMasteryTrait, TrickAttackMasteryTrait, EnhancedDokumoriTrait, EnhancedTenChiJinTrait, MeleeMasteryIiiTrait,
-        ..base.AllTraits,
+    	ShukihoTrait, EnhancedShukuchiTrait, EnhancedKassatsuTrait, EnhancedShukuchiIiTrait, ShukihoIiTrait, ShukihoIiiTrait, EnhancedMeisuiTrait, EnhancedRaitonTrait, AdeptAssassinationTrait, MeleeMasteryTrait, MeleeMasteryIiTrait, IncreaseAttackSpeedTrait, MugMasteryTrait, TrickAttackMasteryTrait, EnhancedDokumoriTrait, EnhancedTenChiJinTrait, MeleeMasteryIiiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -71603,8 +71603,8 @@ public abstract partial class MachinistRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        RookAutoturretPvE, SplitShotPvE, SlugShotPvE, SpreadShotPvE, HotShotPvE, CleanShotPvE, GaussRoundPvE, ReassemblePvE, WildfirePvE, DismantlePvE, RicochetPvE, HeatBlastPvE, HeatedSplitShotPvE, HeatedSlugShotPvE, HeatedCleanShotPvE, BarrelStabilizerPvE, RookOverdrivePvE, RookOverloadPvE, FlamethrowerPvE, AutoCrossbowPvE, DrillPvE, BioblasterPvE, AirAnchorPvE, AutomatonQueenPvE, QueenOverdrivePvE, PileBunkerPvE, ArmPunchPvE, DetonatorPvE, TacticianPvE, RollerDashPvE, HyperchargePvE, ScattergunPvE, CrownedColliderPvE, ChainSawPvE, BlastChargePvP, ScattergunPvP, DrillPvP, BioblasterPvP, AirAnchorPvP, ChainSawPvP, WildfirePvP, BishopAutoturretPvP, AetherMortarPvP, AnalysisPvP, BlazingShotPvE, DoubleCheckPvE, CheckmatePvE, ExcavatorPvE, FullMetalFieldPvE, BlazingShotPvP, FullMetalFieldPvP, DetonatorPvP,
-        ..base.AllBaseActions,
+    	RookAutoturretPvE, SplitShotPvE, SlugShotPvE, SpreadShotPvE, HotShotPvE, CleanShotPvE, GaussRoundPvE, ReassemblePvE, WildfirePvE, DismantlePvE, RicochetPvE, HeatBlastPvE, HeatedSplitShotPvE, HeatedSlugShotPvE, HeatedCleanShotPvE, BarrelStabilizerPvE, RookOverdrivePvE, RookOverloadPvE, FlamethrowerPvE, AutoCrossbowPvE, DrillPvE, BioblasterPvE, AirAnchorPvE, AutomatonQueenPvE, QueenOverdrivePvE, PileBunkerPvE, ArmPunchPvE, DetonatorPvE, TacticianPvE, RollerDashPvE, HyperchargePvE, ScattergunPvE, CrownedColliderPvE, ChainSawPvE, BlastChargePvP, ScattergunPvP, DrillPvP, BioblasterPvP, AirAnchorPvP, ChainSawPvP, WildfirePvP, BishopAutoturretPvP, AetherMortarPvP, AnalysisPvP, BlazingShotPvE, DoubleCheckPvE, CheckmatePvE, ExcavatorPvE, FullMetalFieldPvE, BlazingShotPvP, FullMetalFieldPvP, DetonatorPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BigShotPvECreator = new(() =&gt; 
@@ -71834,8 +71834,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; MarksmansSpite
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        IncreasedActionDamageTrait, IncreasedActionDamageIiTrait, SplitShotMasteryTrait, SlugShotMasteryTrait, CleanShotMasteryTrait, HotShotMasteryTrait, ChargedActionMasteryTrait, EnhancedWildfireTrait, PromotionTrait, SpreadShotMasteryTrait, EnhancedReassembleTrait, QueensGambitTrait, EnhancedTacticianTrait, MarksmansMasteryTrait, HeatBlastMasteryTrait, DoublebarrelMasteryTrait, EnhancedMultiweaponTrait, EnhancedMultiweaponIiTrait, EnhancedTacticianIiTrait, EnhancedBarrelStabilizerTrait, MarksmansMasteryIiTrait,
-        ..base.AllTraits,
+    	IncreasedActionDamageTrait, IncreasedActionDamageIiTrait, SplitShotMasteryTrait, SlugShotMasteryTrait, CleanShotMasteryTrait, HotShotMasteryTrait, ChargedActionMasteryTrait, EnhancedWildfireTrait, PromotionTrait, SpreadShotMasteryTrait, EnhancedReassembleTrait, QueensGambitTrait, EnhancedTacticianTrait, MarksmansMasteryTrait, HeatBlastMasteryTrait, DoublebarrelMasteryTrait, EnhancedMultiweaponTrait, EnhancedMultiweaponIiTrait, EnhancedTacticianIiTrait, EnhancedBarrelStabilizerTrait, MarksmansMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -72983,8 +72983,8 @@ public abstract partial class DarkKnightRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        HardSlashPvE, UnleashPvE, SyphonStrikePvE, UnmendPvE, BloodWeaponPvE, GritPvE, SouleaterPvE, DarkMindPvE, ShadowWallPvE, LivingDeadPvE, SaltedEarthPvE, AbyssalDrainPvE, CarveAndSpitPvE, DeliriumPvE, QuietusPvE, BloodspillerPvE, TheBlackestNightPvE, FloodOfDarknessPvE, EdgeOfDarknessPvE, StalwartSoulPvE, FloodOfShadowPvE, EdgeOfShadowPvE, DarkMissionaryPvE, LivingShadowPvE, OblationPvE, SaltAndDarknessPvE, ShadowbringerPvE, HardSlashPvP, SyphonStrikePvP, SouleaterPvP, ShadowbringerPvP, PlungePvP, TheBlackestNightPvP, SaltedEarthPvP, SaltAndDarknessPvP, ReleaseGritPvE, ShadowstridePvE, ShadowedVigilPvE, ScarletDeliriumPvE, ComeuppancePvE, TorcleaverPvE, ImpalementPvE, DisesteemPvE, ScarletDeliriumPvP, ComeuppancePvP, TorcleaverPvP, DisesteemPvP, ImpalementPvP,
-        ..base.AllBaseActions,
+    	HardSlashPvE, UnleashPvE, SyphonStrikePvE, UnmendPvE, BloodWeaponPvE, GritPvE, SouleaterPvE, DarkMindPvE, ShadowWallPvE, LivingDeadPvE, SaltedEarthPvE, AbyssalDrainPvE, CarveAndSpitPvE, DeliriumPvE, QuietusPvE, BloodspillerPvE, TheBlackestNightPvE, FloodOfDarknessPvE, EdgeOfDarknessPvE, StalwartSoulPvE, FloodOfShadowPvE, EdgeOfShadowPvE, DarkMissionaryPvE, LivingShadowPvE, OblationPvE, SaltAndDarknessPvE, ShadowbringerPvE, HardSlashPvP, SyphonStrikePvP, SouleaterPvP, ShadowbringerPvP, PlungePvP, TheBlackestNightPvP, SaltedEarthPvP, SaltAndDarknessPvP, ReleaseGritPvE, ShadowstridePvE, ShadowedVigilPvE, ScarletDeliriumPvE, ComeuppancePvE, TorcleaverPvE, ImpalementPvE, DisesteemPvE, ScarletDeliriumPvP, ComeuppancePvP, TorcleaverPvP, DisesteemPvP, ImpalementPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _ShieldWallPvECreator = new(() =&gt; 
@@ -73174,8 +73174,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; EventidePvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        BlackbloodTrait, EnhancedBlackbloodTrait, DarksideMasteryTrait, TankMasteryTrait, EnhancedUnmendTrait, EnhancedLivingShadowIiTrait, MeleeMasteryTrait, EnhancedLivingShadowTrait, BloodWeaponMasteryTrait, ShadowWallMasteryTrait, EnhancedDeliriumTrait, EnhancedLivingShadowIiiTrait, MeleeMasteryIiTrait,
-        ..base.AllTraits,
+    	BlackbloodTrait, EnhancedBlackbloodTrait, DarksideMasteryTrait, TankMasteryTrait, EnhancedUnmendTrait, EnhancedLivingShadowIiTrait, MeleeMasteryTrait, EnhancedLivingShadowTrait, BloodWeaponMasteryTrait, ShadowWallMasteryTrait, EnhancedDeliriumTrait, EnhancedLivingShadowIiiTrait, MeleeMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -74645,8 +74645,8 @@ public abstract partial class AstrologianRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        BeneficPvE, AspectedBeneficPvE, MaleficPvE, MaleficIiPvE, CombustPvE, HeliosPvE, AspectedHeliosPvE, AscendPvE, LightspeedPvE, CombustIiPvE, BeneficIiPvE, SynastryPvE, CollectiveUnconsciousPvE, EssentialDignityPvE, GravityPvE, EarthlyStarPvE, MaleficIiiPvE, LordOfCrownsPvE, LadyOfCrownsPvE, StellarDetonationPvE, DivinationPvE, CelestialOppositionPvE, CombustIiiPvE, MaleficIvPvE, CelestialIntersectionPvE, HoroscopePvE, NeutralSectPvE, FallMaleficPvE, GravityIiPvE, ExaltationPvE, MacrocosmosPvE, MicrocosmosPvE, FallMaleficPvP, AspectedBeneficPvP, GravityIiPvP, DoubleCastPvP, MacrocosmosPvP, MicrocosmosPvP, AstralDrawPvE, UmbralDrawPvE, PlayIPvE, PlayIiPvE, PlayIiiPvE, MinorArcanaPvE, TheBalancePvE, TheArrowPvE, TheSpirePvE, TheSpearPvE, TheBolePvE, TheEwerPvE, OraclePvE, HeliosConjunctionPvE, SunSignPvE, MinorArcanaPvP, LadyOfCrownsPvP, LordOfCrownsPvP, EpicyclePvP, RetrogradePvP, OraclePvP,
-        ..base.AllBaseActions,
+    	BeneficPvE, AspectedBeneficPvE, MaleficPvE, MaleficIiPvE, CombustPvE, HeliosPvE, AspectedHeliosPvE, AscendPvE, LightspeedPvE, CombustIiPvE, BeneficIiPvE, SynastryPvE, CollectiveUnconsciousPvE, EssentialDignityPvE, GravityPvE, EarthlyStarPvE, MaleficIiiPvE, LordOfCrownsPvE, LadyOfCrownsPvE, StellarDetonationPvE, DivinationPvE, CelestialOppositionPvE, CombustIiiPvE, MaleficIvPvE, CelestialIntersectionPvE, HoroscopePvE, NeutralSectPvE, FallMaleficPvE, GravityIiPvE, ExaltationPvE, MacrocosmosPvE, MicrocosmosPvE, FallMaleficPvP, AspectedBeneficPvP, GravityIiPvP, DoubleCastPvP, MacrocosmosPvP, MicrocosmosPvP, AstralDrawPvE, UmbralDrawPvE, PlayIPvE, PlayIiPvE, PlayIiiPvE, MinorArcanaPvE, TheBalancePvE, TheArrowPvE, TheSpirePvE, TheSpearPvE, TheBolePvE, TheEwerPvE, OraclePvE, HeliosConjunctionPvE, SunSignPvE, MinorArcanaPvP, LadyOfCrownsPvP, LordOfCrownsPvP, EpicyclePvP, RetrogradePvP, OraclePvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _HealingWindPvECreator = new(() =&gt; 
@@ -74871,8 +74871,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; CelestialRiver
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        MaimAndMendTrait, EnhancedBeneficTrait, MaimAndMendIiTrait, CombustMasteryTrait, MaleficMasteryTrait, MaleficMasteryIiTrait, HyperLightspeedTrait, CombustMasteryIiTrait, MaleficMasteryIiiTrait, EnhancedEssentialDignityTrait, MaleficMasteryIvTrait, GravityMasteryTrait, EnhancedHealingMagicTrait, EnhancedCelestialIntersectionTrait, MinorArcanaMasteryTrait, EnhancedDivinationTrait, AspectedHeliosMasteryTrait, EnhancedEssentialDignityIiTrait, EnhancedNeutralSectTrait, MagickMasteryTrait,
-        ..base.AllTraits,
+    	MaimAndMendTrait, EnhancedBeneficTrait, MaimAndMendIiTrait, CombustMasteryTrait, MaleficMasteryTrait, MaleficMasteryIiTrait, HyperLightspeedTrait, CombustMasteryIiTrait, MaleficMasteryIiiTrait, EnhancedEssentialDignityTrait, MaleficMasteryIvTrait, GravityMasteryTrait, EnhancedHealingMagicTrait, EnhancedCelestialIntersectionTrait, MinorArcanaMasteryTrait, EnhancedDivinationTrait, AspectedHeliosMasteryTrait, EnhancedEssentialDignityIiTrait, EnhancedNeutralSectTrait, MagickMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -76135,8 +76135,8 @@ public abstract partial class SamuraiRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        HakazePvE, JinpuPvE, ShifuPvE, YukikazePvE, GekkoPvE, KashaPvE, FugaPvE, MangetsuPvE, OkaPvE, EnpiPvE, MidareSetsugekkaPvE, TenkaGokenPvE, HiganbanaPvE, HissatsuShintenPvE, HissatsuKyutenPvE, HissatsuGyotenPvE, HissatsuYatenPvE, HagakurePvE, HissatsuGurenPvE, MeditatePvE, ThirdEyePvE, MeikyoShisuiPvE, IaijutsuPvE, HissatsuSeneiPvE, IkishotenPvE, TsubamegaeshiPvE, KaeshiGokenPvE, KaeshiSetsugekkaPvE, ShohaPvE, FukoPvE, OgiNamikiriPvE, KaeshiNamikiriPvE, YukikazePvP, GekkoPvP, KashaPvP, HyosetsuPvP, MangetsuPvP, OkaPvP, OgiNamikiriPvP, KaeshiNamikiriPvP, HissatsuSotenPvP, HissatsuChitenPvP, MineuchiPvP, MeikyoShisuiPvP, TengentsuPvE, GyofuPvE, ZanshinPvE, TendoGokenPvE, TendoSetsugekkaPvE, TendoKaeshiGokenPvE, TendoKaeshiSetsugekkaPvE, TendoSetsugekkaPvP, TendoKaeshiSetsugekkaPvP, ZanshinPvP,
-        ..base.AllBaseActions,
+    	HakazePvE, JinpuPvE, ShifuPvE, YukikazePvE, GekkoPvE, KashaPvE, FugaPvE, MangetsuPvE, OkaPvE, EnpiPvE, MidareSetsugekkaPvE, TenkaGokenPvE, HiganbanaPvE, HissatsuShintenPvE, HissatsuKyutenPvE, HissatsuGyotenPvE, HissatsuYatenPvE, HagakurePvE, HissatsuGurenPvE, MeditatePvE, ThirdEyePvE, MeikyoShisuiPvE, IaijutsuPvE, HissatsuSeneiPvE, IkishotenPvE, TsubamegaeshiPvE, KaeshiGokenPvE, KaeshiSetsugekkaPvE, ShohaPvE, FukoPvE, OgiNamikiriPvE, KaeshiNamikiriPvE, YukikazePvP, GekkoPvP, KashaPvP, HyosetsuPvP, MangetsuPvP, OkaPvP, OgiNamikiriPvP, KaeshiNamikiriPvP, HissatsuSotenPvP, HissatsuChitenPvP, MineuchiPvP, MeikyoShisuiPvP, TengentsuPvE, GyofuPvE, ZanshinPvE, TendoGokenPvE, TendoSetsugekkaPvE, TendoKaeshiGokenPvE, TendoKaeshiSetsugekkaPvE, TendoSetsugekkaPvP, TendoKaeshiSetsugekkaPvP, ZanshinPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -76336,8 +76336,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; ZantetsukenPvP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        KenkiMasteryIiTrait, KenkiMasteryTrait, EnhancedIaijutsuTrait, EnhancedFugetsuAndFukaTrait, EnhancedMeikyoShisuiTrait, EnhancedIkishotenTrait, FugaMasteryTrait, WayOfTheSamuraiTrait, WayOfTheSamuraiIiTrait, ThirdEyeMasteryTrait, HakazeMasteryTrait, EnhancedHissatsuTrait, EnhancedIkishotenIiTrait, EnhancedMeikyoShisuiIiTrait, WayOfTheSamuraiIiiTrait,
-        ..base.AllTraits,
+    	KenkiMasteryIiTrait, KenkiMasteryTrait, EnhancedIaijutsuTrait, EnhancedFugetsuAndFukaTrait, EnhancedMeikyoShisuiTrait, EnhancedIkishotenTrait, FugaMasteryTrait, WayOfTheSamuraiTrait, WayOfTheSamuraiIiTrait, ThirdEyeMasteryTrait, HakazeMasteryTrait, EnhancedHissatsuTrait, EnhancedIkishotenIiTrait, EnhancedMeikyoShisuiIiTrait, WayOfTheSamuraiIiiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -77715,8 +77715,8 @@ public abstract partial class RedMageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        JoltPvE, RipostePvE, VerthunderPvE, CorpsacorpsPvE, VeraeroPvE, ScatterPvE, VerfirePvE, VerstonePvE, ZwerchhauPvE, MoulinetPvE, VercurePvE, DisplacementPvE, RedoublementPvE, FlechePvE, AccelerationPvE, ContreSixtePvE, EmboldenPvE, ManaficationPvE, VerraisePvE, JoltIiPvE, VerflarePvE, VerholyPvE, EnchantedRipostePvE, EnchantedZwerchhauPvE, EnchantedRedoublementPvE, EnchantedMoulinetPvE, VerthunderIiPvE, VeraeroIiPvE, ImpactPvE, EngagementPvE, EnchantedReprisePvE, ReprisePvE, ScorchPvE, VerthunderIiiPvE, VeraeroIiiPvE, MagickBarrierPvE, ResolutionPvE, CorpsacorpsPvP, DisplacementPvP, EnchantedMoulinetDeuxPvE, EnchantedMoulinetTroisPvE, JoltIiiPvE, ViceOfThornsPvE, GrandImpactPvE, PrefulgencePvE, JoltIiiPvP, GrandImpactPvP, EnchantedRipostePvP, EnchantedZwerchhauPvP, EnchantedRedoublementPvP, ScorchPvP, ResolutionPvP, ViceOfThornsPvP, EmboldenPvP, PrefulgencePvP, FortePvP,
-        ..base.AllBaseActions,
+    	JoltPvE, RipostePvE, VerthunderPvE, CorpsacorpsPvE, VeraeroPvE, ScatterPvE, VerfirePvE, VerstonePvE, ZwerchhauPvE, MoulinetPvE, VercurePvE, DisplacementPvE, RedoublementPvE, FlechePvE, AccelerationPvE, ContreSixtePvE, EmboldenPvE, ManaficationPvE, VerraisePvE, JoltIiPvE, VerflarePvE, VerholyPvE, EnchantedRipostePvE, EnchantedZwerchhauPvE, EnchantedRedoublementPvE, EnchantedMoulinetPvE, VerthunderIiPvE, VeraeroIiPvE, ImpactPvE, EngagementPvE, EnchantedReprisePvE, ReprisePvE, ScorchPvE, VerthunderIiiPvE, VeraeroIiiPvE, MagickBarrierPvE, ResolutionPvE, CorpsacorpsPvP, DisplacementPvP, EnchantedMoulinetDeuxPvE, EnchantedMoulinetTroisPvE, JoltIiiPvE, ViceOfThornsPvE, GrandImpactPvE, PrefulgencePvE, JoltIiiPvP, GrandImpactPvP, EnchantedRipostePvP, EnchantedZwerchhauPvP, EnchantedRedoublementPvP, ScorchPvP, ResolutionPvP, ViceOfThornsPvP, EmboldenPvP, PrefulgencePvP, FortePvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _SkyshardPvECreator = new(() =&gt; 
@@ -77916,8 +77916,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; SouthernCrossP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        EnhancedJoltTrait, MaimAndMendTrait, MaimAndMendIiTrait, DualcastTrait, ScatterMasteryTrait, EnhancedDisplacementTrait, RedMagicMasteryTrait, ManaStackTrait, RedMagicMasteryIiTrait, RedMagicMasteryIiiTrait, EnhancedAccelerationTrait, EnhancedEmboldenTrait, EnhancedAccelerationIiTrait, EnhancedManaficationTrait, EnchantedBladeMasteryTrait,
-        ..base.AllTraits,
+    	EnhancedJoltTrait, MaimAndMendTrait, MaimAndMendIiTrait, DualcastTrait, ScatterMasteryTrait, EnhancedDisplacementTrait, RedMagicMasteryTrait, ManaStackTrait, RedMagicMasteryIiTrait, RedMagicMasteryIiiTrait, EnhancedAccelerationTrait, EnhancedEmboldenTrait, EnhancedAccelerationIiTrait, EnhancedManaficationTrait, EnchantedBladeMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -80951,8 +80951,8 @@ public abstract partial class BlueMageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        SnortPvE, _4TonzeWeightPvE, WaterCannonPvE, SongOfTormentPvE, HighVoltagePvE, BadBreathPvE, FlyingFrenzyPvE, AquaBreathPvE, PlaincrackerPvE, AcornBombPvE, BristlePvE, MindBlastPvE, BloodDrainPvE, BombTossPvE, _1000NeedlesPvE, DrillCannonsPvE, TheLookPvE, SharpenedKnifePvE, LoomPvE, FlameThrowerPvE, FazePvE, GlowerPvE, MissilePvE, WhiteWindPvE, FinalStingPvE, SelfdestructPvE, TransfusionPvE, ToadOilPvE, OffguardPvE, StickyTonguePvE, TailScrewPvE, Level5PetrifyPvE, MoonFlutePvE, DoomPvE, MightyGuardPvE, IceSpikesPvE, TheRamsVoicePvE, TheDragonsVoicePvE, PeculiarLightPvE, InkJetPvE, FlyingSardinePvE, DiamondbackPvE, FireAngonPvE, FeatherRainPvE, EruptionPvE, MountainBusterPvE, ShockStrikePvE, GlassDancePvE, VeilOfTheWhorlPvE, AlpineDraftPvE, ProteanWavePvE, NortherliesPvE, ElectrogenesisPvE, KaltstrahlPvE, AbyssalTransfixionPvE, ChirpPvE, EerieSoundwavePvE, PomCurePvE, GobskinPvE, MagicHammerPvE, AvailPvE, FrogLegsPvE, SonicBoomPvE, WhistlePvE, WhiteKnightsTourPvE, BlackKnightsTourPvE, Level5DeathPvE, LauncherPvE, PerpetualRayPvE, CactguardPvE, RevengeBlastPvE, AngelWhisperPvE, ExuviationPvE, RefluxPvE, DevourPvE, CondensedLibraPvE, AethericMimicryPvE, SurpanakhaPvE, QuasarPvE, JKickPvE, TripleTridentPvE, TinglePvE, TatamigaeshiPvE, ColdFogPvE, WhiteDeathPvE, StotramPvE, SaintlyBeamPvE, FeculentFloodPvE, AngelsSnackPvE, ChelonianGatePvE, DivineCataractPvE, TheRoseOfDestructionPvE, BasicInstinctPvE, UltravibrationPvE, BlazePvE, MustardBombPvE, DragonForcePvE, AetherialSparkPvE, HydroPullPvE, MaledictionOfWaterPvE, ChocoMeteorPvE, MatraMagicPvE, PeripheralSynthesisPvE, BothEndsPvE, PhantomFlurryPvE, NightbloomPvE, GoblinPunchPvE, RightRoundPvE, SchiltronPvE, RehydrationPvE, BreathOfMagicPvE, WildRagePvE, PeatPeltPvE, DeepCleanPvE, RubyDynamicsPvE, DivinationRunePvE, DimensionalShiftPvE, ConvictionMarcatoPvE, ForceFieldPvE, WingedReprobationPvE, LaserEyePvE, CandyCanePvE, MortalFlamePvE, SeaShantyPvE, ApokalypsisPvE, BeingMortalPvE,
-        ..base.AllBaseActions,
+    	SnortPvE, _4TonzeWeightPvE, WaterCannonPvE, SongOfTormentPvE, HighVoltagePvE, BadBreathPvE, FlyingFrenzyPvE, AquaBreathPvE, PlaincrackerPvE, AcornBombPvE, BristlePvE, MindBlastPvE, BloodDrainPvE, BombTossPvE, _1000NeedlesPvE, DrillCannonsPvE, TheLookPvE, SharpenedKnifePvE, LoomPvE, FlameThrowerPvE, FazePvE, GlowerPvE, MissilePvE, WhiteWindPvE, FinalStingPvE, SelfdestructPvE, TransfusionPvE, ToadOilPvE, OffguardPvE, StickyTonguePvE, TailScrewPvE, Level5PetrifyPvE, MoonFlutePvE, DoomPvE, MightyGuardPvE, IceSpikesPvE, TheRamsVoicePvE, TheDragonsVoicePvE, PeculiarLightPvE, InkJetPvE, FlyingSardinePvE, DiamondbackPvE, FireAngonPvE, FeatherRainPvE, EruptionPvE, MountainBusterPvE, ShockStrikePvE, GlassDancePvE, VeilOfTheWhorlPvE, AlpineDraftPvE, ProteanWavePvE, NortherliesPvE, ElectrogenesisPvE, KaltstrahlPvE, AbyssalTransfixionPvE, ChirpPvE, EerieSoundwavePvE, PomCurePvE, GobskinPvE, MagicHammerPvE, AvailPvE, FrogLegsPvE, SonicBoomPvE, WhistlePvE, WhiteKnightsTourPvE, BlackKnightsTourPvE, Level5DeathPvE, LauncherPvE, PerpetualRayPvE, CactguardPvE, RevengeBlastPvE, AngelWhisperPvE, ExuviationPvE, RefluxPvE, DevourPvE, CondensedLibraPvE, AethericMimicryPvE, SurpanakhaPvE, QuasarPvE, JKickPvE, TripleTridentPvE, TinglePvE, TatamigaeshiPvE, ColdFogPvE, WhiteDeathPvE, StotramPvE, SaintlyBeamPvE, FeculentFloodPvE, AngelsSnackPvE, ChelonianGatePvE, DivineCataractPvE, TheRoseOfDestructionPvE, BasicInstinctPvE, UltravibrationPvE, BlazePvE, MustardBombPvE, DragonForcePvE, AetherialSparkPvE, HydroPullPvE, MaledictionOfWaterPvE, ChocoMeteorPvE, MatraMagicPvE, PeripheralSynthesisPvE, BothEndsPvE, PhantomFlurryPvE, NightbloomPvE, GoblinPunchPvE, RightRoundPvE, SchiltronPvE, RehydrationPvE, BreathOfMagicPvE, WildRagePvE, PeatPeltPvE, DeepCleanPvE, RubyDynamicsPvE, DivinationRunePvE, DimensionalShiftPvE, ConvictionMarcatoPvE, ForceFieldPvE, WingedReprobationPvE, LaserEyePvE, CandyCanePvE, MortalFlamePvE, SeaShantyPvE, ApokalypsisPvE, BeingMortalPvE,
+    	..base.AllBaseActions,
     ];
 
 
@@ -80999,8 +80999,8 @@ public abstract partial class BlueMageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        LearningTrait, MaimAndMendTrait, MaimAndMendIiTrait, MaimAndMendIiiTrait, MaimAndMendIvTrait, MaimAndMendVTrait,
-        ..base.AllTraits,
+    	LearningTrait, MaimAndMendTrait, MaimAndMendIiTrait, MaimAndMendIiiTrait, MaimAndMendIvTrait, MaimAndMendVTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -82286,8 +82286,8 @@ public abstract partial class GunbreakerRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        KeenEdgePvE, NoMercyPvE, BrutalShellPvE, CamouflagePvE, DemonSlicePvE, RoyalGuardPvE, LightningShotPvE, DangerZonePvE, SolidBarrelPvE, GnashingFangPvE, SavageClawPvE, NebulaPvE, DemonSlaughterPvE, WickedTalonPvE, AuroraPvE, SuperbolidePvE, SonicBreakPvE, ContinuationPvE, JugularRipPvE, AbdomenTearPvE, EyeGougePvE, BowShockPvE, HeartOfLightPvE, HeartOfStonePvE, BurstStrikePvE, FatedCirclePvE, BloodfestPvE, BlastingZonePvE, HeartOfCorundumPvE, HypervelocityPvE, DoubleDownPvE, KeenEdgePvP, BrutalShellPvP, SolidBarrelPvP, BurstStrikePvP, GnashingFangPvP, SavageClawPvP, WickedTalonPvP, ContinuationPvP, HypervelocityPvP, JugularRipPvP, AbdomenTearPvP, EyeGougePvP, RoughDividePvP, BlastingZonePvP, ReleaseRoyalGuardPvE, TrajectoryPvE, GreatNebulaPvE, FatedBrandPvE, ReignOfBeastsPvE, NobleBloodPvE, LionHeartPvE, FatedBrandPvP, HeartOfCorundumPvP, FatedCirclePvP,
-        ..base.AllBaseActions,
+    	KeenEdgePvE, NoMercyPvE, BrutalShellPvE, CamouflagePvE, DemonSlicePvE, RoyalGuardPvE, LightningShotPvE, DangerZonePvE, SolidBarrelPvE, GnashingFangPvE, SavageClawPvE, NebulaPvE, DemonSlaughterPvE, WickedTalonPvE, AuroraPvE, SuperbolidePvE, SonicBreakPvE, ContinuationPvE, JugularRipPvE, AbdomenTearPvE, EyeGougePvE, BowShockPvE, HeartOfLightPvE, HeartOfStonePvE, BurstStrikePvE, FatedCirclePvE, BloodfestPvE, BlastingZonePvE, HeartOfCorundumPvE, HypervelocityPvE, DoubleDownPvE, KeenEdgePvP, BrutalShellPvP, SolidBarrelPvP, BurstStrikePvP, GnashingFangPvP, SavageClawPvP, WickedTalonPvP, ContinuationPvP, HypervelocityPvP, JugularRipPvP, AbdomenTearPvP, EyeGougePvP, RoughDividePvP, BlastingZonePvP, ReleaseRoyalGuardPvE, TrajectoryPvE, GreatNebulaPvE, FatedBrandPvE, ReignOfBeastsPvE, NobleBloodPvE, LionHeartPvE, FatedBrandPvP, HeartOfCorundumPvP, FatedCirclePvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _ShieldWallPvECreator = new(() =&gt; 
@@ -82482,8 +82482,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; RelentlessRush
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        CartridgeChargeTrait, EnhancedBrutalShellTrait, DangerZoneMasteryTrait, TankMasteryTrait, HeartOfStoneMasteryTrait, EnhancedAuroraTrait, EnhancedContinuationTrait, CartridgeChargeIiTrait, MeleeMasteryTrait, NebulaMasteryTrait, EnhancedContinuationIiTrait, EnhancedBloodfestTrait, EnhancedNoMercyTrait, MeleeMasteryIiTrait,
-        ..base.AllTraits,
+    	CartridgeChargeTrait, EnhancedBrutalShellTrait, DangerZoneMasteryTrait, TankMasteryTrait, HeartOfStoneMasteryTrait, EnhancedAuroraTrait, EnhancedContinuationTrait, CartridgeChargeIiTrait, MeleeMasteryTrait, NebulaMasteryTrait, EnhancedContinuationIiTrait, EnhancedBloodfestTrait, EnhancedNoMercyTrait, MeleeMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -83861,8 +83861,8 @@ public abstract partial class DancerRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        CascadePvE, FountainPvE, ReverseCascadePvE, FountainfallPvE, WindmillPvE, BladeshowerPvE, RisingWindmillPvE, BloodshowerPvE, StandardStepPvE, TechnicalStepPvE, EmboitePvE, EntrechatPvE, JetePvE, PirouettePvE, StandardFinishPvE, TechnicalFinishPvE, SaberDancePvE, ClosedPositionPvE, FanDancePvE, FanDanceIiPvE, FanDanceIiiPvE, EnAvantPvE, DevilmentPvE, ShieldSambaPvE, FlourishPvE, ImprovisationPvE, CuringWaltzPvE, SingleStandardFinishPvE, DoubleStandardFinishPvE, SingleTechnicalFinishPvE, DoubleTechnicalFinishPvE, TripleTechnicalFinishPvE, QuadrupleTechnicalFinishPvE, EndingPvE, ImprovisedFinishPvE, TillanaPvE, FanDanceIvPvE, StarfallDancePvE, CascadePvP, FountainPvP, ReverseCascadePvP, FountainfallPvP, SaberDancePvP, StarfallDancePvP, HoningDancePvP, HoningOvationPvP, FanDancePvP, CuringWaltzPvP, EnAvantPvP, ClosedPositionPvP, LastDancePvE, FinishingMovePvE, DanceOfTheDawnPvE, DanceOfTheDawnPvP,
-        ..base.AllBaseActions,
+    	CascadePvE, FountainPvE, ReverseCascadePvE, FountainfallPvE, WindmillPvE, BladeshowerPvE, RisingWindmillPvE, BloodshowerPvE, StandardStepPvE, TechnicalStepPvE, EmboitePvE, EntrechatPvE, JetePvE, PirouettePvE, StandardFinishPvE, TechnicalFinishPvE, SaberDancePvE, ClosedPositionPvE, FanDancePvE, FanDanceIiPvE, FanDanceIiiPvE, EnAvantPvE, DevilmentPvE, ShieldSambaPvE, FlourishPvE, ImprovisationPvE, CuringWaltzPvE, SingleStandardFinishPvE, DoubleStandardFinishPvE, SingleTechnicalFinishPvE, DoubleTechnicalFinishPvE, TripleTechnicalFinishPvE, QuadrupleTechnicalFinishPvE, EndingPvE, ImprovisedFinishPvE, TillanaPvE, FanDanceIvPvE, StarfallDancePvE, CascadePvP, FountainPvP, ReverseCascadePvP, FountainfallPvP, SaberDancePvP, StarfallDancePvP, HoningDancePvP, HoningOvationPvP, FanDancePvP, CuringWaltzPvP, EnAvantPvP, ClosedPositionPvP, LastDancePvE, FinishingMovePvE, DanceOfTheDawnPvE, DanceOfTheDawnPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BigShotPvECreator = new(() =&gt; 
@@ -84067,8 +84067,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; ContradancePvP
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        IncreasedActionDamageTrait, FourfoldFantasyTrait, IncreasedActionDamageIiTrait, EnhancedEnAvantTrait, EspritTrait, EnhancedEnAvantIiTrait, EnhancedTechnicalFinishTrait, EnhancedEspritTrait, EnhancedFlourishTrait, EnhancedShieldSambaTrait, EnhancedDevilmentTrait, EnhancedStandardFinishTrait, EnhancedFlourishIiTrait, EnhancedShieldSambaIiTrait, EnhancedTechnicalFinishIiTrait, DynamicDancerTrait,
-        ..base.AllTraits,
+    	IncreasedActionDamageTrait, FourfoldFantasyTrait, IncreasedActionDamageIiTrait, EnhancedEnAvantTrait, EspritTrait, EnhancedEnAvantIiTrait, EnhancedTechnicalFinishTrait, EnhancedEspritTrait, EnhancedFlourishTrait, EnhancedShieldSambaTrait, EnhancedDevilmentTrait, EnhancedStandardFinishTrait, EnhancedFlourishIiTrait, EnhancedShieldSambaIiTrait, EnhancedTechnicalFinishIiTrait, DynamicDancerTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -85354,8 +85354,8 @@ public abstract partial class ReaperRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        SlicePvE, WaxingSlicePvE, InfernalSlicePvE, SpinningScythePvE, NightmareScythePvE, ShadowOfDeathPvE, WhorlOfDeathPvE, SoulSlicePvE, SoulScythePvE, GibbetPvE, GallowsPvE, GuillotinePvE, PlentifulHarvestPvE, HarpePvE, SoulsowPvE, HarvestMoonPvE, BloodStalkPvE, UnveiledGibbetPvE, UnveiledGallowsPvE, GrimSwathePvE, GluttonyPvE, EnshroudPvE, VoidReapingPvE, CrossReapingPvE, GrimReapingPvE, CommunioPvE, LemuresSlicePvE, LemuresScythePvE, HellsIngressPvE, HellsEgressPvE, RegressPvE, ArcaneCrestPvE, ArcaneCirclePvE, SlicePvP, WaxingSlicePvP, InfernalSlicePvP, VoidReapingPvP, CrossReapingPvP, HarvestMoonPvP, PlentifulHarvestPvP, GrimSwathePvP, LemuresSlicePvP, DeathWarrantPvP, HellsIngressPvP, RegressPvP, ArcaneCrestPvP, CommunioPvP, SacrificiumPvE, ExecutionersGibbetPvE, ExecutionersGallowsPvE, ExecutionersGuillotinePvE, PerfectioPvE, ExecutionersGuillotinePvP, FateSealedPvP, PerfectioPvP,
-        ..base.AllBaseActions,
+    	SlicePvE, WaxingSlicePvE, InfernalSlicePvE, SpinningScythePvE, NightmareScythePvE, ShadowOfDeathPvE, WhorlOfDeathPvE, SoulSlicePvE, SoulScythePvE, GibbetPvE, GallowsPvE, GuillotinePvE, PlentifulHarvestPvE, HarpePvE, SoulsowPvE, HarvestMoonPvE, BloodStalkPvE, UnveiledGibbetPvE, UnveiledGallowsPvE, GrimSwathePvE, GluttonyPvE, EnshroudPvE, VoidReapingPvE, CrossReapingPvE, GrimReapingPvE, CommunioPvE, LemuresSlicePvE, LemuresScythePvE, HellsIngressPvE, HellsEgressPvE, RegressPvE, ArcaneCrestPvE, ArcaneCirclePvE, SlicePvP, WaxingSlicePvP, InfernalSlicePvP, VoidReapingPvP, CrossReapingPvP, HarvestMoonPvP, PlentifulHarvestPvP, GrimSwathePvP, LemuresSlicePvP, DeathWarrantPvP, HellsIngressPvP, RegressPvP, ArcaneCrestPvP, CommunioPvP, SacrificiumPvE, ExecutionersGibbetPvE, ExecutionersGallowsPvE, ExecutionersGuillotinePvE, PerfectioPvE, ExecutionersGuillotinePvP, FateSealedPvP, PerfectioPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -85550,8 +85550,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; TenebraeLemuru
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        SoulGaugeTrait, MeleeMasteryTrait, EnhancedAvatarTrait, HellsgateTrait, TemperedSoulTrait, ShroudGaugeTrait, EnhancedArcaneCrestTrait, VoidSoulTrait, EnhancedArcaneCircleTrait, MeleeMasteryIiTrait, EnhancedEnshroudTrait, EnhancedGluttonyTrait, EnhancedPlentifulHarvestTrait, MeleeMasteryIiiTrait,
-        ..base.AllTraits,
+    	SoulGaugeTrait, MeleeMasteryTrait, EnhancedAvatarTrait, HellsgateTrait, TemperedSoulTrait, ShroudGaugeTrait, EnhancedArcaneCrestTrait, VoidSoulTrait, EnhancedArcaneCircleTrait, MeleeMasteryIiTrait, EnhancedEnshroudTrait, EnhancedGluttonyTrait, EnhancedPlentifulHarvestTrait, MeleeMasteryIiiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -86722,8 +86722,8 @@ public abstract partial class SageRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        DosisPvE, DiagnosisPvE, KardiaPvE, PrognosisPvE, EgeiroPvE, PhysisPvE, PhlegmaPvE, EukrasiaPvE, EukrasianDiagnosisPvE, EukrasianPrognosisPvE, EukrasianDosisPvE, SoteriaPvE, IcarusPvE, DruocholePvE, DyskrasiaPvE, KeracholePvE, IxocholePvE, ZoePvE, PepsisPvE, PhysisIiPvE, TaurocholePvE, ToxikonPvE, HaimaPvE, DosisIiPvE, PhlegmaIiPvE, EukrasianDosisIiPvE, RhizomataPvE, HolosPvE, PanhaimaPvE, DosisIiiPvE, PhlegmaIiiPvE, EukrasianDosisIiiPvE, DyskrasiaIiPvE, ToxikonIiPvE, KrasisPvE, PneumaPvE, DosisIiiPvP, EukrasianDosisIiiPvP, EukrasiaPvP, PhlegmaIiiPvP, PneumaPvP, IcarusPvP, ToxikonPvP, ToxikonIiPvP, KardiaPvP, EukrasianDyskrasiaPvE, PsychePvE, EukrasianPrognosisIiPvE, PhilosophiaPvE, PsychePvP,
-        ..base.AllBaseActions,
+    	DosisPvE, DiagnosisPvE, KardiaPvE, PrognosisPvE, EgeiroPvE, PhysisPvE, PhlegmaPvE, EukrasiaPvE, EukrasianDiagnosisPvE, EukrasianPrognosisPvE, EukrasianDosisPvE, SoteriaPvE, IcarusPvE, DruocholePvE, DyskrasiaPvE, KeracholePvE, IxocholePvE, ZoePvE, PepsisPvE, PhysisIiPvE, TaurocholePvE, ToxikonPvE, HaimaPvE, DosisIiPvE, PhlegmaIiPvE, EukrasianDosisIiPvE, RhizomataPvE, HolosPvE, PanhaimaPvE, DosisIiiPvE, PhlegmaIiiPvE, EukrasianDosisIiiPvE, DyskrasiaIiPvE, ToxikonIiPvE, KrasisPvE, PneumaPvE, DosisIiiPvP, EukrasianDosisIiiPvP, EukrasiaPvP, PhlegmaIiiPvP, PneumaPvP, IcarusPvP, ToxikonPvP, ToxikonIiPvP, KardiaPvP, EukrasianDyskrasiaPvE, PsychePvE, EukrasianPrognosisIiPvE, PhilosophiaPvE, PsychePvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _HealingWindPvECreator = new(() =&gt; 
@@ -86928,8 +86928,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; MesotesPvP;
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        MaimAndMendTrait, MaimAndMendIiTrait, AddersgallTrait, SomanouticOathTrait, SomanouticOathIiTrait, AdderstingTrait, OffensiveMagicMasteryTrait, EnhancedKeracholeTrait, OffensiveMagicMasteryIiTrait, EnhancedHealingMagicTrait, EnhancedZoeTrait, PhysisMasteryTrait, EnhancedSoteriaTrait, EukrasianPrognosisMasteryTrait, EnhancedPhysisIiTrait, MagickMasteryTrait,
-        ..base.AllTraits,
+    	MaimAndMendTrait, MaimAndMendIiTrait, AddersgallTrait, SomanouticOathTrait, SomanouticOathIiTrait, AdderstingTrait, OffensiveMagicMasteryTrait, EnhancedKeracholeTrait, OffensiveMagicMasteryIiTrait, EnhancedHealingMagicTrait, EnhancedZoeTrait, PhysisMasteryTrait, EnhancedSoteriaTrait, EukrasianPrognosisMasteryTrait, EnhancedPhysisIiTrait, MagickMasteryTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -88675,8 +88675,8 @@ public abstract partial class ViperRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        SteelFangsPvE, ReavingFangsPvE, HuntersStingPvE, SwiftskinsStingPvE, FlankstingStrikePvE, FlanksbaneFangPvE, HindstingStrikePvE, HindsbaneFangPvE, SteelMawPvE, ReavingMawPvE, HuntersBitePvE, SwiftskinsBitePvE, JaggedMawPvE, BloodiedMawPvE, VicewinderPvE, HuntersCoilPvE, SwiftskinsCoilPvE, VicepitPvE, HuntersDenPvE, SwiftskinsDenPvE, ReawakenPvE, FirstGenerationPvE, SecondGenerationPvE, ThirdGenerationPvE, FourthGenerationPvE, OuroborosPvE, WrithingSnapPvE, UncoiledFuryPvE, DeathRattlePvE, LastLashPvE, TwinfangBitePvE, TwinbloodBitePvE, TwinfangThreshPvE, TwinbloodThreshPvE, FirstLegacyPvE, SecondLegacyPvE, ThirdLegacyPvE, FourthLegacyPvE, UncoiledTwinfangPvE, UncoiledTwinbloodPvE, SlitherPvE, SerpentsIrePvE, SerpentsTailPvE, TwinfangPvE, TwinbloodPvE, SteelFangsPvP, PiercingFangsPvP, HuntersStingPvP, SwiftskinsStingPvP, BarbarousBitePvP, RavenousBitePvP, BloodcoilPvP, SanguineFeastPvP, UncoiledFuryPvP, FirstGenerationPvP, SecondGenerationPvP, ThirdGenerationPvP, FourthGenerationPvP, OuroborosPvP, DeathRattlePvP, TwinfangBitePvP, TwinbloodBitePvP, UncoiledTwinfangPvP, UncoiledTwinbloodPvP, FirstLegacyPvP, SecondLegacyPvP, ThirdLegacyPvP, FourthLegacyPvP, SerpentsTailPvP, SlitherPvP, SnakeScalesPvP, BacklashPvP, FuriousBacklashPvP, RattlingCoilPvP,
-        ..base.AllBaseActions,
+    	SteelFangsPvE, ReavingFangsPvE, HuntersStingPvE, SwiftskinsStingPvE, FlankstingStrikePvE, FlanksbaneFangPvE, HindstingStrikePvE, HindsbaneFangPvE, SteelMawPvE, ReavingMawPvE, HuntersBitePvE, SwiftskinsBitePvE, JaggedMawPvE, BloodiedMawPvE, VicewinderPvE, HuntersCoilPvE, SwiftskinsCoilPvE, VicepitPvE, HuntersDenPvE, SwiftskinsDenPvE, ReawakenPvE, FirstGenerationPvE, SecondGenerationPvE, ThirdGenerationPvE, FourthGenerationPvE, OuroborosPvE, WrithingSnapPvE, UncoiledFuryPvE, DeathRattlePvE, LastLashPvE, TwinfangBitePvE, TwinbloodBitePvE, TwinfangThreshPvE, TwinbloodThreshPvE, FirstLegacyPvE, SecondLegacyPvE, ThirdLegacyPvE, FourthLegacyPvE, UncoiledTwinfangPvE, UncoiledTwinbloodPvE, SlitherPvE, SerpentsIrePvE, SerpentsTailPvE, TwinfangPvE, TwinbloodPvE, SteelFangsPvP, PiercingFangsPvP, HuntersStingPvP, SwiftskinsStingPvP, BarbarousBitePvP, RavenousBitePvP, BloodcoilPvP, SanguineFeastPvP, UncoiledFuryPvP, FirstGenerationPvP, SecondGenerationPvP, ThirdGenerationPvP, FourthGenerationPvP, OuroborosPvP, DeathRattlePvP, TwinfangBitePvP, TwinbloodBitePvP, UncoiledTwinfangPvP, UncoiledTwinbloodPvP, FirstLegacyPvP, SecondLegacyPvP, ThirdLegacyPvP, FourthLegacyPvP, SerpentsTailPvP, SlitherPvP, SnakeScalesPvP, BacklashPvP, FuriousBacklashPvP, RattlingCoilPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _BraverPvECreator = new(() =&gt; 
@@ -88866,8 +88866,8 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; Worldswallower
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        VipersFangsTrait, VipersMawTrait, VipersBiteTrait, VipersThreshTrait, VipersRattleTrait, EnhancedSlitherTrait, EnhancedVipersRattleTrait, SerpentsLineageTrait, UncoiledFangsTrait, EnhancedSerpentsLineageTrait, SerpentsLegacyTrait, MeleeMasteryTrait, MeleeMasteryIiTrait,
-        ..base.AllTraits,
+    	VipersFangsTrait, VipersMawTrait, VipersBiteTrait, VipersThreshTrait, VipersRattleTrait, EnhancedSlitherTrait, EnhancedVipersRattleTrait, SerpentsLineageTrait, UncoiledFangsTrait, EnhancedSerpentsLineageTrait, SerpentsLegacyTrait, MeleeMasteryTrait, MeleeMasteryIiTrait,
+    	..base.AllTraits,
     ];
 #endregion
 }
@@ -90475,8 +90475,8 @@ public abstract partial class PictomancerRotation : CustomRotation
     
     /// &lt;inheritdoc/&gt;
     public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
-        FireInRedPvE, AeroInGreenPvE, WaterInBluePvE, BlizzardInCyanPvE, StoneInYellowPvE, ThunderInMagentaPvE, FireIiInRedPvE, AeroIiInGreenPvE, WaterIiInBluePvE, BlizzardIiInCyanPvE, StoneIiInYellowPvE, ThunderIiInMagentaPvE, HolyInWhitePvE, CometInBlackPvE, PomMotifPvE, WingMotifPvE, ClawMotifPvE, MawMotifPvE, HammerMotifPvE, StarrySkyMotifPvE, PomMusePvE, WingedMusePvE, ClawedMusePvE, FangedMusePvE, StrikingMusePvE, StarryMusePvE, MogOfTheAgesPvE, RetributionOfTheMadeenPvE, HammerStampPvE, HammerBrushPvE, PolishingHammerPvE, StarPrismPvE, SubtractivePalettePvE, SmudgePvE, TemperaCoatPvE, TemperaGrassaPvE, RainbowDripPvE, CreatureMotifPvE, WeaponMotifPvE, LandscapeMotifPvE, LivingMusePvE, SteelMusePvE, ScenicMusePvE, FireInRedPvP, AeroInGreenPvP, WaterInBluePvP, BlizzardInCyanPvP, StoneInYellowPvP, ThunderInMagentaPvP, HolyInWhitePvP, CometInBlackPvP, PomMotifPvP, WingMotifPvP, ClawMotifPvP, MawMotifPvP, CreatureMotifPvP, PomMusePvP, WingedMusePvP, ClawedMusePvP, FangedMusePvP, LivingMusePvP, SmudgePvP, TemperaCoatPvP, TemperaGrassaPvP, SubtractivePalettePvP, ReleaseSubtractivePalettePvP, StarPrismPvP, MogOfTheAgesPvP, RetributionOfTheMadeenPvP,
-        ..base.AllBaseActions,
+    	FireInRedPvE, AeroInGreenPvE, WaterInBluePvE, BlizzardInCyanPvE, StoneInYellowPvE, ThunderInMagentaPvE, FireIiInRedPvE, AeroIiInGreenPvE, WaterIiInBluePvE, BlizzardIiInCyanPvE, StoneIiInYellowPvE, ThunderIiInMagentaPvE, HolyInWhitePvE, CometInBlackPvE, PomMotifPvE, WingMotifPvE, ClawMotifPvE, MawMotifPvE, HammerMotifPvE, StarrySkyMotifPvE, PomMusePvE, WingedMusePvE, ClawedMusePvE, FangedMusePvE, StrikingMusePvE, StarryMusePvE, MogOfTheAgesPvE, RetributionOfTheMadeenPvE, HammerStampPvE, HammerBrushPvE, PolishingHammerPvE, StarPrismPvE, SubtractivePalettePvE, SmudgePvE, TemperaCoatPvE, TemperaGrassaPvE, RainbowDripPvE, CreatureMotifPvE, WeaponMotifPvE, LandscapeMotifPvE, LivingMusePvE, SteelMusePvE, ScenicMusePvE, FireInRedPvP, AeroInGreenPvP, WaterInBluePvP, BlizzardInCyanPvP, StoneInYellowPvP, ThunderInMagentaPvP, HolyInWhitePvP, CometInBlackPvP, PomMotifPvP, WingMotifPvP, ClawMotifPvP, MawMotifPvP, CreatureMotifPvP, PomMusePvP, WingedMusePvP, ClawedMusePvP, FangedMusePvP, LivingMusePvP, SmudgePvP, TemperaCoatPvP, TemperaGrassaPvP, SubtractivePalettePvP, ReleaseSubtractivePalettePvP, StarPrismPvP, MogOfTheAgesPvP, RetributionOfTheMadeenPvP,
+    	..base.AllBaseActions,
     ];
 
 private readonly Lazy&lt;IBaseAction&gt; _SkyshardPvECreator = new(() =&gt; 
@@ -90681,8 +90681,50 @@ private sealed protected override IBaseAction LimitBreakPvP =&gt; AdventOfChocob
     
     /// &lt;inheritdoc/&gt;
     public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
-        PaletteGaugeTrait, EnhancedArtistryTrait, EnhancedSmudgeTrait, EnhancedPictomancyIiTrait, EnhancedTemperaTrait, EnhancedPaletteTrait, EnhancedPictomancyIiiTrait, EnhancedPictomancyVTrait, EnhancedPictomancyIvTrait, EnhancedPictomancyTrait, MaimAndMendTrait, MaimAndMendIiTrait, PictomancyMasteryTrait, PictomancyMasteryIiTrait, PictomancyMasteryIiiTrait, PictomancyMasteryIvTrait,
-        ..base.AllTraits,
+    	PaletteGaugeTrait, EnhancedArtistryTrait, EnhancedSmudgeTrait, EnhancedPictomancyIiTrait, EnhancedTemperaTrait, EnhancedPaletteTrait, EnhancedPictomancyIiiTrait, EnhancedPictomancyVTrait, EnhancedPictomancyIvTrait, EnhancedPictomancyTrait, MaimAndMendTrait, MaimAndMendIiTrait, PictomancyMasteryTrait, PictomancyMasteryIiTrait, PictomancyMasteryIiiTrait, PictomancyMasteryIvTrait,
+    	..base.AllTraits,
+    ];
+#endregion
+}
+
+/// &lt;summary&gt;
+/// &lt;see href="https://na.finalfantasyxiv.com/jobguide/beastmaster"&gt;&lt;strong&gt;beastmaster&lt;/strong&gt;&lt;/see&gt;
+/// &lt;br&gt;Number of Actions: 0&lt;/br&gt;
+/// &lt;br&gt;Number of Traits: 0&lt;/br&gt;
+/// &lt;/summary&gt;
+[Jobs(Job.BST)]
+public abstract partial class BeastmasterRotation : CustomRotation
+{
+    
+
+#region Actions
+    
+
+    private IBaseAction[] _AllBaseActions = null;
+    
+    /// &lt;inheritdoc/&gt;
+    public override IBaseAction[] AllBaseActions =&gt; _AllBaseActions ??= [
+    	
+    	..base.AllBaseActions,
+    ];
+
+
+
+
+
+
+#endregion
+
+#region Traits
+
+    
+
+    private IBaseTrait[] _AllTraits = null;
+    
+    /// &lt;inheritdoc/&gt;
+    public override IBaseTrait[] AllTraits =&gt; _AllTraits ??= [
+    	
+    	..base.AllTraits,
     ];
 #endregion
 }</value>

@@ -23,7 +23,7 @@ using Player = ECommons.GameHelpers.Player;
 
 namespace RotationSolver;
 
-public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
+public sealed class RotationSolverPlugin : IAsyncDalamudPlugin
 {
 	private readonly WindowSystem windowSystem;
 
