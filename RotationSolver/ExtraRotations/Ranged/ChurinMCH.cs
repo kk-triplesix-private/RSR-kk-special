@@ -20,11 +20,13 @@ public sealed class ChurinMCH : MachinistRotation
 	private static bool IsMedicated => StatusHelper.PlayerHasStatus(true, StatusID.Medicated) ||
 									   !StatusHelper.PlayerWillStatusEnd(0, true, StatusID.Medicated);
 
-    #endregion
-    #region  Logic Booleans
-    private bool BurstSoon => WildfirePvE.Cooldown.IsCoolingDown && WildfirePvE.Cooldown.WillHaveOneCharge(40);
-    private bool InFiller => !AreToolsComingOffCooldown() && !BurstSoon && WildfirePvE.Cooldown.IsCoolingDown && WildfirePvE.Cooldown.ElapsedAfter(30);
-    //private bool InRebuildPhase => (CombatTime % 120 >= 70 && CombatTime % 120 <= 90) && !InBurstPrepPhase;
+	#endregion
+	#region  Logic Booleans
+	private bool BurstSoon => WildfirePvE.Cooldown.IsCoolingDown && WildfirePvE.Cooldown.WillHaveOneCharge(40);
+	private bool InFiller => !AreToolsComingOffCooldown() && !BurstSoon && WildfirePvE.Cooldown.IsCoolingDown && WildfirePvE.Cooldown.ElapsedAfter(30);
+	//private bool InRebuildPhase => (CombatTime % 120 >= 70 && CombatTime % 120 <= 90) && !InBurstPrepPhase;
+
+	private static bool CanDoubleHypercharge => HasHypercharged && Heat >= 50;
 
 	#endregion
 	#endregion
@@ -35,8 +37,8 @@ public sealed class ChurinMCH : MachinistRotation
 	private const float DefaultAnimationLock = 0.6f;
 	#endregion
 
-    private const float DefaultAnimationLock = 0.6f;
-    #endregion
+	#region Potion Properties
+	private readonly ChurinMCHPotions _churinPotions = new();
 
 	private float _firstPotionTiming = 0;
 	private float _secondPotionTiming = 0;

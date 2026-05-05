@@ -348,12 +348,9 @@ public sealed class RotationSolverPlugin : IAsyncDalamudPlugin
 		return false;
 	}
 
-	void IDisposable.Dispose()
-	{
-		Dispose().GetAwaiter().GetResult();
-	}
+	public Task LoadAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-	public async Task Dispose()
+	public async ValueTask DisposeAsync()
 	{
 		Service.Config.Save();
 		await OtherConfiguration.Save();

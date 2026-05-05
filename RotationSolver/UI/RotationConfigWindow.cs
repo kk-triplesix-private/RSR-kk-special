@@ -4291,11 +4291,16 @@ public partial class RotationConfigWindow : Window
 			ImGui.Text($"IsOCFreezeImmuneTarget: {battleChara.IsOCFreezeImmuneTarget()}");
 			ImGui.Text($"IsOCBlindImmuneTarget: {battleChara.IsOCBlindImmuneTarget()}");
 			ImGui.Text($"IsOCParalysisImmuneTarget: {battleChara.IsOCParalysisImmuneTarget()}");
-			ImGui.Spacing();
-			ImGui.Text("AST Card Targets (Preview):");
-			ImGui.Text($"- The Spear: {spear?.Name ?? "None"}");
-			ImGui.Text($"- The Balance: {balance?.Name ?? "None"}");
-			ImGui.Spacing();
+			if (Player.Object?.IsJobs(Job.AST) == true)
+			{
+				IBattleChara? spear = ActionTargetInfo.FindTargetByType(DataCenter.PartyMembers, TargetType.TheSpear, 0, SpecialActionType.None, TargetType.TheSpear, true);
+				IBattleChara? balance = ActionTargetInfo.FindTargetByType(DataCenter.PartyMembers, TargetType.TheBalance, 0, SpecialActionType.None, TargetType.TheBalance, true);
+				ImGui.Spacing();
+				ImGui.Text("AST Card Targets (Preview):");
+				ImGui.Text($"- The Spear: {spear?.Name ?? "None"}");
+				ImGui.Text($"- The Balance: {balance?.Name ?? "None"}");
+				ImGui.Spacing();
+			}
 			ImGui.Text($"Is Current Focus Target: {battleChara.IsFocusTarget()}");
 			ImGui.Text($"TTK: {battleChara.GetTTK()}");
 			ImGui.Text($"Is Boss TTK: {battleChara.IsBossFromTTK()}");

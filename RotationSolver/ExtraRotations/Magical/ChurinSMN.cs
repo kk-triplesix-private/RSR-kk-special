@@ -1404,73 +1404,13 @@ public sealed class ChurinSMN : SummonerRotation
                 break;
         }
     }
-    
-    #endregion
-    
-    #endregion
-    
+
     #endregion
 
-		switch (InBigSummonCount)
-		{
-			case <= 1 or 3:
-				SetRuin3Flag(EmeraldAttunement && (!HasGarudaFavor || IsLastGCD(ActionID.SlipstreamPvE)) && Ruin3Count < 1);
-				SetIfritAttunementFlags(true, false, false, defaultCycloneCondition);
-				break;
-			case 4:
-				SetIfritAttunementFlags(true, false, false, defaultCycloneCondition);
-				SetRuin3Flag(!IsIfritReady && !RubyAttunement && IsLastGCD(ActionID.CrimsonStrikePvE) && IsTitanReady && IsGarudaReady && Ruin3Count < 1);
-				SetRuin4Flag(EmeraldAttunement && !HasGarudaFavor && HasFurtherRuin);
-				break;
-			case 5:
-				SetIfritAttunementFlags(false, true, false, hasOneAttunementLeft && (CrimsonCycloneTargetTooFar || crimsonCycloneTargetInRange));
-				SetSkipAttunementFlag((RubyAttunement && !HasIfritFavor && !HasCrimsonStrike && AttunementCount == 1 && IsGarudaReady && IsLastGCD(ActionID.CrimsonStrikePvE)) || (EmeraldAttunement && !HasGarudaFavor && AttunementCount < 3 && IsTitanReady));
-				break;
-			case 6:
-				SetRuin3Flag(attunementUsedUp && Ruin3Count < 1);
-				SetIfritAttunementFlags(true, false, false, defaultCycloneCondition && Ruin3Count == 1);
-				break;
-			case 8:
-				SetRuin3Flag(!RubyAttunement && !HasCrimsonStrike && !HasIfritFavor && IsLastGCD(ActionID.CrimsonStrikePvE) && !IsIfritReady && IsGarudaReady && IsTitanReady && Ruin3Count < 1);
-				break;
-			case 9:
-				SetIfritAttunementFlags(true, true, false, hasOneAttunementLeft && (CrimsonCycloneTargetTooFar || crimsonCycloneTargetInRange));
-				if (EmeraldAttunement)
-				{
-					if (!HasGarudaFavor && AttunementCount > 3)
-					{
-						SetRuin3Flag(Ruin3Count < 1);
-						SetRuin4Flag(HasFurtherRuin);
-					}
-				}
-				break;
-			case 10:
-				SetIfritAttunementFlags(true, true, false, hasOneAttunementLeft && (CrimsonCycloneTargetTooFar || crimsonCycloneTargetInRange));
-				SetRuin3Flag(attunementUsedUp && Ruin3Count < 1 && IsTitanReady);
-				SetRuin4Flag(EmeraldAttunement && !HasGarudaFavor && AttunementCount > 2 && HasFurtherRuin);
-				break;
-			case 11:
-				SetIfritAttunementFlags(true, false, false, defaultCycloneCondition && Ruin3Count == 1);
-				SetRuin3Flag(attunementUsedUp && Ruin3Count < 1);
-				SetRuin4Flag(EmeraldAttunement && !HasGarudaFavor && AttunementCount > 3 && HasFurtherRuin);
-				break;
-			case 12:
-				SetRuin3Flag(EmeraldAttunement && !HasGarudaFavor && AttunementCount > 3 && Ruin3Count < 1);
-				SetIfritAttunementFlags(true, false, true, CrimsonCycloneTargetTooFar || crimsonCycloneTargetInRange);
-				break;
-			default:
-				SetIfritAttunementFlags(true, false, false, defaultCycloneCondition);
-				break;
-		}
-	}
+    #endregion
 
-	#endregion
+    #endregion
 
-	#endregion
-
-	#endregion
-
-	#endregion
-
+    #endregion
 }
 
