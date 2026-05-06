@@ -1,9 +1,7 @@
 name: Sync Upstream
 
 on:
-  schedule:
-    - cron: '0 */2 * * *'  # Every 2 hours
-  workflow_dispatch:        # Manual trigger
+  workflow_dispatch:        # Manual trigger only (auto-sync disabled — manual merges via Claude Code)
 
 jobs:
   sync:
