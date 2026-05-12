@@ -1,5 +1,4 @@
 using Dalamud.Interface.Colors;
-using AetherFlags = Dalamud.Game.ClientState.JobGauge.Enums.AetherFlags;
 
 namespace RotationSolver.Basic.Rotations.Basic;
 
