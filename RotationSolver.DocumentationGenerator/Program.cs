@@ -7,7 +7,7 @@ namespace RotationSolver.DocumentationGenerator
 	{
 		private class Entry
 		{
-			private static Regex slugRegex = new("[^a-z0-9-]", RegexOptions.Compiled);
+			private static readonly Regex slugRegex = new("[^a-z0-9-]", RegexOptions.Compiled);
 
 			public bool HasRef { get; set; } = false;
 			public required string Page { get; init; }
@@ -61,11 +61,15 @@ namespace RotationSolver.DocumentationGenerator
 			{
 				var parts = data.Replace("\r", "").Trim().Split("\n");
 				var sb = new System.Text.StringBuilder();
-				for (int i = 0; i < parts.Length; i++)
+				for (var i = 0; i < parts.Length; i++)
 				{
-					string line = parts[i];
-					string processed = line == "\n" ? line : "> " + line.Trim();
-					if (i > 0) sb.Append('\n');
+					var line = parts[i];
+					var processed = line == "\n" ? line : "> " + line.Trim();
+					if (i > 0)
+					{
+						sb.Append('\n');
+					}
+
 					sb.Append(processed);
 				}
 				return sb.ToString();
@@ -75,12 +79,12 @@ namespace RotationSolver.DocumentationGenerator
 		/// <summary>
 		/// File => Section => Subsection => Entry[]
 		/// </summary>
-		private static Dictionary<string, Dictionary<string, Dictionary<string, List<Entry>>>> Files = new();
+		private static readonly Dictionary<string, Dictionary<string, Dictionary<string, List<Entry>>>> Files = new();
 
 		/// <summary>
 		/// Fully-qualified type => Entry
 		/// </summary>
-		private static Dictionary<string, Entry> Entries = new();
+		private static readonly Dictionary<string, Entry> Entries = new();
 
 		static void Main(string[] files)
 		{
@@ -126,18 +130,22 @@ namespace RotationSolver.DocumentationGenerator
 			}
 
 			if (!Directory.Exists("_doc"))
+			{
 				Directory.CreateDirectory("_doc");
+			}
 
-			foreach (var (fileName, sections) in Files)
+			foreach ((var fileName, var sections) in Files)
 			{
 				var fileContents = "";
 
-				foreach (var (section, subsections) in sections)
+				foreach ((var section, var subsections) in sections)
 				{
 					if (!string.IsNullOrEmpty(section))
+					{
 						fileContents += $"# {section}\n";
+					}
 
-					foreach (var (subsection, entries) in subsections)
+					foreach ((var subsection, var entries) in subsections)
 					{
 						if (!string.IsNullOrEmpty(subsection))
 						{
@@ -148,7 +156,11 @@ namespace RotationSolver.DocumentationGenerator
 
 						foreach (var entry in entries)
 						{
-							if (entry.IsSubsection) continue;
+							if (entry.IsSubsection)
+							{
+								continue;
+							}
+
 							fileContents += $"### {entry.Name}\n";
 							fileContents += entry.ProcessContent(Entries);
 							fileContents += "\n\n";

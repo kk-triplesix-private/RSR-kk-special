@@ -17,9 +17,7 @@ public class BaseAction : IBaseAction
 	/// <value>
 	/// A <see cref="TargetResult"/> representing the target of the action.
 	/// </value>
-	public TargetResult Target { get; set; } = Player.Object is IBattleChara bc
-	? new(bc, [], null)
-	: default;
+	public TargetResult Target { get; set; } = default;
 
 	/// <summary>
 	/// Gets the target for preview purposes.
@@ -105,6 +103,13 @@ public class BaseAction : IBaseAction
 	}
 
 	/// <inheritdoc/>
+	public bool SkipPositionSafetyCheck
+	{
+		get => Config.SkipPositionSafetyCheck;
+		set => Config.SkipPositionSafetyCheck = value;
+	}
+
+	/// <inheritdoc/>
 	public float MinHPPercent
 	{
 		get => Config.MinHPPercent;
@@ -122,7 +127,7 @@ public class BaseAction : IBaseAction
 	{
 		get
 		{
-			if (!Service.Config.RotationActionConfig.TryGetValue(ID, out ActionConfig? value) || DataCenter.ResetActionConfigs)
+			if (!Service.Config.RotationActionConfig.TryGetValue(ID, out var value) || DataCenter.ResetActionConfigs)
 			{
 				value = Setting.CreateConfig?.Invoke() ?? new ActionConfig();
 				Service.Config.RotationActionConfig[ID] = value;
@@ -149,7 +154,7 @@ public class BaseAction : IBaseAction
 			// without touching other user-configured fields.
 			if (!value.AoeResetDone)
 			{
-				byte defaultAoe = (Setting.CreateConfig?.Invoke()?.AoeCount) ?? new ActionConfig().AoeCount;
+				var defaultAoe = (Setting.CreateConfig?.Invoke()?.AoeCount) ?? new ActionConfig().AoeCount;
 				value.AoeCount = defaultAoe;
 				value.AoeResetDone = true;
 
@@ -244,17 +249,22 @@ public class BaseAction : IBaseAction
 	/// <inheritdoc/>
 	public unsafe bool Use()
 	{
-		if (Player.Object == null) return false;
+		if (Player.Object == null)
+		{
+			return false;
+		}
 
-		TargetResult target = Target;
-		uint adjustId = AdjustedID;
+		var target = Target;
+		var adjustId = AdjustedID;
 
 		if (TargetInfo.IsTargetArea)
 		{
 			if (adjustId != ID || !target.Position.HasValue)
+			{
 				return false;
+			}
 
-			Vector3 loc = target.Position.Value;
+			var loc = target.Position.Value;
 
 			// Use ActionManagerEx for enhanced timing if tweaks are enabled
 			if (Service.Config.RemoveAnimationLockDelay || Service.Config.RemoveCooldownDelay)
@@ -270,10 +280,12 @@ public class BaseAction : IBaseAction
 		}
 		else
 		{
-			ulong targetId = target.Target?.GameObjectId ?? Player.Object.GameObjectId;
+			var targetId = target.Target?.GameObjectId ?? Player.Object.GameObjectId;
 
 			if (targetId == 0 || Svc.Objects.SearchById(targetId) == null)
+			{
 				return false;
+			}
 
 			// Use ActionManagerEx for enhanced timing if tweaks are enabled
 			if (Service.Config.RemoveAnimationLockDelay || Service.Config.RemoveCooldownDelay)

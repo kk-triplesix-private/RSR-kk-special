@@ -184,7 +184,7 @@ namespace RotationSolver.IPC
 		[EzIPC]
 		public void ActionCommand(string action, float time)
 		{
-			string combinedString = $"{action}-{time}";
+			var combinedString = $"{action}-{time}";
 
 			RSCommands.DoActionCommand($"{combinedString}");
 			PluginLog.Debug($"IPC ActionCommand was called. Action Name:{action}, Time:{time}");

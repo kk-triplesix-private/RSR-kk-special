@@ -50,7 +50,7 @@ public partial class NinjaRotation
 	{
 		get
 		{
-			byte stacks = StatusHelper.PlayerStatusStack(true, StatusID.RaijuReady);
+			var stacks = StatusHelper.PlayerStatusStack(true, StatusID.RaijuReady);
 			return stacks == byte.MaxValue ? (byte)3 : stacks;
 		}
 	}

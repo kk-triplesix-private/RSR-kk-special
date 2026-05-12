@@ -23,7 +23,7 @@ public class BLM_RP : BlackMageRotation
 	{
 		if (remainTime < BlizzardIiiPvE.Info.CastTime + CountDownAhead)
 		{
-			if (BlizzardIiiPvE.CanUse(out IAction act))
+			if (BlizzardIiiPvE.CanUse(out var act))
 			{
 				return act;
 			}

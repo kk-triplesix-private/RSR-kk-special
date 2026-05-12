@@ -49,7 +49,7 @@ public sealed class WAR_Reborn : WarriorRotation
 	#region Countdown Logic
 	protected override IAction? CountDownAction(float remainTime)
 	{
-		if (remainTime < 0.54f && TomahawkPvE.CanUse(out IAction? act))
+		if (remainTime < 0.54f && TomahawkPvE.CanUse(out var act))
 		{
 			return act;
 		}
@@ -144,8 +144,12 @@ public sealed class WAR_Reborn : WarriorRotation
 
 	protected override bool GeneralAbility(IAction nextGCD, out IAction? act)
 	{
-		int _partyCount = 0;
-		foreach (var _ in PartyMembers) _partyCount++;
+		var _partyCount = 0;
+		foreach (var _ in PartyMembers)
+		{
+			_partyCount++;
+		}
+
 		if ((InCombat && Player?.GetHealthRatio() < HealIntuition && NumberOfHostilesInRange > 0) || (InCombat && _partyCount == 1 && NumberOfHostilesInRange > 0))
 		{
 			if (BloodwhettingPvE.CanUse(out act))
@@ -198,7 +202,7 @@ public sealed class WAR_Reborn : WarriorRotation
 	[RotationDesc(ActionID.RawIntuitionPvE, ActionID.VengeancePvE, ActionID.RampartPvE, ActionID.RawIntuitionPvE, ActionID.ReprisalPvE)]
 	protected override bool DefenseSingleAbility(IAction nextGCD, out IAction? act)
 	{
-		bool RawSingleTargets = SoloIntuition;
+		var RawSingleTargets = SoloIntuition;
 		act = null;
 
 		if (StatusHelper.PlayerHasStatus(true, StatusID.Holmgang_409) && Player?.GetHealthRatio() < 0.3f)

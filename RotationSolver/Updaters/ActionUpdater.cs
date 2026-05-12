@@ -1,5 +1,4 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.SubKinds;
 using ECommons.DalamudServices;
 using ECommons.EzIpcManager;
 using ECommons.GameHelpers;
@@ -57,25 +56,34 @@ internal static class ActionUpdater
 
 	internal static void UpdateNextAction()
 	{
-		IPlayerCharacter? localPlayer = Player.Object;
-		ICustomRotation? customRotation = DataCenter.CurrentRotation;
+		ActionTracer.Enabled = Service.Config.EnableActionTracer;
+		ActionTracer.MirrorToPluginLog = Service.Config.TraceMirrorToPluginLog;
 
+		var localPlayer = Player.Object;
+		var customRotation = DataCenter.CurrentRotation;
+
+		ActionTracer.BeginFrame();
 		try
 		{
 			if (localPlayer != null && customRotation != null
-				&& customRotation.TryInvoke(out IAction? newAction, out IAction? gcdAction))
+				&& customRotation.TryInvoke(out var newAction, out var gcdAction))
 			{
 				NextAction = newAction;
 				NextGCDAction = gcdAction as IBaseAction;
 				return;
 			}
+
+			NextAction = NextGCDAction = null;
 		}
 		catch (Exception ex)
 		{
 			LogError("Failed to update the next action in the rotation", ex);
+			NextAction = NextGCDAction = null;
 		}
-
-		NextAction = NextGCDAction = null;
+		finally
+		{
+			ActionTracer.EndFrame(NextAction);
+		}
 	}
 
 	internal static void UpdateCombatInfo()
@@ -98,7 +106,7 @@ internal static class ActionUpdater
 	private static DateTime _startCombatTime = DateTime.MinValue;
 	private static void UpdateCombatTime(DateTime now)
 	{
-		bool lastInCombat = DataCenter.InCombat;
+		var lastInCombat = DataCenter.InCombat;
 		DataCenter.InCombat = Svc.Condition[ConditionFlag.InCombat];
 
 		if (!lastInCombat && DataCenter.InCombat)
@@ -122,19 +130,26 @@ internal static class ActionUpdater
 
 	private static unsafe void UpdateSlots()
 	{
-		ActionManager* actionManager = ActionManager.Instance();
+		var actionManager = ActionManager.Instance();
 		if (actionManager == null)
 		{
 			return;
 		}
 
-		for (int i = 0; i < DataCenter.BluSlots.Length; i++)
+		if (DataCenter.Job == ECommons.ExcelServices.Job.BLU)
 		{
-			DataCenter.BluSlots[i] = actionManager->GetActiveBlueMageActionInSlot(i);
+			for (var i = 0; i < DataCenter.BluSlots.Length; i++)
+			{
+				DataCenter.BluSlots[i] = actionManager->GetActiveBlueMageActionInSlot(i);
+			}
 		}
-		for (ushort i = 0; i < DataCenter.DutyActions.Length; i++)
+
+		if (DataCenter.IsInDuty)
 		{
-			DataCenter.DutyActions[i] = DutyActionManager.GetDutyActionId(i);
+			for (ushort i = 0; i < DataCenter.DutyActions.Length; i++)
+			{
+				DataCenter.DutyActions[i] = DutyActionManager.GetDutyActionId(i);
+			}
 		}
 	}
 
@@ -176,7 +191,7 @@ internal static class ActionUpdater
 			return;
 		}
 
-		bool lastDead = _isDead;
+		var lastDead = _isDead;
 		_isDead = player.IsDead;
 
 		if (Svc.Condition[ConditionFlag.BetweenAreas])
@@ -240,7 +255,13 @@ internal static class ActionUpdater
 		}
 
 		var player = Player.Object;
-		if (player == null || IsPlayerOccupied() || player.CurrentHp == 0)
+		if (player == null || player.CurrentHp == 0)
+		{
+			return false;
+		}
+
+		var isPvPPurifyNeeded = DataCenter.IsPvP && StatusHelper.PlayerHasStatus(false, StatusHelper.PurifyPvPStatuses);
+		if (!isPvPPurifyNeeded && IsPlayerOccupied())
 		{
 			return false;
 		}
@@ -287,7 +308,9 @@ internal static class ActionUpdater
 			if (!DataCenter.IsPvP)
 			{
 				if (status != null && StatusHelper.LockActions(status) == true && status.RemainingTime > 1 + DataCenter.DefaultGCDRemain)
+				{
 					return true;
+				}
 			}
 		}
 		return false;
@@ -320,7 +343,7 @@ internal static class ActionUpdater
 			return true;
 		}
 
-		ActionManager* am = ActionManager.Instance();
+		var am = ActionManager.Instance();
 		if (am != null
 			&& am->ActionQueued
 			&& NextAction != null

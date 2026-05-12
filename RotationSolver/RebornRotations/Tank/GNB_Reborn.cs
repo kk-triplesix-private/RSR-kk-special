@@ -16,7 +16,7 @@ public sealed class GNB_Reborn : GunbreakerRotation
 	#region Countdown Logic
 	protected override IAction? CountDownAction(float remainTime)
 	{
-		if (remainTime <= 0.7 && LightningShotPvE.CanUse(out IAction? act))
+		if (remainTime <= 0.7 && LightningShotPvE.CanUse(out var act))
 		{
 			return act;
 		}

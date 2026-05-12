@@ -81,7 +81,10 @@ internal class RotationGetter(Lumina.GameData gameData, ClassJob job)
 		try
 		{
 			var actionSheet = gameData.GetExcelSheet<Lumina.Excel.Sheets.Action>();
-			if (actionSheet == null) return null;
+			if (actionSheet == null)
+			{
+				return null;
+			}
 
 			// Get the job's class job category
 			var jobCategory = job.ClassJobCategory.Value;
@@ -174,7 +177,10 @@ internal class RotationGetter(Lumina.GameData gameData, ClassJob job)
 	/// <returns>The limit break code.</returns>
 	private string GetLBInRotation(Lumina.Excel.Sheets.Action action, int index)
 	{
-		if (action.RowId == 0) return string.Empty;
+		if (action.RowId == 0)
+		{
+			return string.Empty;
+		}
 
 		var code = GetLBPvE(action, out var name);
 
@@ -208,7 +214,10 @@ internal class RotationGetter(Lumina.GameData gameData, ClassJob job)
 	/// <returns>The PvP limit break code.</returns>
 	private string GetLBInRotationPvP(Lumina.Excel.Sheets.Action? action)
 	{
-		if (action == null || action.Value.RowId == 0) return string.Empty;
+		if (action == null || action.Value.RowId == 0)
+		{
+			return string.Empty;
+		}
 
 		var code = GetLBPvP(action.Value, out var name);
 

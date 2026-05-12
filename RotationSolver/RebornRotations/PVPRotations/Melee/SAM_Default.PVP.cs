@@ -145,6 +145,21 @@ public sealed class SAM_DefaultPvP : SamuraiRotation
 			return true;
 		}
 
+		if (HyosetsuPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (MangetsuPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (OkaPvP.CanUse(out action))
+		{
+			return true;
+		}
+
 		if (KashaPvP.CanUse(out action))
 		{
 			return true;

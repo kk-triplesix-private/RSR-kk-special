@@ -26,13 +26,22 @@ public partial class GunbreakerRotation
 		if (HasBloodfest)
 		{
 			if (CartridgeChargeIiTrait.EnoughLevel)
+			{
 				return 6;
+			}
+
 			return 4;
 		}
 		if (CartridgeChargeIiTrait.EnoughLevel)
+		{
 			return 3;
+		}
+
 		if (CartridgeChargeTrait.EnoughLevel)
+		{
 			return 2;
+		}
+
 		return 0;
 	}
 
@@ -42,9 +51,15 @@ public partial class GunbreakerRotation
 	public static byte NormalMaxAmmo()
 	{
 		if (CartridgeChargeIiTrait.EnoughLevel)
+		{
 			return 3;
+		}
+
 		if (CartridgeChargeTrait.EnoughLevel)
+		{
 			return 2;
+		}
+
 		return 0;
 	}
 

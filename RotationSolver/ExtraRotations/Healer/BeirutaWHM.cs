@@ -5,6 +5,8 @@ namespace RotationSolver.ExtraRotations.Healer;
 
 [Rotation("BeirutaWHM", CombatType.PvE, GameVersion = "7.45")]
 [SourceCode(Path = "main/ExtraRotations/Healer/BeirutaWHM.cs")]
+[ExtraRotation]
+
 public sealed class WHM_Reborn : WhiteMageRotation
 {
     #region Config Options

@@ -6,7 +6,7 @@ public partial class CustomRotation
 {
 	internal static void LoadActionSetting(ref IBaseAction action)
 	{
-		Lumina.Excel.Sheets.Action a = action.Action;
+		var a = action.Action;
 		action.Setting.IsFriendly = a.CanTargetAlly || a.CanTargetParty || (!a.CanTargetHostile && action.TargetInfo.EffectRange > 5);
 		// TODO: better target type check. (NoNeed?)
 	}
@@ -83,18 +83,26 @@ public partial class CustomRotation
 				return false;
 			}
 
-			IEnumerable<IBattleChara> players = PartyMembers.GetObjectInRadius(20);
+			var players = PartyMembers.GetObjectInRadius(20);
 
-			bool anyInCombat = false;
-			bool anyWillStatusEnd = false;
+			var anyInCombat = false;
+			var anyWillStatusEnd = false;
 			foreach (var p in players)
 			{
 				if (ObjectHelper.InCombat(p))
+				{
 					anyInCombat = true;
+				}
+
 				if (p.WillStatusEnd(3, false, StatusID.Peloton))
+				{
 					anyWillStatusEnd = true;
+				}
+
 				if (anyInCombat && anyWillStatusEnd)
+				{
 					break;
+				}
 			}
 			return !anyInCombat && anyWillStatusEnd;
 		};
@@ -278,27 +286,37 @@ public partial class CustomRotation
 			foreach (var i in AllBaseActions)
 			{
 				if (i.Action.IsInJob())
+				{
 					list.Add(i);
+				}
 			}
 			foreach (var i in Medicines)
 			{
 				if (i.HasIt)
+				{
 					list.Add(i);
+				}
 			}
 			foreach (var i in MpPotions)
 			{
 				if (i.HasIt)
+				{
 					list.Add(i);
+				}
 			}
 			foreach (var i in HpPotions)
 			{
 				if (i.HasIt)
+				{
 					list.Add(i);
+				}
 			}
 			foreach (var i in AllItems)
 			{
 				if (i.HasIt)
+				{
 					list.Add(i);
+				}
 			}
 			return [.. list];
 		}
@@ -326,7 +344,9 @@ public partial class CustomRotation
 		get
 		{
 			if (_allBytes != null)
+			{
 				return _allBytes;
+			}
 
 			var bytes = GetType().GetStaticProperties<byte>();
 			var ints = GetType().GetStaticProperties<int>();

@@ -5,6 +5,8 @@ namespace RotationSolver.ExtraRotations.Melee;
 
 [Rotation("BeirutaNIN", CombatType.PvE, GameVersion = "7.45")]
 [SourceCode(Path = "main/ExtraRotations/Melee/BeirutaNIN.cs")]
+[ExtraRotation]
+
 public sealed class BeirutaNIN : NinjaRotation
 {
     #region Config

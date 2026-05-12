@@ -145,6 +145,37 @@ internal class OtherConfiguration
 		_ = Task.Run(() => InitOne(ref SupportersList, nameof(SupportersList)));
 	}
 
+	public static async Task InitAsync(CancellationToken cancellationToken = default)
+	{
+		if (!Directory.Exists(Svc.PluginInterface.ConfigDirectory.FullName))
+		{
+			_ = Directory.CreateDirectory(Svc.PluginInterface.ConfigDirectory.FullName);
+		}
+
+		await Task.WhenAll(
+			Task.Run(() => InitOne(ref DangerousStatus, nameof(DangerousStatus)), cancellationToken),
+			Task.Run(() => InitOne(ref PriorityStatus, nameof(PriorityStatus)), cancellationToken),
+			Task.Run(() => InitOne(ref InvincibleStatus, nameof(InvincibleStatus)), cancellationToken),
+			Task.Run(() => InitOne(ref DancePartnerPriority, nameof(DancePartnerPriority)), cancellationToken),
+			Task.Run(() => InitOne(ref TheSpearPriority, nameof(TheSpearPriority)), cancellationToken),
+			Task.Run(() => InitOne(ref TheBalancePriority, nameof(TheBalancePriority)), cancellationToken),
+			Task.Run(() => InitOne(ref KardiaTankPriority, nameof(KardiaTankPriority)), cancellationToken),
+			Task.Run(() => InitOne(ref NoHostileNames, nameof(NoHostileNames)), cancellationToken),
+			Task.Run(() => InitOne(ref NoProvokeNames, nameof(NoProvokeNames)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingArea, nameof(HostileCastingArea)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingTank, nameof(HostileCastingTank)), cancellationToken),
+			Task.Run(() => InitOne(ref BeneficialPositions, nameof(BeneficialPositions)), cancellationToken),
+			Task.Run(() => InitOne(ref RotationSolverRecord, nameof(RotationSolverRecord), false), cancellationToken),
+			Task.Run(() => InitOne(ref NoCastingStatus, nameof(NoCastingStatus)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingKnockback, nameof(HostileCastingKnockback)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingStop, nameof(HostileCastingStop)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingStack, nameof(HostileCastingStack)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingPrey, nameof(HostileCastingPrey)), cancellationToken),
+			Task.Run(() => InitOne(ref HostileCastingMarker, nameof(HostileCastingMarker)), cancellationToken),
+			Task.Run(() => InitOne(ref SupportersList, nameof(SupportersList)), cancellationToken)
+		);
+	}
+
     public static Task Save()
     {
         return Task.Run(async () =>

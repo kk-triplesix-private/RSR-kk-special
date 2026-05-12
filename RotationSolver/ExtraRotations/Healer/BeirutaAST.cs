@@ -4,6 +4,8 @@ namespace RotationSolver.ExtraRotations.Healer;
 
 [Rotation("BeirutaAST", CombatType.PvE, GameVersion = "7.45", Description = "Semi-Automatic Savage/Ultimate rotation, need to used with CD planner or manual inputs")]
 [SourceCode(Path = "main/ExtraRotations/Healer/BeirutaAST.cs")]
+[ExtraRotation]
+
 public sealed class BeirutaAST : AstrologianRotation
 {
 	#region Config Options

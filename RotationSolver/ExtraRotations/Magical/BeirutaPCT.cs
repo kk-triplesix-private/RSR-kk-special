@@ -2,6 +2,8 @@ namespace RotationSolver.ExtraRotations.Magical;
 
 [Rotation("BeirutaPCT", CombatType.PvE, GameVersion = "7.45")]
 [SourceCode(Path = "main/ExtraRotations/Magical/BeirutaPCT.cs")]
+[ExtraRotation]
+
 public sealed class BeirutaPCT : PictomancerRotation
 {
     #region Config Options

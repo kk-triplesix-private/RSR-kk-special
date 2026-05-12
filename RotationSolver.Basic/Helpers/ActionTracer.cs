@@ -92,9 +92,12 @@ internal static class ActionTracer
 			}
 		}
 
-		if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return;
+		if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
+		{
+			return;
+		}
 
-		foreach (string path in Directory.EnumerateFiles(dir, "actiontrace_*.log"))
+		foreach (var path in Directory.EnumerateFiles(dir, "actiontrace_*.log"))
 		{
 			try
 			{
@@ -109,10 +112,14 @@ internal static class ActionTracer
 
 	internal static bool HasAnyTraceFiles()
 	{
-		if (string.IsNullOrEmpty(_traceDirectory) || !Directory.Exists(_traceDirectory)) return false;
+		if (string.IsNullOrEmpty(_traceDirectory) || !Directory.Exists(_traceDirectory))
+		{
+			return false;
+		}
+
 		try
 		{
-			foreach (string _ in Directory.EnumerateFiles(_traceDirectory, "actiontrace_*.log"))
+			foreach (var _ in Directory.EnumerateFiles(_traceDirectory, "actiontrace_*.log"))
 			{
 				return true;
 			}
@@ -126,35 +133,55 @@ internal static class ActionTracer
 
 	internal static void BeginFrame()
 	{
-		if (!Enabled) return;
-		long n = Interlocked.Increment(ref _frameCounter);
+		if (!Enabled)
+		{
+			return;
+		}
+
+		var n = Interlocked.Increment(ref _frameCounter);
 		_currentFrame.Clear();
 		Write($"---- frame {n} ----");
 	}
 
 	internal static void EndFrame(IAction? chosen)
 	{
-		if (!Enabled) return;
+		if (!Enabled)
+		{
+			return;
+		}
+
 		Write($"=> chose {Format(chosen)}");
 		LastFrameSummary = _currentFrame.ToString();
 	}
 
 	internal static void Try(IBaseAction a)
 	{
-		if (!Enabled) return;
+		if (!Enabled)
+		{
+			return;
+		}
+
 		Write($"TRY    {Format(a)}");
 	}
 
 	internal static bool Reject(IBaseAction a, string reason)
 	{
-		if (!Enabled) return false;
+		if (!Enabled)
+		{
+			return false;
+		}
+
 		Write($"REJECT {Format(a)} {reason}");
 		return false;
 	}
 
 	internal static void Accept(IBaseAction a)
 	{
-		if (!Enabled) return;
+		if (!Enabled)
+		{
+			return;
+		}
+
 		Write($"ACCEPT {Format(a)}");
 	}
 
@@ -162,7 +189,7 @@ internal static class ActionTracer
 
 	private static void Write(string body)
 	{
-		string line = $"{DateTime.Now:HH:mm:ss.fff} {body}";
+		var line = $"{DateTime.Now:HH:mm:ss.fff} {body}";
 		_currentFrame.AppendLine(line);
 
 		lock (_lock)
@@ -210,11 +237,14 @@ internal static class ActionTracer
 
 	private static void EnsureWriter()
 	{
-		if (_writer != null || _traceDirectory == null) return;
+		if (_writer != null || _traceDirectory == null)
+		{
+			return;
+		}
 
 		Directory.CreateDirectory(_traceDirectory);
 		// Millisecond precision in the filename avoids collisions when rollover happens twice in one second.
-		string path = Path.Combine(_traceDirectory, $"actiontrace_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log");
+		var path = Path.Combine(_traceDirectory, $"actiontrace_{DateTime.Now:yyyyMMdd_HHmmss_fff}.log");
 		_writer = new StreamWriter(path, append: false) { AutoFlush = true };
 		_writer.WriteLine($"# RotationSolverReborn action trace started {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} (max size {MaxFileSizeBytes / (1024 * 1024)} MB before rollover)");
 		_currentFilePath = path;
@@ -224,16 +254,23 @@ internal static class ActionTracer
 
 	private static void PruneOldFiles()
 	{
-		if (string.IsNullOrEmpty(_traceDirectory)) return;
+		if (string.IsNullOrEmpty(_traceDirectory))
+		{
+			return;
+		}
+
 		try
 		{
-			FileInfo[] files = new DirectoryInfo(_traceDirectory).GetFiles("actiontrace_*.log");
-			int excess = files.Length - MaxRetainedFiles;
-			if (excess <= 0) return;
+			var files = new DirectoryInfo(_traceDirectory).GetFiles("actiontrace_*.log");
+			var excess = files.Length - MaxRetainedFiles;
+			if (excess <= 0)
+			{
+				return;
+			}
 
 			Array.Sort(files, static (a, b) => a.CreationTimeUtc.CompareTo(b.CreationTimeUtc));
 
-			for (int i = 0; i < excess; i++)
+			for (var i = 0; i < excess; i++)
 			{
 				try
 				{

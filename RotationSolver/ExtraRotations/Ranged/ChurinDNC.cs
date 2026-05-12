@@ -195,9 +195,7 @@ public sealed class ChurinDNC : DancerRotation
 				return ActiveStandardRecastRemain > WeaponTotal ? MidEspritThreshold : MaxEsprit;
 			}
 
-			if (HasDanceOfTheDawn && !HasLastDance
-								  && (CanSaberDance || IsLastGCD(ActionID.TillanaPvE))
-								  && ActiveStandardRecastRemain > WeaponTotal)
+			if ((HasDanceOfTheDawn|| !DanceOfTheDawnPvE.EnoughLevel) && (!HasLastDance || CanSaberDance || IsLastGCD(ActionID.TillanaPvE)))
 			{
 				return SaberDanceEspritCost;
 			}
@@ -683,7 +681,7 @@ public sealed class ChurinDNC : DancerRotation
 	private bool ActiveStandardWillHaveCharge =>
 		ActiveStandard.Cooldown.WillHaveOneCharge(SecondsToCompleteStandard + WeaponTotal);
 	private bool CanUseStandardBasedOnEsprit => !HasLastDance && !CanSpendEspritNow;
-	private bool CanUseStandardStepInBurst => !DisableStandardInBurst || HasFinishingMove;
+	private bool CanUseStandardStepInBurst => !DisableStandardInBurst || HasFinishingMove || !FinishingMovePvE.EnoughLevel;
 	private bool DevilmentReady
 	{
 		get
@@ -1384,6 +1382,12 @@ public sealed class ChurinDNC : DancerRotation
 			{
 				ImGui.Text($"Error evaluating potion conditions: {ex.Message}");
 			}
+		}
+
+		if (ImGui.CollapsingHeader("Dance Partner"))
+		{
+			ColoredTextRow("Should Swap Dance Partner?", ShouldSwapDancePartner);
+			ColoredTextRow("Has Available Dance Partner?", HasAvailableDancePartner(RestrictDPTarget));
 		}
 
 		if (ImGui.CollapsingHeader("Method Checks"))

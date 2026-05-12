@@ -22,27 +22,27 @@ internal static class CancelCastUpdater
 			return;
 		}
 
-		IBattleChara? castTarget = Svc.Objects.SearchById(Player.Object.CastTargetObjectId) as IBattleChara;
+		var castTarget = Svc.Objects.SearchById(Player.Object.CastTargetObjectId) as IBattleChara;
 
-		bool tarDead = Service.Config.UseStopCasting
+		var tarDead = Service.Config.UseStopCasting
 			&& castTarget != null
 			&& castTarget.IsEnemy()
 			&& castTarget.CurrentHp == 0;
 
 		// Cancel raise cast if target already has Raise status
-		bool tarHasRaise = castTarget != null && castTarget.HasStatus(false, StatusID.Raise);
+		var tarHasRaise = castTarget != null && castTarget.HasStatus(false, StatusID.Raise);
 
 		// Cancel cast in PvP if the target gains Guard and the action does not ignore Guard
-		bool tarHasGuard = DataCenter.IsPvP && Service.Config.PvpGuardCancel
+		var tarHasGuard = DataCenter.IsPvP && Service.Config.PvpGuardCancel
 			&& castTarget != null
 			&& castTarget.HasStatus(false, StatusID.Guard)
 			&& !(((ActionID)Player.Object.CastActionId).GetActionFromID(true, RotationUpdater.CurrentRotationActions)
 				is IBaseAction guardCheckAction && (!guardCheckAction.Setting.IgnoreGuard || (DataCenter.Job == Job.BLM && !guardCheckAction.Setting.IgnoreGuard && !StatusHelper.PlayerHasStatus(true, StatusID.WreathOfFire))));
 
-		float[] statusTimes = GetStatusTimes();
+		var statusTimes = GetStatusTimes();
 
-		float minStatusTime = float.MaxValue;
-		for (int i = 0; i < statusTimes.Length; i++)
+		var minStatusTime = float.MaxValue;
+		for (var i = 0; i < statusTimes.Length; i++)
 		{
 			if (statusTimes[i] < minStatusTime)
 			{
@@ -50,19 +50,19 @@ internal static class CancelCastUpdater
 			}
 		}
 
-		float remainingCast = MathF.Max(0, Player.Object.TotalCastTime - Player.Object.CurrentCastTime);
+		var remainingCast = MathF.Max(0, Player.Object.TotalCastTime - Player.Object.CurrentCastTime);
 
 		// Cancel immediately if the player currently has any active NoCastingStatus
-		bool hasNoCastingStatus = statusTimes.Length > 0;
+		var hasNoCastingStatus = statusTimes.Length > 0;
 
 		// Cancel if a "no-casting" status will expire before the cast completes and it's soon (<3s)
-		bool stopDueStatus = hasNoCastingStatus
+		var stopDueStatus = hasNoCastingStatus
 			&& minStatusTime <= remainingCast
 			&& minStatusTime < 3f;
 
-		bool bmrPyretic = DataCenter.BMRSpecialModeType == SpecialMode.Pyretic;
+		var bmrPyretic = DataCenter.BMRSpecialModeType == SpecialMode.Pyretic;
 
-		bool shouldStopHealing =
+		var shouldStopHealing =
 			Service.Config.StopHealingAfterThresholdExperimental2
 			&& DataCenter.InCombat
 			&& !CustomRotation.HealingWhileDoingNothing
@@ -73,7 +73,7 @@ internal static class CancelCastUpdater
 
 		if (_tarStopCastDelay.Delay(tarDead) || hasNoCastingStatus || stopDueStatus || tarHasRaise || tarHasGuard || shouldStopHealing)
 		{
-			UIState* uiState = UIState.Instance();
+			var uiState = UIState.Instance();
 			if (uiState != null)
 			{
 				uiState->Hotbar.CancelCast();
@@ -86,7 +86,7 @@ internal static class CancelCastUpdater
 		List<float> statusTimes = [];
 		if (Player.Object?.StatusList != null)
 		{
-			foreach (Dalamud.Game.ClientState.Statuses.IStatus status in Player.Object.StatusList)
+			foreach (var status in Player.Object.StatusList)
 			{
 				if (OtherConfiguration.NoCastingStatus.Contains(status.StatusId))
 				{

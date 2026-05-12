@@ -281,13 +281,25 @@ public partial class ViperRotation
 		get
 		{
 			if (!HasHunterAndSwift)
+			{
 				return null;
+			}
+
 			if (HuntersTime == null || SwiftTime == null)
+			{
 				return null;
+			}
+
 			if (HuntersTime < SwiftTime)
+			{
 				return "Hunter";
+			}
+
 			if (SwiftTime < HuntersTime)
+			{
 				return "Swift";
+			}
+
 			return "Equal";
 		}
 	}

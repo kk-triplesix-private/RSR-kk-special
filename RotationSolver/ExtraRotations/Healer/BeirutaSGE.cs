@@ -6,6 +6,8 @@ namespace RotationSolver.ExtraRotations.Healer;
 
 [Rotation("BeirutaSGE", CombatType.PvE, GameVersion = "7.45")]
 [SourceCode(Path = "main/ExtraRotations/Healer/BeirutaSGE.cs")]
+[ExtraRotation]
+
 public sealed class BeirutaSGE : SageRotation
 {
     #region Config Options

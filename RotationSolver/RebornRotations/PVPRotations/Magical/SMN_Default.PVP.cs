@@ -23,6 +23,16 @@ public class SMN_DefaultPvP : SummonerRotation
 
 	protected override bool AttackAbility(IAction nextGCD, out IAction? action)
 	{
+		if (RustPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (PhantomDartPvP.CanUse(out action))
+		{
+			return true;
+		}
+
 		if (DeathflarePvP.CanUse(out action))
 		{
 			return true;
@@ -38,24 +48,18 @@ public class SMN_DefaultPvP : SummonerRotation
 			return true;
 		}
 
+		if (CrimsonCyclonePvP.CanUse(out action) && Target.DistanceToPlayer() <= 5f)
+		{
+			return true;
+		}
+
 		return base.AttackAbility(nextGCD, out action);
 	}
 
 	[RotationDesc(ActionID.CrimsonCyclonePvP)]
 	protected override bool MoveForwardAbility(IAction nextGCD, out IAction? action)
 	{
-		//if (CometPvP.CanUse(out action)) return true;
-		if (RustPvP.CanUse(out action))
-		{
-			return true;
-		}
-
-		if (PhantomDartPvP.CanUse(out action))
-		{
-			return true;
-		}
-
-		if (CrimsonCyclonePvP.CanUse(out action) && Target.DistanceToPlayer() < 5)
+		if (CrimsonCyclonePvP.CanUse(out action))
 		{
 			return true;
 		}
@@ -65,35 +69,38 @@ public class SMN_DefaultPvP : SummonerRotation
 
 	#endregion
 
-    #region GCDs
-    protected override bool GeneralGCD(out IAction? action)
-    {
-        
-        if (SlipstreamPvP.CanUse(out action))
-        {
-            return true;
-        }
+	#region GCDs
+	protected override bool GeneralGCD(out IAction? action)
+	{
+		if (CometPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (SlipstreamPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (MountainBusterPvP.CanUse(out action))
+		{
+			return true;
+		}
+
+		if (CrimsonStrikePvP.CanUse(out action))
+		{
+			return true;
+		}
 
 		if (AstralImpulsePvP.CanUse(out action))
 		{
 			return true;
 		}
 
-        if (CrimsonStrikePvP.CanUse(out action))
-        {
-            return true;
-        }
-
-        if (AstralImpulsePvP.CanUse(out action))
-        {
-            return true;
-        }
-
-        if (FountainOfFirePvP.CanUse(out action))
-        {
-            return true;
-        }
-        
+		if (FountainOfFirePvP.CanUse(out action))
+		{
+			return true;
+		}
 
 
 		if (RuinIiiPvP.CanUse(out action))

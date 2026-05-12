@@ -45,7 +45,7 @@ public partial class CustomRotation
 		IBaseAction.TargetOverride = TargetType.Death;
 		try
 		{
-			foreach (PhoenixDownItem phoenixdown in PhoenixDowns)
+			foreach (var phoenixdown in PhoenixDowns)
 			{
 				// Ensure we propagate the action outward if needed by upstream code
 				if (phoenixdown.CanUse(out act, true))
@@ -95,9 +95,9 @@ public partial class CustomRotation
 			}
 		}
 		// Reverse the list
-		int n = list.Count;
+		var n = list.Count;
 		var arr = new MedicineItem[n];
-		for (int i = 0; i < n; i++)
+		for (var i = 0; i < n; i++)
 		{
 			arr[i] = list[n - i - 1];
 		}
@@ -114,8 +114,8 @@ public partial class CustomRotation
 	{
 		act = null;
 
-		bool isHostileTargetDummy = HostileTarget?.IsDummy() ?? false;
-		bool isInHighEndDuty = DataCenter.Territory?.IsHighEndDuty ?? false;
+		var isHostileTargetDummy = HostileTarget?.IsDummy() ?? false;
+		var isInHighEndDuty = DataCenter.Territory?.IsHighEndDuty ?? false;
 
 		if (!isHostileTargetDummy && !isInHighEndDuty && DataCenter.CurrentTinctureUseType == TinctureUseType.InHighEndDuty)
 		{
@@ -127,7 +127,7 @@ public partial class CustomRotation
 			return false;
 		}
 
-		foreach (MedicineItem medicine in Medicines)
+		foreach (var medicine in Medicines)
 		{
 			if (medicine.Type != MedicineType)
 			{
@@ -163,9 +163,9 @@ public partial class CustomRotation
 			}
 		}
 		// Reverse the list
-		int n = list.Count;
+		var n = list.Count;
 		var arr = new MpPotionItem[n];
-		for (int i = 0; i < n; i++)
+		for (var i = 0; i < n; i++)
 		{
 			arr[i] = list[n - i - 1];
 		}
@@ -215,9 +215,9 @@ public partial class CustomRotation
 			}
 		}
 		// Reverse the list
-		int n = list.Count;
+		var n = list.Count;
 		var arr = new HpPotionItem[n];
-		for (int i = 0; i < n; i++)
+		for (var i = 0; i < n; i++)
 		{
 			arr[i] = list[n - i - 1];
 		}

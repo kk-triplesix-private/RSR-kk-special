@@ -23,8 +23,8 @@ internal static class MiscUpdater
 
 	internal static void UpdateEntry()
 	{
-		string showStr = RSCommands.EntryString;
-		BitmapFontIcon icon = GetJobIcon(Player.Job);
+		var showStr = RSCommands.EntryString;
+		var icon = GetJobIcon(Player.Job);
 
 		if (Service.Config.ShowInfoOnDtr && !string.IsNullOrEmpty(showStr))
 		{
@@ -169,8 +169,8 @@ internal static class MiscUpdater
 	private unsafe delegate bool ActionBarPredicate(ActionBarSlot bar, RaptureHotbarModule.HotbarSlot* hot);
 	private static unsafe void LoopAllSlotBar(ActionBarAction doingSomething)
 	{
-		int index = 0;
-		int hotBarIndex = 0;
+		var index = 0;
+		var hotBarIndex = 0;
 
 		List<nint> addonPtrs =
 		[
@@ -180,25 +180,25 @@ internal static class MiscUpdater
 			.. Service.GetAddons<AddonActionDoubleCrossBase>(),
 		];
 
-		foreach (nint intPtr in addonPtrs)
+		foreach (var intPtr in addonPtrs)
 		{
 			if (intPtr == IntPtr.Zero)
 			{
 				continue;
 			}
 
-			AddonActionBarBase* actionBar = (AddonActionBarBase*)intPtr;
-			RaptureHotbarModule.Hotbar hotBar = Framework.Instance()->GetUIModule()->GetRaptureHotbarModule()->Hotbars[hotBarIndex];
+			var actionBar = (AddonActionBarBase*)intPtr;
+			var hotBar = Framework.Instance()->GetUIModule()->GetRaptureHotbarModule()->Hotbars[hotBarIndex];
 
-			int slotIndex = 0;
+			var slotIndex = 0;
 
-			foreach (ActionBarSlot slot in actionBar->ActionBarSlotVector.AsSpan())
+			foreach (var slot in actionBar->ActionBarSlotVector.AsSpan())
 			{
-				int highLightId = 0x53550000 + index;
+				var highLightId = 0x53550000 + index;
 
 				if (doingSomething(slot, hotBarIndex > 9 ? null : hotBar.Slots[slotIndex], (uint)highLightId))
 				{
-					FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentNode* iconAddon = slot.Icon;
+					var iconAddon = slot.Icon;
 					if ((IntPtr)iconAddon == IntPtr.Zero)
 					{
 						continue;

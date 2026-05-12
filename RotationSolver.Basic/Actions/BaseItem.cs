@@ -64,7 +64,7 @@ public class BaseItem : IBaseItem
 	{
 		get
 		{
-			if (!Service.Config.RotationItemConfig.TryGetValue(ID, out ItemConfig? value))
+			if (!Service.Config.RotationItemConfig.TryGetValue(ID, out var value))
 			{
 				Service.Config.RotationItemConfig[ID] = value = new();
 			}
@@ -124,6 +124,14 @@ public class BaseItem : IBaseItem
 	{
 		get => Config.MinHPPercent;
 		set => Config.MinHPPercent = value;
+	}
+
+	/// <inheritdoc/>
+	/// <remarks>Items never move the character; this is always <c>false</c>.</remarks>
+	public bool SkipPositionSafetyCheck
+	{
+		get => false;
+		set { }
 	}
 
 	/// <summary>
@@ -216,7 +224,7 @@ public class BaseItem : IBaseItem
 			return false;
 		}
 
-		float remain = Cooldown.RecastTimeOneChargeRaw - Cooldown.RecastTimeElapsedRaw;
+		var remain = Cooldown.RecastTimeOneChargeRaw - Cooldown.RecastTimeElapsedRaw;
 
 		return remain <= DataCenter.DefaultGCDRemain && (ItemCheck == null || ItemCheck()) && HasIt;
 	}

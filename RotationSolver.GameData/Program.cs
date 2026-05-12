@@ -118,7 +118,11 @@ public class Program
 			using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
 			var result = await client.GetAsync("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.json");
 
-			if (result.StatusCode != HttpStatusCode.OK) return;
+			if (result.StatusCode != HttpStatusCode.OK)
+			{
+				return;
+			}
+
 			var responseStream = await result.Content.ReadAsStringAsync();
 
 			var root = JToken.Parse(responseStream)[0]!["lists"]!;

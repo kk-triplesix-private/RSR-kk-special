@@ -67,9 +67,12 @@ namespace RotationSolver.Updaters
 		private static bool BlackListedInterceptActionsContains(ActionID id)
 		{
 			var arr = BlackListedInterceptActions;
-			for (int i = 0; i < arr.Length; i++)
+			for (var i = 0; i < arr.Length; i++)
 			{
-				if (arr[i] == id) return true;
+				if (arr[i] == id)
+				{
+					return true;
+				}
 			}
 			return false;
 		}
@@ -193,7 +196,7 @@ namespace RotationSolver.Updaters
 					if (actionType == 1 && (useType != 2 || Service.Config.InterceptMacro) && !StatusHelper.PlayerHasStatus(false, StatusHelper.RotationLockoutStatus)) // ActionType.Action == 1
 					{
 						// Always compute adjusted ID first to keep logic consistent
-						uint adjustedActionId = Service.GetAdjustedActionId(actionID);
+						var adjustedActionId = Service.GetAdjustedActionId(actionID);
 
 						if (_useActionHook?.Original != null && RSCommands.CurrentAction != null)
 						{
@@ -240,6 +243,42 @@ namespace RotationSolver.Updaters
 											return _useActionHook.Original(actionManager, actionType, actionID, targetObjectID, param, useType, pvp, isGroundTarget);
 										}
 									}
+									else if (matchingAction is IBaseAction baseMovAction && baseMovAction.Setting.SpecialType == SpecialActionType.ObjectBasedMovement && Service.Config.BmrSafetyCheckIntercept)
+									{
+										if (baseMovAction.TargetInfo.ShouldCheckMoveSafety() && baseMovAction.Setting.ObjectBasedMovementObjectOID != 0 && Player.Object != null)
+										{
+											var position = default(Vector3);
+											IGameObject? movementobj = null;
+											var playerId = Player.Object.GameObjectId;
+											foreach (var obj in Svc.Objects)
+											{
+												if (obj != null && obj.BaseId == baseMovAction.Setting.ObjectBasedMovementObjectOID && obj.OwnerId == playerId)
+												{
+													position = obj.Position;
+													movementobj = obj;
+													if (Service.Config.InDebug)
+													{
+														PluginLog.Debug($"[AQM.ObjectBasedMovement] Found object with OID {baseMovAction.Setting.ObjectBasedMovementObjectOID} at position {position} for player {playerId}.");
+													}
+
+													break;
+												}
+											}
+
+											if (movementobj == null)
+											{
+												return false;
+											}
+
+											if (!DataCenter.IsMovementDestinationSafe(position))
+											{
+												return false;
+											}
+										}
+
+										HandleInterceptedAction(matchingAction, actionID);
+										return false;
+									}
 									else
 									{
 										HandleInterceptedAction(matchingAction, actionID);
@@ -282,10 +321,15 @@ namespace RotationSolver.Updaters
 		{
 			// Note: actionId is expected to be the adjusted ID
 			if (ActionUpdater.NextAction != null && actionId == ActionUpdater.NextAction.AdjustedID)
+			{
 				return false;
+			}
 
 			var actionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>();
-			if (actionSheet == null) return false;
+			if (actionSheet == null)
+			{
+				return false;
+			}
 
 			var action = actionSheet.GetRow(actionId);
 			var type = ActionHelper.GetActionCate(action);
@@ -320,16 +364,24 @@ namespace RotationSolver.Updaters
 
 		private static bool CanInterceptAction(IAction action)
 		{
-			if (Service.Config.InterceptCooldown || action.Cooldown.CurrentCharges > 0) return true;
+			if (Service.Config.InterceptCooldown || action.Cooldown.CurrentCharges > 0)
+			{
+				return true;
+			}
 
 			// Guard against invalid GCD totals to avoid division by zero
 			var gcdTotal = DataCenter.DefaultGCDTotal;
 			if (gcdTotal <= 0)
+			{
 				return false;
+			}
 
 			// We check if the skill will fit inside the intercept action time window
 			var gcdCount = (byte)Math.Floor(Service.Config.InterceptActionTime / gcdTotal);
-			if (gcdCount < 1) gcdCount = 1;
+			if (gcdCount < 1)
+			{
+				gcdCount = 1;
+			}
 
 			return action is IBaseAction baseAction && baseAction.Cooldown.CooldownCheck(false, gcdCount);
 		}

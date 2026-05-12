@@ -327,18 +327,33 @@ public partial class BlueMageRotation
 		};
 		setting.ActionCheck = () =>
 		{
-			if (Player == null) return false;
+			if (Player == null)
+			{
+				return false;
+			}
+
 			var playerFace = Player.GetFaceVector();
 			var playerPos = Player.Position;
 			const float snortRange = 6f;
 			const double coneHalfAngle = Math.PI / 4; // 45 degrees each side = 90 degree cone
 			foreach (var target in DataCenter.AllHostileTargets)
 			{
-				if (!target.CanInterrupt()) continue;
-				if (target.DistanceToPlayer() > snortRange) continue;
+				if (!target.CanInterrupt())
+				{
+					continue;
+				}
+
+				if (target.DistanceToPlayer() > snortRange)
+				{
+					continue;
+				}
+
 				var dir = Vector3.Normalize(target.Position - playerPos);
 				var angle = playerFace.AngleTo(dir);
-				if (angle <= coneHalfAngle) return true;
+				if (angle <= coneHalfAngle)
+				{
+					return true;
+				}
 			}
 			return false;
 		};

@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11304.174 d18.0
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8948C02A-914E-4A51-B1FE-2C608492EBF5}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		.config\dotnet-tools.json = .config\dotnet-tools.json
 		Resources\HostileCastingArea.json = Resources\HostileCastingArea.json
 		Resources\HostileCastingKnockback.json = Resources\HostileCastingKnockback.json
 		Resources\HostileCastingTank.json = Resources\HostileCastingTank.json
-		Resources\IncompatiblePlugins.json = Resources\IncompatiblePlugins.json
 		manifest.json = manifest.json
 		.github\workflows\publish.yaml = .github\workflows\publish.yaml
 		UpdateDownloads.ts = UpdateDownloads.ts

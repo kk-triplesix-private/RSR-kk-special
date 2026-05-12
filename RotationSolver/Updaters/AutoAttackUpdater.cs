@@ -52,12 +52,18 @@ namespace RotationSolver.Updaters
 		/// </summary>
 		public static unsafe void Update()
 		{
-			if (!Player.Available) return;
+			if (!Player.Available)
+			{
+				return;
+			}
 
 			try
 			{
 				var uiState = UIState.Instance();
-				if (uiState == null) return;
+				if (uiState == null)
+				{
+					return;
+				}
 
 				if (uiState->WeaponState.AutoAttackState.IsAutoAttacking && PlayerHasNoCastingStatus())
 				{
@@ -76,9 +82,16 @@ namespace RotationSolver.Updaters
 		{
 			try
 			{
-				HashSet<uint> noCastingStatus = OtherConfiguration.NoCastingStatus;
-				if (noCastingStatus == null || noCastingStatus.Count == 0) return false;
-				if (Player.Object?.StatusList == null) return false;
+				var noCastingStatus = OtherConfiguration.NoCastingStatus;
+				if (noCastingStatus == null || noCastingStatus.Count == 0)
+				{
+					return false;
+				}
+
+				if (Player.Object?.StatusList == null)
+				{
+					return false;
+				}
 
 				// Check for Motion Tracker separately
 				if (StatusHelper.PlayerHasStatus(false, StatusID.MotionTracker))
@@ -94,7 +107,9 @@ namespace RotationSolver.Updaters
 				foreach (var status in Player.Object.StatusList)
 				{
 					if (noCastingStatus.Contains(status.StatusId))
+					{
 						return true;
+					}
 				}
 			}
 			catch (Exception ex)

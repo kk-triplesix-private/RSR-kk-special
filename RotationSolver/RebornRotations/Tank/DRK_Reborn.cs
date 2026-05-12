@@ -43,7 +43,7 @@ public sealed class DRK_Reborn : DarkKnightRotation
 				}
 			}
 		}
-		if (remainTime <= 2 && UseBurstMedicine(out IAction? act))
+		if (remainTime <= 2 && UseBurstMedicine(out var act))
 		{
 			return act;
 		}

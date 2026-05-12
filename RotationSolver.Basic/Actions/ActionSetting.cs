@@ -6,34 +6,62 @@
 public enum SpecialActionType : byte
 {
 	/// <summary>
-	/// 
+	/// No special movement behaviour.
 	/// </summary>
 	None,
 
 	/// <summary>
-	/// 
+	/// Ranged attack that can be used by a Melee class/job (e.g. Ranged attack fallback).
 	/// </summary>
 	MeleeRangedAttack,
 
 	/// <summary>
-	/// 
+	/// A pure movement action that moves the character a fixed distance forward in the current facing/screen direction
+	/// with no target requirement (e.g. En Avant, Elusive Jump, Hells Ingress, AetherialShiftPvE).
+	/// Targeting uses area-move logic and the destination is validated for safety.
 	/// </summary>
-	MovingBackward,
+	FixedDistanceMoveForward,
 
 	/// <summary>
-	/// 
+	/// A pure movement action that moves the character a fixed distance forward in the current facing/screen direction
+	/// with no target requirement (e.g. Hell's Regress).
+	/// Targeting uses area-move logic and the destination is validated for safety.
+	/// </summary>
+	FixedDistanceMoveBackward,
+
+	/// <summary>
+	/// A non-damage targeted movement action that dashes to the hitbox of a <b>hostile</b> target
+	/// (e.g. TrajectoryPvE on GNB).
+	/// Targeting selects the best hostile target within range; destination is validated for safety.
 	/// </summary>
 	HostileMovingForward,
 
 	/// <summary>
-	/// 
+	/// A targeted movement action that dashes to the hitbox of a <b>friendly/party</b> target
+	/// (e.g. Aetherial ManipulationPvE targeting an ally).
+	/// Targeting selects the best party member in range; destination is validated for safety.
 	/// </summary>
 	FriendlyMovingForward,
 
 	/// <summary>
-	/// 
+	/// A targeted movement action that can dash to either a <b>hostile or friendly</b> target
+	/// depending on what is currently selected (e.g. AetherialManipulationPvP).
+	/// Targeting prefers the focus/hard target; destination is validated for safety.
 	/// </summary>
 	HostileFriendlyMovingForward,
+
+	/// <summary>
+	/// A movement-<b>attack</b> action where the movement is part of an offensive hit
+	/// (e.g. Primal Rend on WAR, Dragonfire Dive on DRG, IntervenePvE on PLD).
+	/// Targeting uses the standard hostile targeting pipeline with all normal filters
+	/// (stop marks, priority, TTK, resistance). Position safety is still validated.
+	/// Do <b>not</b> use pure movement target logic for these — the action must hit a valid enemy.
+	/// </summary>
+	HostileMovingAttack,
+
+	/// <summary>
+	/// </summary>
+	ObjectBasedMovement,
 }
 
 /// <summary>
@@ -47,6 +75,15 @@ public class ActionSetting
 	public IBaseAction[]? Ninjutsu { get; set; } = null;
 
 	/// <summary>
+	/// For BLU morph actions: the action ID of the parent BLU action that must be in an
+	/// active BLU slot for this action to appear in the UI.
+	/// For example, Cold Fog (23267) for White Death, Chelonian Gate (23273) for Divine Cataract.
+	/// When non-zero, <see cref="ActionBasicInfo.IsOnSlot"/> delegates to whether this ID is in
+	/// <see cref="DataCenter.BluSlots"/> instead of checking the morph action's own ID.
+	/// </summary>
+	public uint RequiredBluSlotActionId { get; set; } = 0;
+
+	/// <summary>
 	/// The override of the <see cref="ActionBasicInfo.MPNeed"/>.
 	/// </summary>
 	public Func<uint?>? MPOverride { get; set; } = null;
@@ -55,6 +92,14 @@ public class ActionSetting
 	/// Is this action in the melee range.
 	/// </summary>
 	internal SpecialActionType SpecialType { get; set; }
+
+	/// <summary>
+	/// For <see cref="SpecialActionType.ObjectBasedMovement"/> actions: the DataId of the
+	/// in-world object that marks the destination (e.g. Ley Lines for BetweenTheLines,
+	/// Hell's Gate for Regress). The safety check will look for an object owned by the
+	/// local player with this DataId and use its position as the movement destination.
+	/// </summary>
+	public uint ObjectBasedMovementObjectOID { get; set; } = 0;
 
 	/// <summary>
 	/// Is this status only ever added by the caster/player. 
@@ -130,7 +175,7 @@ public class ActionSetting
 	{
 		get
 		{
-			TargetType type = IBaseAction.TargetOverride ?? _type;
+			var type = IBaseAction.TargetOverride ?? _type;
 			if (IsFriendly)
 			{
 
@@ -170,10 +215,10 @@ public class ActionSetting
 	public bool IsSlowSpell { get; set; } = false;
 
 	/// <summary>
-	/// When true, this PvP action ignores Guard on the target — used by Cancel-On-Guard logic
-	/// (added back-port from upstream 2c080bbc to support cherry-picked bdfad3c4 PvP-Guard cancel).
+	/// When true, this action bypasses bad status checks (e.g. stun, silence) that would normally prevent it from being used.
+	/// Use for actions like PurifyPvP that are specifically designed to be usable while under crowd-control effects.
 	/// </summary>
-	public bool IgnoreGuard { get; set; } = false;
+	public bool IgnoresBadStatus { get; set; } = false;
 
 	/// <summary>
 	/// Does this action primarily apply <b>Petrification</b>? When true, it is skipped against mobs not vulnerable to Petrification in the Masked Carnivale.
@@ -253,4 +298,10 @@ public class ActionSetting
 	/// 0 means no quest.
 	/// </summary>
 	public uint UnlockedByQuestID { get; set; } = 0;
+
+	/// <summary>
+	/// When true, this action can be used against targets that have the Guard status in PvP.
+	/// By default, actions are blocked when the target has Guard in PvP.
+	/// </summary>
+	public bool IgnoreGuard { get; set; } = false;
 }

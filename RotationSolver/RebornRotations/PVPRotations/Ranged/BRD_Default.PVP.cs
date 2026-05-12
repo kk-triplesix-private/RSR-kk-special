@@ -85,7 +85,7 @@ public sealed class BRD_DefaultPvP : BardRotation
 			return true;
 		}
 
-		if (PitchPerfectPvP.CanUse(out action))
+		if (PitchPerfectPvP.CanUse(out action, skipAoeCheck: true))
 		{
 			return true;
 		}

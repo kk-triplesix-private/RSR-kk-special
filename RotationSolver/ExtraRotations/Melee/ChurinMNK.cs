@@ -5,6 +5,8 @@ namespace RotationSolver.ExtraRotations.Melee;
 
 [Rotation("Churin MNK", CombatType.PvE, GameVersion = "7.4", Description = "An eye for an eye. A tooth for a tooth. An eye and a tooth for a loaf of bread. Eyes and teeth are the new currency.")]
 [SourceCode(Path = "main/ExtraRotations/Melee/ChurinMNK.cs")]
+[ExtraRotation]
+
 public sealed class ChurinMNK : MonkRotation
 {
     #region Properties

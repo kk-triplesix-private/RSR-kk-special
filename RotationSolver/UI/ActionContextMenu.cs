@@ -15,7 +15,11 @@ internal static class ActionContextMenu
 
 	public static void Init()
 	{
-		if (_initialized) return;
+		if (_initialized)
+		{
+			return;
+		}
+
 		_initialized = true;
 
 		contextMenu = Svc.ContextMenu;
@@ -31,7 +35,11 @@ internal static class ActionContextMenu
 
 	public static void Dispose()
 	{
-		if (!_initialized) return;
+		if (!_initialized)
+		{
+			return;
+		}
+
 		_initialized = false;
 
 		if (contextMenu != null)

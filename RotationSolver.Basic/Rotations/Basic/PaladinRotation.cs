@@ -27,7 +27,7 @@ public partial class PaladinRotation
 	{
 		get
 		{
-			byte stacks = StatusHelper.PlayerStatusStack(true, StatusID.Requiescat);
+			var stacks = StatusHelper.PlayerStatusStack(true, StatusID.Requiescat);
 			return stacks == byte.MaxValue ? (byte)5 : stacks;
 		}
 	}
@@ -323,7 +323,7 @@ public partial class PaladinRotation
 
 	static partial void ModifyIntervenePvE(ref ActionSetting setting)
 	{
-		setting.SpecialType = SpecialActionType.HostileMovingForward;
+		setting.SpecialType = SpecialActionType.HostileMovingAttack;
 	}
 
 	static partial void ModifyAtonementPvE(ref ActionSetting setting)
@@ -508,7 +508,7 @@ public partial class PaladinRotation
 
 	static partial void ModifyIntervenePvP(ref ActionSetting setting)
 	{
-		//setting.SpecialType = SpecialActionType.MovingForward;
+		setting.SpecialType = SpecialActionType.HostileMovingAttack;
 	}
 
 	static partial void ModifyBladeOfFaithPvP(ref ActionSetting setting)

@@ -302,6 +302,14 @@ internal partial class Configs : IPluginConfiguration
 
 	#endregion
 
+	[ConditionBool, UI("Use BMR intergration to verify safety of movement actions/actions that cause movement for automatic usage. (Experimental)",
+	Filter = AutoActionUsage, Section = 5)]
+	private static readonly bool _bmrSafetyCheckAuto = false;
+
+	[ConditionBool, UI("Use BMR intergration to verify safety of movement actions/actions that cause movement for intercepted usage. (Experimental)",
+	Filter = AutoActionUsage, Section = 5)]
+	private static readonly bool _bmrSafetyCheckIntercept = false;
+
 	[ConditionBool, UI("Intercept player input and queue it for RSR to execute the action. (PvE only)",
 	Filter = AutoActionUsage, Section = 5)]
 	private static readonly bool _interceptAction3 = true;
@@ -410,6 +418,18 @@ internal partial class Configs : IPluginConfiguration
 	[UI("", Action = ActionID.ImprovisationPvE, Parent = nameof(PoslockCasting))]
 	public bool PosImprovisation { get; set; } = false;
 
+	[ConditionBool, UI("Lock actions when casting Passage Of Arms during AOE mitigations.",
+	Filter = Extra)]
+	private static readonly bool _pldlockCasting = false;
+
+	[ConditionBool, UI("Lock actions when casting Collective Unconscious during AOE mitigations.",
+	Filter = Extra)]
+	private static readonly bool _astlockCasting = false;
+
+	[ConditionBool, UI("Lock actions when casting Phantom Flurry.",
+	Filter = Extra)]
+	private static readonly bool _blulockCasting = true;
+
 	/// <markdown file="Auto" name="Gemdraughts/Tinctures/Pots Usage" section="Action Usage and Control">
 	/// Sets whether to use damage-boosting potions and in which duty. You also need to enable the specific
 	/// potion in the `Actions` tab, under `Items`.
@@ -465,14 +485,14 @@ internal partial class Configs : IPluginConfiguration
 		Parent = nameof(TeachingMode))]
 	private static readonly bool _teachingModeAutoTarget = false;
 
-	[ConditionBool, UI("Simulate the effect of pressing abilities",
-		Filter = UiInformation)]
-	private static readonly bool _keyboardNoise = true;
-
 	[ConditionBool, UI("Show target hint in Next Action window",
 		Description = "When teaching mode is active, display the rotation's suggested target name below the Next Action icon. Shown in orange if you don't have that target selected, green if you do.",
 		Parent = nameof(TeachingMode))]
 	private static readonly bool _teachingModeShowTargetHint = false;
+
+	[ConditionBool, UI("Simulate the effect of pressing abilities",
+		Filter = UiInformation)]
+	private static readonly bool _keyboardNoise = true;
 
 	[ConditionBool, UI("Activate auto mode when countdown starts",
 		Filter = BasicAutoSwitch, Section = 1)]
@@ -537,6 +557,13 @@ internal partial class Configs : IPluginConfiguration
 
 	[ConditionBool, UI("Debug Mode", Filter = Debug)]
 	private static readonly bool _inDebug = false;
+
+	[ConditionBool, UI("Enable Action Tracer (ONLY toggle this at dev request)", Filter = Debug)]
+	private static readonly bool _enableActionTracer = false;
+
+	[ConditionBool, UI("Mirror tracer output to Dalamud plugin log",
+		Parent = nameof(EnableActionTracer))]
+	private static readonly bool _traceMirrorToPluginLog = false;
 
 	[ConditionBool, UI("Make /rotation Manual a toggle command.",
 		Filter = BasicParams)]
@@ -660,7 +687,7 @@ internal partial class Configs : IPluginConfiguration
 
 	[UI("Seconds before raidwide to use area mitigation", Parent = nameof(UseBmrTimeline))]
 	[Range(1, 15, ConfigUnitType.Seconds, 0.5f)]
-	public float BMRRaidwideMitWindow { get; set; } = 10f;
+	public float BMRRaidwideMitWindow { get; set; } = 5f;
 
 	[UI("Seconds before tankbuster to use single mitigation", Parent = nameof(UseBmrTimeline),
 		PvEFilter = JobFilterType.Tank)]
@@ -719,610 +746,610 @@ internal partial class Configs : IPluginConfiguration
 	private static readonly bool _useTargetTankForGroundHeal = false;
 
 	[ConditionBool, UI("Show Cooldown Window", Filter = UiWindows)]
-    private static readonly bool _showCooldownWindow = false;
-
-    [ConditionBool, UI("Show Action Timeline Window", Filter = UiWindows)]
-    private static readonly bool _showActionTimelineWindow = false;
-
-    [ConditionBool, UI("Only show timeline in combat", Parent = nameof(ShowActionTimelineWindow))]
-    private static readonly bool _actionTimelineOnlyInCombat = true;
-
-    [ConditionBool, UI("Only show timeline when RSR is active", Parent = nameof(ShowActionTimelineWindow))]
-    private static readonly bool _actionTimelineOnlyWhenActive = true;
-
-    [ConditionBool, UI("Show oGCD actions in timeline", Parent = nameof(ShowActionTimelineWindow))]
-    private static readonly bool _actionTimelineShowOGCD = true;
-
-    [ConditionBool, UI("Show auto-attacks in timeline", Parent = nameof(ShowActionTimelineWindow))]
-    private static readonly bool _actionTimelineShowAutoAttack = false;
-
-    [ConditionBool, UI("Save timeline to JSON file after combat", Parent = nameof(ShowActionTimelineWindow))]
-    private static readonly bool _actionTimelineSaveToFile = false;
-
-    [ConditionBool, UI("Enable Glassmorphism UI", Filter = UiWindows)]
-    private static readonly bool _enableGlassmorphism = true;
-
-    [ConditionBool, UI("Show Rotation Planner Window", Filter = UiWindows)]
-    private static readonly bool _showRotationPlannerWindow = false;
-
-    [ConditionBool, UI("Record AOE actions", Filter = List)]
-    private static readonly bool _recordCastingArea = true;
-
-    [ConditionBool, UI("Auto turn off RSR when combat is over for more than:",
-        Filter = BasicAutoSwitch)]
-    private static readonly bool _autoOffAfterCombat = true;
-
-    [ConditionBool, UI("Enable RSR click counter in main menu",
-        Filter = Extra)]
-    private static readonly bool _enableClickingCount = true;
-
-    [ConditionBool, UI("Hide all warnings",
-        Filter = UiInformation)]
-    private static readonly bool _hideWarning = false;
-
-    /// <markdown file="Auto" name="Only heal self when not a Healer" section="Healing Usage and Control">
-    /// When enabled and not a healer, skills that can target someone and heal will only target you.
-    /// </markdown>
-    [ConditionBool, UI("Only heal self when not a Healer",
-        Filter = HealingActionCondition, Section = 1)]
-    private static readonly bool _onlyHealSelfWhenNoHealer = false;
-
-    [ConditionBool, UI("Only use healing abilities as a non-healer if there are no living healers in the party.",
-    Description = "When enabled, non-healer jobs (such as DPS or tanks) will only use healing abilities if there are no healers in the party, or if all healers are incapacitated (at 0 HP). \r\nIf at least one healer is alive, non-healers will not use healing abilities.",
-    Filter = HealingActionCondition, Section = 1)]
-    private static readonly bool _onlyHealAsNonHealIfNoHealers = false;
-
-    [ConditionBool, UI("Show toggled setting and new value in chat.",
-        Filter = UiInformation)]
-    private static readonly bool _ShowToggledSettingInChat = false;
-
-    [ConditionBool, UI("Record knockback actions", Filter = List2)]
-    private static readonly bool _recordKnockbackies = false;
-
-    [ConditionBool, UI("Set Blue Mage Actions Automatically", Description = "When using a Blue Mage Rotation, RSR can automatically set your spell book to the spells required by that rotation.", Filter = Extra)]
-    private static readonly bool _setBluActions2 = false;
-
-    #region Float
-    [UI("Auto turn off RSR when combat is over for more than...",
-        Parent = nameof(AutoOffAfterCombat))]
-    [Range(0, 600, ConfigUnitType.Seconds)]
-    public float AutoOffAfterCombatTime { get; set; } = 30;
-
-    [UI("The angle of your vision cone", Parent = nameof(OnlyAttackInVisionCone))]
-    [Range(0, 90, ConfigUnitType.Degree, 0.02f)]
-    public float AngleOfVisionCone { get; set; } = 45;
-
-    /// <markdown file="Auto" name="Melee Range action using offset" section="Action Usage and Control">
-    /// Additional buffer in yalms where ranged attacks will be used for melee classes. For example,
-    /// if you are playing as Samurai and this setting is set to `1`, Enpi will only be used starting
-    /// at 4 yalms.
-    ///
-    /// This is because the default "overflow" for the melee range is 3 yalms, which means you can cast
-    /// melee attacks 3 yalms outside the enemy's hitbox. This setting (the offset) takes max melee range and
-    /// adds the value you set.
-    ///
-    /// This setting exists to leave you time to approach and enter in melee range of the enemy without wasting
-    /// a GCD.
-    /// </markdown>
-    [UI("Melee Ranged action usage offset",
-        Filter = AutoActionUsage, Section = 3,
-        PvEFilter = JobFilterType.Melee, PvPFilter = JobFilterType.Melee)]
-    [Range(0, 5, ConfigUnitType.Yalms, 0.02f)]
-    public float MeleeRangedOffset { get; set; } = 1;
-
-    [UI("When their minimum HP is lower than this.", Parent = nameof(HealWhenNothingTodo))]
-    [Range(0, 1, ConfigUnitType.Percent, 0.002f)]
-    public float HealWhenNothingTodoBelow { get; set; } = 0.8f;
-
-    [UI("Heal tank first if their HP is lower than this.",
-        Filter = HealingActionCondition, Section = 1)]
-    [Range(0, 1, ConfigUnitType.Percent, 0.02f)]
-    public float HealthTankRatio { get; set; } = 0.45f;
-
-    [UI("Heal healer first if their HP is lower than this.",
-        Filter = HealingActionCondition, Section = 1)]
-    [Range(0, 1, ConfigUnitType.Percent, 0.02f)]
-    public float HealthHealerRatio { get; set; } = 0.4f;
-
-    [UI("Heal self first if your HP is lower than this.",
-        Filter = HealingActionCondition, Section = 1)]
-    [Range(0, 1, ConfigUnitType.Percent, 0.02f)]
-    public float HealthSelfRatio { get; set; } = 0.4f;
-
-    #region
-    [JobConfig, UI("Prioritize raising dead players over Healing/Defense.",
-        Filter = HealingActionCondition, Section = 2)]
-    private static readonly bool _raisePlayerFirst = false;
-
-    [JobConfig, UI("Raise player by using Swiftcast/Dualcast if available", Description = "If this is disabled, you will never use Swiftcast/Dualcast to raise players.",
-        Filter = HealingActionCondition, Section = 2)]
-    private static readonly bool _raisePlayerBySwift = true;
-
-    [JobConfig, UI("Hard cast Raise logic",
-        Filter = HealingActionCondition, Section = 2)]
-    private readonly HardCastRaiseType _HardCastRaiseType = HardCastRaiseType.HardCastNormal;
-
-    [JobConfig, UI("Raise styles",
-        Filter = HealingActionCondition, Section = 2)]
-    private readonly RaiseType _RaiseType = RaiseType.PartyOnly;
-
-    [JobConfig, UI("Raise players that have the Brink of Death debuff",
-        Filter = HealingActionCondition, Section = 2)]
-    private static readonly bool _raiseBrinkOfDeath = true;
-
-    [JobConfig, UI("Raise non-Healers from bottom of party list to the top (Light Party 2 Healer Behavior)",
-        Filter = HealingActionCondition, Section = 2)]
-    private static readonly bool _h2 = false;
-
-    [JobConfig, UI("Raise Red Mage and Summoners first if no Tanks or Healers are dead",
-        Filter = HealingActionCondition, Section = 2)]
-    private static readonly bool _offRaiserRaise = false;
-
-    #endregion
-
-    /// <markdown file="Auto" name="How early before next GCD should RSR use swiftcast for raise" section="Healing Usage and Control">
-    /// If your cast a GCD and your cooldown is of 2.5 seconds, if a teammate dies when your cooldown starts, the Swiftcast action will wait
-    /// the specified amount of time before your cooldown ends to cast Swiftcast. This is to prevent using your Swiftcast too early and waste it
-    /// if your co-healer manages to raise your target within your global cooldown period.
-    /// </markdown>
-    [JobConfig, UI("How early before next GCD should RSR use swiftcast for raise",
-        Filter = HealingActionCondition, Section = 2)]
-    [Range(0, 1.0f, ConfigUnitType.Seconds, 0.01f)]
-    public float SwiftcastBuffer { get; set; } = 0.6f;
-
-    /// <markdown file="Auto" name="Random delay range for resurrecting players" section="Healing Usage and Control">
-    /// In order to not make is so obvious that you use RSR, casting a raise action will be delayed by a random amount of seconds
-    /// between the two values.
-    /// </markdown>
-    [UI("Random delay range for resurrecting players.",
-        Filter = HealingActionCondition, Section = 2)]
-    [Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 RaiseDelay2 { get; set; } = new(3f, 3f);
-
-    [UI("Random delay range for dispelling statuses.",
-        Filter = HealingActionCondition, Section = 2)]
-    [Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 EsunaDelay { get; set; } = new(0f, 0f);
-
-    [Range(0, 10000, ConfigUnitType.None, 100)]
-    [UI("Never raise player if MP is less than this",
-        Filter = HealingActionCondition, Section = 2)]
-    public int LessMPNoRaise { get; set; } = 2400;
-
-    /// <markdown file="Extra" name="HP standard deviation for using AoE heal">
-    /// Controls how much party members' HP must differ before using AoE healing instead
-    /// of single-target heals. Lower values require party members to have more similar HP
-    /// for AoE healing to trigger (more selective). Higher values allow AoE healing even
-    /// when HP differences are larger (less selective). Adjust only if you want to fine-tune
-    /// AoE heal behavior.
-    /// </markdown>
-    [UI("HP standard deviation for using AoE heal.", Description = "Controls how much party members' HP must differ before using AoE healing instead of single-target heals. Lower values require party members to have more similar HP for AoE healing to trigger (more selective). Higher values allow AoE healing even when HP differences are larger (less selective). Adjust only if you want to fine-tune AoE heal behavior.",
-    Filter = Extra)]
-    [Range(0, 0.5f, ConfigUnitType.Percent, 0.02f)]
-    public float HealthDifference { get; set; } = 0.25f;
-
-    [ConditionBool, UI("Heal party members when not in combat.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _healOutOfCombat = false;
-
-    [ConditionBool, UI("Heal solo instance NPCs (Only enable as needed)", Description = "Experimental.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _friendlyBattleNPCHeal = false;
-
-    [ConditionBool, UI("Heal and raise Party NPCs.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _friendlyPartyNPCHealRaise3 = true;
-
-    [ConditionBool, UI("Treat your chocobo as a party member",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _chocoboPartyMember = false;
-
-    [ConditionBool, UI("Treat focus targeted player as party member in alliance raids", Description = "Experimental, includes Chaotic.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _focusTargetIsParty = false;
-
-    [ConditionBool, UI("Heal party members with GCD if there is nothing to do in combat.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _healWhenNothingTodo = true;
-
-    [ConditionBool, UI("Prioritize Low HP tank for tankbusters.",
-        Filter = HealingActionCondition, Section = 3)]
-    private static readonly bool _priolowtank = false;
-
-    /// <markdown file="Basic" name="The duration of special windows opened by /rotation commands by default">
-    /// The duration of special windows opened by /rotation commands by default.
-    /// (Found in Main => Macros)
-    /// </markdown>
-    [UI("The duration of special windows opened by /rotation commands by default.",
-        Filter = BasicTimer, Section = 1)]
-    [Range(1, 20, ConfigUnitType.Seconds, 1f)]
-    public float SpecialDuration { get; set; } = 3;
-
-    [UI("Random range of delay for RSR to stop attacking when the target is dead or immune to damage.",
-        Parent = nameof(UseStopCasting))]
-    [Range(0, 3, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 StopCastingDelay { get; set; } = new(0.5f, 1);
-
-    [UI("The range of random delay before interrupting hostile targets.",
-        Filter = AutoActionUsage, Section = 3,
-        PvEFilter = JobFilterType.Interrupt, PvPFilter = JobFilterType.NoJob)]
-    [Range(0, 3, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 InterruptDelay { get; set; } = new(0.5f, 1);
-
-    [UI("Provoke random delay range.", Parent = nameof(AutoProvokeForTank))]
-    [Range(0, 10, ConfigUnitType.Seconds, 0.05f)]
-    public Vector2 ProvokeDelay { get; set; } = new(0.5f, 1);
-
-    [UI("Not In Combat random delay range.",
-        Filter = BasicParams)]
-    [Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 NotInCombatDelay { get; set; } = new(2, 3);
-
-    /// <markdown file="Basic" name="Clicking actions random delay range">
-    /// Delay between showing the clicking/pressing effect on the actions
-    /// in your hotbars.
-    /// </markdown>
-    [UI("Clicking actions random delay range.",
-        Filter = BasicTimer)]
-    [Range(0.00f, 0.25f, ConfigUnitType.Seconds, 0.002f)]
-    public Vector2 ClickingDelay { get; set; } = new(0.1f, 0.2f);
-
-    [UI("Downtime healing delay range.", Parent = nameof(HealWhenNothingTodo))]
-    [Range(0, 5, ConfigUnitType.Seconds, 0.05f)]
-    public Vector2 HealWhenNothingTodoDelay { get; set; } = new(0.5f, 1);
-
-    /// <markdown file="Basic" name="How soon before countdown is finished to start casting or attacking">
-    /// How soon before countdown is finished to start casting or attacking.
-    /// </markdown>
-    [UI("How soon before countdown is finished to start casting or attacking.",
-        Filter = BasicTimer, Section = 1, PvPFilter = JobFilterType.NoJob)]
-    [Range(0, 0.7f, ConfigUnitType.Seconds, 0.002f)]
-    public float CountDownAhead { get; set; } = 0.4f;
-
-    [UI("Cooldown window icon size")]
-    [Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
-    public float CooldownWindowIconSize { get; set; } = 30;
-
-    [UI("Next Action Size Ratio", Parent = nameof(ShowControlWindow))]
-    [Range(0, 10, ConfigUnitType.Percent, 0.02f)]
-    public float ControlWindowNextSizeRatio { get; set; } = 1.5f;
-
-    [UI("GCD icon size", Parent = nameof(ShowControlWindow))]
-    [Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
-    public float ControlWindowGCDSize { get; set; } = 40;
-
-    [UI("oGCD icon size", Parent = nameof(ShowControlWindow))]
-    [Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
-    public float ControlWindow0GCDSize { get; set; } = 30;
-
-    [UI("Control Progress Height")]
-    [Range(2, 30, ConfigUnitType.Yalms)]
-    public float ControlProgressHeight { get; set; } = 8;
-
-    [UI("Stop healing when time to kill is lower than:", Parent = nameof(UseHealWhenNotAHealer))]
-    [Range(0, 30, ConfigUnitType.Seconds, 0.02f)]
-    public float AutoHealTimeToKill { get; set; } = 8f;
-
-    [UI("The minimum time between updating RSR information. (Raising this will help with framerate issues but can cause issues with rotation performance)",
-    Filter = BasicTimer)]
-    [JobConfig, Range(0, 0.3f, ConfigUnitType.Seconds, 0.002f)]
-    public float MinUpdatingTime { get; set; } = 0.00f;
-
-    /// <markdown file="Basic" name="Action Ahead">
-    /// Percent of your GCD time remaining on a GCD cycle before RSR will try to queue the next GCD.
-    ///
-    /// This setting controls how many oGCDs RSR will try to fit in a single GCD window.
-    /// Lower numbers mean more oGCDs, but potentially more GCD clipping.
-    /// </markdown>
-    [JobConfig, Range(0.05f, 0.25f, ConfigUnitType.Percent)]
-    [UI("Action Ahead (Percent of your GCD time remaining on a GCD cycle before RSR will try to queue the next GCD)", Filter = BasicTimer,
-    Description = "This setting controls how many oGCDs RSR will try to fit in a single GCD window\nLower numbers mean more oGCDs, but potentially more GCD clipping")]
-    private readonly float _action6head = 0.25f;
-
-    /// <summary>
-    /// Remove extra lag-induced animation lock delay from instant casts (read tooltip!)
-    /// Do NOT use with XivAlexander or NoClippy - this should automatically disable itself if they are detected, but double check first!
-    /// </summary>
-    [ConditionBool, UI("Remove extra lag-induced animation lock delay from instant casts (read tooltip!)", 
-    Description = "Do NOT use with XivAlexander, BMR tweaks enabled, or NoClippy - this should automatically disable itself if they are detected, but double check first!",
-    Filter = Extra)]
-    private static readonly bool _removeAnimationLockDelay = false;
-
-    /// <summary>
-    /// Animation lock max. simulated delay in milliseconds
-    /// Configures the maximum simulated delay in milliseconds when using animation lock removal - this is required and cannot be reduced to zero.
-    /// Setting this to 20ms will enable triple-weaving when using autorotation. The minimum setting to remove triple-weaving is 26ms.
-    /// The minimum of 20ms has been accepted by FFLogs and should not cause issues with your logs.
-    /// </summary>
-    [UI("Animation lock max. simulated delay (read tooltip!)", 
-    Description = "Configures the maximum simulated delay in milliseconds when using animation lock removal - this is required and cannot be reduced to zero. Setting this to 20ms will enable triple-weaving when using autorotation. The minimum setting to remove triple-weaving is 26ms. The minimum of 20ms has been accepted by FFLogs and should not cause issues with your logs.",
-    Parent = nameof(RemoveAnimationLockDelay), Filter = Extra)]
-    [Range(20, 50, ConfigUnitType.None, 1f)]
-    public int AnimationLockDelayMax2 { get; set; } = 26;
-
-    [UI("Animation lock delay smoothing factor", Parent = nameof(RemoveAnimationLockDelay), Filter = Extra)]
-    [Range(0.3f, 0.95f, ConfigUnitType.None, 0.01f)]
-    public float AnimLockDelaySmoothing { get; set; } = 0.3f;
-
-    /// <summary>
-    /// Remove extra framerate-induced cooldown delay
-    /// Dynamically adjusts cooldown and animation locks to ensure queued actions resolve immediately regardless of framerate limitations
-    /// </summary>
-    [ConditionBool, UI("Remove extra framerate-induced cooldown delay", 
-    Description = "Dynamically adjusts cooldown and animation locks to ensure queued actions resolve immediately regardless of framerate limitations",
-    Filter = Extra)]
-    private static readonly bool _removeCooldownDelay = false;
-
-    [UI("Max cooldown adjustment (ms)", Parent = nameof(RemoveCooldownDelay), Filter = Extra)]
-    [Range(10, 150, ConfigUnitType.None, 1f)]
-    public int CooldownAdjustMaxMs { get; set; } = 100;
-
-    // Cactbot timeline integration
-    [ConditionBool, UI("Enable cactbot timeline integration (Extremely experimental)",
-        Description = "Connects to OverlayPlugin's WebSocket server and reacts to cactbot broadcast messages (raidwide, tankbuster, knockback, downtime/untargetable).",
-        Filter = Extra)]
-    private static readonly bool _enableCactbotTimeline = false;
-
-    [ConditionBool, UI("Show cactbot event toasts (debug)",
-    Description = "Show a toast when a cactbot broadcast is received and mapped to a RotationSolver special.",
-    Filter = Extra)]
-    private static readonly bool _showCactbotToasts = false;
-
-    [UI("Highlight color.", Parent = nameof(TeachingMode))]
-    public Vector4 TeachingModeColor { get; set; } = new(0f, 1f, 0f, 1f);
-
-    [UI("Target color", Parent = nameof(TargetColor))]
-    public Vector4 TargetColor { get; set; } = new(1f, 0.2f, 0f, 0.8f);
-
-    [UI("Locked Control Window's Background", Parent = nameof(ShowControlWindow))]
-    public Vector4 ControlWindowLockBg { get; set; } = new(0, 0, 0, 0.55f);
-
-    [UI("Unlocked Control Window's Background", Parent = nameof(ShowControlWindow))]
-    public Vector4 ControlWindowUnlockBg { get; set; } = new(0, 0, 0, 0.75f);
-
-    [UI("Info Window's Background", Filter = UiWindows)]
-    public Vector4 InfoWindowBg { get; set; } = new(0, 0, 0, 0.4f);
-    #endregion
-
-    #region Target
-    [ConditionBool, UI("Use movement actions towards the object/mob in the center of the screen",
-    Description = "If enabled, movement actions target the object or mob at the center of your screen. If disabled, they target the object or mob your character is facing.",
-    Filter = TargetConfig, Section = 2)]
-    private static readonly bool _moveTowardsScreenCenter = false;
-
-    [ConditionBool, UI("Prioritize mob/object targets with attack markers",
-    Description = "Targets with attack markers will be prioritized for actions.",
-    Filter = TargetConfig)]
-    private static readonly bool _chooseAttackMark = true;
-
-    [ConditionBool, UI("Prioritize enemy parts",
-    Description = "Enemy parts, such as Titan's Heart, will be prioritized as targets.",
-    Filter = TargetConfig)]
-    private static readonly bool _prioEnemyParts = true;
-
-    [ConditionBool, UI("Never attack targets with stop markers.",
-    Description = "Targets with stop markers will not be attacked.",
-    Filter = TargetConfig)]
-    private static readonly bool _filterStopMark2 = false;
-
-    [ConditionBool, UI("Treat 1hp targets as invincible.",
-    Description = "Targets with only 1 HP will be treated as invincible and ignored; for rare cases where target is invincible but is not given a status for it.",
-    Filter = TargetConfig)]
-    private static readonly bool _filterOneHPInvincible = true;
-
-    [ConditionBool, UI("Ignore Non-Fate targets while in a Fate and Fate targets if not in Fate.",
-    Description = "When in a Fate, only Fate targets are considered. When not in a Fate, Fate targets are ignored.",
-    Filter = TargetConfig)]
-    private static readonly bool _ignoreNonFateInFate = true;
-
-    [ConditionBool, UI("Move to the furthest position for targeting area movement actions.",
-        Filter = TargetConfig, Section = 2)]
-    private static readonly bool _moveAreaActionFarthest = false;
+	private static readonly bool _showCooldownWindow = false;
+
+	[ConditionBool, UI("Show Action Timeline Window", Filter = UiWindows)]
+	private static readonly bool _showActionTimelineWindow = false;
+
+	[ConditionBool, UI("Only show timeline in combat", Parent = nameof(ShowActionTimelineWindow))]
+	private static readonly bool _actionTimelineOnlyInCombat = true;
+
+	[ConditionBool, UI("Only show timeline when RSR is active", Parent = nameof(ShowActionTimelineWindow))]
+	private static readonly bool _actionTimelineOnlyWhenActive = true;
+
+	[ConditionBool, UI("Show oGCD actions in timeline", Parent = nameof(ShowActionTimelineWindow))]
+	private static readonly bool _actionTimelineShowOGCD = true;
+
+	[ConditionBool, UI("Show auto-attacks in timeline", Parent = nameof(ShowActionTimelineWindow))]
+	private static readonly bool _actionTimelineShowAutoAttack = false;
+
+	[ConditionBool, UI("Save timeline to JSON file after combat", Parent = nameof(ShowActionTimelineWindow))]
+	private static readonly bool _actionTimelineSaveToFile = false;
+
+	[ConditionBool, UI("Enable Glassmorphism UI", Filter = UiWindows)]
+	private static readonly bool _enableGlassmorphism = true;
+
+	[ConditionBool, UI("Show Rotation Planner Window", Filter = UiWindows)]
+	private static readonly bool _showRotationPlannerWindow = false;
+
+	[ConditionBool, UI("Record AOE actions", Filter = List)]
+	private static readonly bool _recordCastingArea = true;
+
+	[ConditionBool, UI("Auto turn off RSR when combat is over for more than:",
+		Filter = BasicAutoSwitch)]
+	private static readonly bool _autoOffAfterCombat = true;
+
+	[ConditionBool, UI("Enable RSR click counter in main menu",
+		Filter = Extra)]
+	private static readonly bool _enableClickingCount = true;
+
+	[ConditionBool, UI("Hide all warnings",
+		Filter = UiInformation)]
+	private static readonly bool _hideWarning = false;
+
+	/// <markdown file="Auto" name="Only heal self when not a Healer" section="Healing Usage and Control">
+	/// When enabled and not a healer, skills that can target someone and heal will only target you.
+	/// </markdown>
+	[ConditionBool, UI("Only heal self when not a Healer",
+		Filter = HealingActionCondition, Section = 1)]
+	private static readonly bool _onlyHealSelfWhenNoHealer = false;
+
+	[ConditionBool, UI("Only use healing abilities as a non-healer if there are no living healers in the party.",
+	Description = "When enabled, non-healer jobs (such as DPS or tanks) will only use healing abilities if there are no healers in the party, or if all healers are incapacitated (at 0 HP). \r\nIf at least one healer is alive, non-healers will not use healing abilities.",
+	Filter = HealingActionCondition, Section = 1)]
+	private static readonly bool _onlyHealAsNonHealIfNoHealers = false;
+
+	[ConditionBool, UI("Show toggled setting and new value in chat.",
+		Filter = UiInformation)]
+	private static readonly bool _ShowToggledSettingInChat = false;
+
+	[ConditionBool, UI("Record knockback actions", Filter = List2)]
+	private static readonly bool _recordKnockbackies = false;
+
+	[ConditionBool, UI("Set Blue Mage Actions Automatically", Description = "When using a Blue Mage Rotation, RSR can automatically set your spell book to the spells required by that rotation.", Filter = Extra)]
+	private static readonly bool _setBluActions2 = false;
+
+	#region Float
+	[UI("Auto turn off RSR when combat is over for more than...",
+		Parent = nameof(AutoOffAfterCombat))]
+	[Range(0, 600, ConfigUnitType.Seconds)]
+	public float AutoOffAfterCombatTime { get; set; } = 30;
+
+	[UI("The angle of your vision cone", Parent = nameof(OnlyAttackInVisionCone))]
+	[Range(0, 90, ConfigUnitType.Degree, 0.02f)]
+	public float AngleOfVisionCone { get; set; } = 45;
+
+	/// <markdown file="Auto" name="Melee Range action using offset" section="Action Usage and Control">
+	/// Additional buffer in yalms where ranged attacks will be used for melee classes. For example,
+	/// if you are playing as Samurai and this setting is set to `1`, Enpi will only be used starting
+	/// at 4 yalms.
+	///
+	/// This is because the default "overflow" for the melee range is 3 yalms, which means you can cast
+	/// melee attacks 3 yalms outside the enemy's hitbox. This setting (the offset) takes max melee range and
+	/// adds the value you set.
+	///
+	/// This setting exists to leave you time to approach and enter in melee range of the enemy without wasting
+	/// a GCD.
+	/// </markdown>
+	[UI("Melee Ranged action usage offset",
+		Filter = AutoActionUsage, Section = 3,
+		PvEFilter = JobFilterType.Melee, PvPFilter = JobFilterType.Melee)]
+	[Range(0, 5, ConfigUnitType.Yalms, 0.02f)]
+	public float MeleeRangedOffset { get; set; } = 1;
+
+	[UI("When their minimum HP is lower than this.", Parent = nameof(HealWhenNothingTodo))]
+	[Range(0, 1, ConfigUnitType.Percent, 0.002f)]
+	public float HealWhenNothingTodoBelow { get; set; } = 0.8f;
+
+	[UI("Heal tank first if their HP is lower than this.",
+		Filter = HealingActionCondition, Section = 1)]
+	[Range(0, 1, ConfigUnitType.Percent, 0.02f)]
+	public float HealthTankRatio { get; set; } = 0.45f;
+
+	[UI("Heal healer first if their HP is lower than this.",
+		Filter = HealingActionCondition, Section = 1)]
+	[Range(0, 1, ConfigUnitType.Percent, 0.02f)]
+	public float HealthHealerRatio { get; set; } = 0.4f;
+
+	[UI("Heal self first if your HP is lower than this.",
+		Filter = HealingActionCondition, Section = 1)]
+	[Range(0, 1, ConfigUnitType.Percent, 0.02f)]
+	public float HealthSelfRatio { get; set; } = 0.4f;
+
+	#region
+	[JobConfig, UI("Prioritize raising dead players over Healing/Defense.",
+		Filter = HealingActionCondition, Section = 2)]
+	private static readonly bool _raisePlayerFirst = false;
+
+	[JobConfig, UI("Raise player by using Swiftcast/Dualcast if available", Description = "If this is disabled, you will never use Swiftcast/Dualcast to raise players.",
+		Filter = HealingActionCondition, Section = 2)]
+	private static readonly bool _raisePlayerBySwift = true;
+
+	[JobConfig, UI("Hard cast Raise logic",
+		Filter = HealingActionCondition, Section = 2)]
+	private readonly HardCastRaiseType _HardCastRaiseType = HardCastRaiseType.HardCastNormal;
+
+	[JobConfig, UI("Raise styles",
+		Filter = HealingActionCondition, Section = 2)]
+	private readonly RaiseType _RaiseType = RaiseType.PartyOnly;
+
+	[JobConfig, UI("Raise players that have the Brink of Death debuff",
+		Filter = HealingActionCondition, Section = 2)]
+	private static readonly bool _raiseBrinkOfDeath = true;
+
+	[JobConfig, UI("Raise non-Healers from bottom of party list to the top (Light Party 2 Healer Behavior)",
+		Filter = HealingActionCondition, Section = 2)]
+	private static readonly bool _h2 = false;
+
+	[JobConfig, UI("Raise Red Mage and Summoners first if no Tanks or Healers are dead",
+		Filter = HealingActionCondition, Section = 2)]
+	private static readonly bool _offRaiserRaise = false;
+
+	#endregion
+
+	/// <markdown file="Auto" name="How early before next GCD should RSR use swiftcast for raise" section="Healing Usage and Control">
+	/// If your cast a GCD and your cooldown is of 2.5 seconds, if a teammate dies when your cooldown starts, the Swiftcast action will wait
+	/// the specified amount of time before your cooldown ends to cast Swiftcast. This is to prevent using your Swiftcast too early and waste it
+	/// if your co-healer manages to raise your target within your global cooldown period.
+	/// </markdown>
+	[JobConfig, UI("How early before next GCD should RSR use swiftcast for raise",
+		Filter = HealingActionCondition, Section = 2)]
+	[Range(0, 1.0f, ConfigUnitType.Seconds, 0.01f)]
+	public float SwiftcastBuffer { get; set; } = 0.6f;
+
+	/// <markdown file="Auto" name="Random delay range for resurrecting players" section="Healing Usage and Control">
+	/// In order to not make is so obvious that you use RSR, casting a raise action will be delayed by a random amount of seconds
+	/// between the two values.
+	/// </markdown>
+	[UI("Random delay range for resurrecting players.",
+		Filter = HealingActionCondition, Section = 2)]
+	[Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 RaiseDelay2 { get; set; } = new(3f, 3f);
+
+	[UI("Random delay range for dispelling statuses.",
+		Filter = HealingActionCondition, Section = 2)]
+	[Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 EsunaDelay { get; set; } = new(0f, 0f);
+
+	[Range(0, 10000, ConfigUnitType.None, 100)]
+	[UI("Never raise player if MP is less than this",
+		Filter = HealingActionCondition, Section = 2)]
+	public int LessMPNoRaise { get; set; } = 2400;
+
+	/// <markdown file="Extra" name="HP standard deviation for using AoE heal">
+	/// Controls how much party members' HP must differ before using AoE healing instead
+	/// of single-target heals. Lower values require party members to have more similar HP
+	/// for AoE healing to trigger (more selective). Higher values allow AoE healing even
+	/// when HP differences are larger (less selective). Adjust only if you want to fine-tune
+	/// AoE heal behavior.
+	/// </markdown>
+	[UI("HP standard deviation for using AoE heal.", Description = "Controls how much party members' HP must differ before using AoE healing instead of single-target heals. Lower values require party members to have more similar HP for AoE healing to trigger (more selective). Higher values allow AoE healing even when HP differences are larger (less selective). Adjust only if you want to fine-tune AoE heal behavior.",
+	Filter = Extra)]
+	[Range(0, 0.5f, ConfigUnitType.Percent, 0.02f)]
+	public float HealthDifference { get; set; } = 0.25f;
+
+	[ConditionBool, UI("Heal party members when not in combat.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _healOutOfCombat = false;
+
+	[ConditionBool, UI("Heal solo instance NPCs (Only enable as needed)", Description = "Experimental.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _friendlyBattleNPCHeal = false;
+
+	[ConditionBool, UI("Heal and raise Party NPCs.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _friendlyPartyNPCHealRaise3 = true;
+
+	[ConditionBool, UI("Treat your chocobo as a party member",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _chocoboPartyMember = false;
+
+	[ConditionBool, UI("Treat focus targeted player as party member in alliance raids", Description = "Experimental, includes Chaotic.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _focusTargetIsParty = false;
+
+	[ConditionBool, UI("Heal party members with GCD if there is nothing to do in combat.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _healWhenNothingTodo = true;
+
+	[ConditionBool, UI("Prioritize Low HP tank for tankbusters.",
+		Filter = HealingActionCondition, Section = 3)]
+	private static readonly bool _priolowtank = false;
+
+	/// <markdown file="Basic" name="The duration of special windows opened by /rotation commands by default">
+	/// The duration of special windows opened by /rotation commands by default.
+	/// (Found in Main => Macros)
+	/// </markdown>
+	[UI("The duration of special windows opened by /rotation commands by default.",
+		Filter = BasicTimer, Section = 1)]
+	[Range(1, 20, ConfigUnitType.Seconds, 1f)]
+	public float SpecialDuration { get; set; } = 3;
+
+	[UI("Random range of delay for RSR to stop attacking when the target is dead or immune to damage.",
+		Parent = nameof(UseStopCasting))]
+	[Range(0, 3, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 StopCastingDelay { get; set; } = new(0.5f, 1);
+
+	[UI("The range of random delay before interrupting hostile targets.",
+		Filter = AutoActionUsage, Section = 3,
+		PvEFilter = JobFilterType.Interrupt, PvPFilter = JobFilterType.NoJob)]
+	[Range(0, 3, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 InterruptDelay { get; set; } = new(0.5f, 1);
+
+	[UI("Provoke random delay range.", Parent = nameof(AutoProvokeForTank))]
+	[Range(0, 10, ConfigUnitType.Seconds, 0.05f)]
+	public Vector2 ProvokeDelay { get; set; } = new(0.5f, 1);
+
+	[UI("Not In Combat random delay range.",
+		Filter = BasicParams)]
+	[Range(0, 10, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 NotInCombatDelay { get; set; } = new(2, 3);
+
+	/// <markdown file="Basic" name="Clicking actions random delay range">
+	/// Delay between showing the clicking/pressing effect on the actions
+	/// in your hotbars.
+	/// </markdown>
+	[UI("Clicking actions random delay range.",
+		Filter = BasicTimer)]
+	[Range(0.00f, 0.25f, ConfigUnitType.Seconds, 0.002f)]
+	public Vector2 ClickingDelay { get; set; } = new(0.1f, 0.2f);
+
+	[UI("Downtime healing delay range.", Parent = nameof(HealWhenNothingTodo))]
+	[Range(0, 5, ConfigUnitType.Seconds, 0.05f)]
+	public Vector2 HealWhenNothingTodoDelay { get; set; } = new(0.5f, 1);
+
+	/// <markdown file="Basic" name="How soon before countdown is finished to start casting or attacking">
+	/// How soon before countdown is finished to start casting or attacking.
+	/// </markdown>
+	[UI("How soon before countdown is finished to start casting or attacking.",
+		Filter = BasicTimer, Section = 1, PvPFilter = JobFilterType.NoJob)]
+	[Range(0, 0.7f, ConfigUnitType.Seconds, 0.002f)]
+	public float CountDownAhead { get; set; } = 0.4f;
+
+	[UI("Cooldown window icon size")]
+	[Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
+	public float CooldownWindowIconSize { get; set; } = 30;
+
+	[UI("Next Action Size Ratio", Parent = nameof(ShowControlWindow))]
+	[Range(0, 10, ConfigUnitType.Percent, 0.02f)]
+	public float ControlWindowNextSizeRatio { get; set; } = 1.5f;
+
+	[UI("GCD icon size", Parent = nameof(ShowControlWindow))]
+	[Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
+	public float ControlWindowGCDSize { get; set; } = 40;
+
+	[UI("oGCD icon size", Parent = nameof(ShowControlWindow))]
+	[Range(0, 80, ConfigUnitType.Pixels, 0.2f)]
+	public float ControlWindow0GCDSize { get; set; } = 30;
+
+	[UI("Control Progress Height")]
+	[Range(2, 30, ConfigUnitType.Yalms)]
+	public float ControlProgressHeight { get; set; } = 8;
+
+	[UI("Stop healing when time to kill is lower than:", Parent = nameof(UseHealWhenNotAHealer))]
+	[Range(0, 30, ConfigUnitType.Seconds, 0.02f)]
+	public float AutoHealTimeToKill { get; set; } = 8f;
+
+	[UI("The minimum time between updating RSR information. (Raising this will help with framerate issues but can cause issues with rotation performance)",
+	Filter = BasicTimer)]
+	[JobConfig, Range(0, 0.3f, ConfigUnitType.Seconds, 0.002f)]
+	public float MinUpdatingTime { get; set; } = 0.00f;
+
+	/// <markdown file="Basic" name="Action Ahead">
+	/// Percent of your GCD time remaining on a GCD cycle before RSR will try to queue the next GCD.
+	///
+	/// This setting controls how many oGCDs RSR will try to fit in a single GCD window.
+	/// Lower numbers mean more oGCDs, but potentially more GCD clipping.
+	/// </markdown>
+	[JobConfig, Range(0.05f, 0.25f, ConfigUnitType.Percent)]
+	[UI("Action Ahead (Percent of your GCD time remaining on a GCD cycle before RSR will try to queue the next GCD)", Filter = BasicTimer,
+	Description = "This setting controls how many oGCDs RSR will try to fit in a single GCD window\nLower numbers mean more oGCDs, but potentially more GCD clipping")]
+	private readonly float _action6head = 0.25f;
+
+	/// <summary>
+	/// Remove extra lag-induced animation lock delay from instant casts (read tooltip!)
+	/// Do NOT use with XivAlexander or NoClippy - this should automatically disable itself if they are detected, but double check first!
+	/// </summary>
+	[ConditionBool, UI("Remove extra lag-induced animation lock delay from instant casts (read tooltip!)",
+	Description = "Do NOT use with XivAlexander, BMR tweaks enabled, or NoClippy - this should automatically disable itself if they are detected, but double check first!",
+	Filter = Extra)]
+	private static readonly bool _removeAnimationLockDelay = false;
+
+	/// <summary>
+	/// Animation lock max. simulated delay in milliseconds
+	/// Configures the maximum simulated delay in milliseconds when using animation lock removal - this is required and cannot be reduced to zero.
+	/// Setting this to 20ms will enable triple-weaving when using autorotation. The minimum setting to remove triple-weaving is 26ms.
+	/// The minimum of 20ms has been accepted by FFLogs and should not cause issues with your logs.
+	/// </summary>
+	[UI("Animation lock max. simulated delay (read tooltip!)",
+	Description = "Configures the maximum simulated delay in milliseconds when using animation lock removal - this is required and cannot be reduced to zero. Setting this to 20ms will enable triple-weaving when using autorotation. The minimum setting to remove triple-weaving is 26ms. The minimum of 20ms has been accepted by FFLogs and should not cause issues with your logs.",
+	Parent = nameof(RemoveAnimationLockDelay), Filter = Extra)]
+	[Range(20, 50, ConfigUnitType.None, 1f)]
+	public int AnimationLockDelayMax2 { get; set; } = 26;
+
+	[UI("Animation lock delay smoothing factor", Parent = nameof(RemoveAnimationLockDelay), Filter = Extra)]
+	[Range(0.3f, 0.95f, ConfigUnitType.None, 0.01f)]
+	public float AnimLockDelaySmoothing { get; set; } = 0.3f;
+
+	/// <summary>
+	/// Remove extra framerate-induced cooldown delay
+	/// Dynamically adjusts cooldown and animation locks to ensure queued actions resolve immediately regardless of framerate limitations
+	/// </summary>
+	[ConditionBool, UI("Remove extra framerate-induced cooldown delay",
+	Description = "Dynamically adjusts cooldown and animation locks to ensure queued actions resolve immediately regardless of framerate limitations",
+	Filter = Extra)]
+	private static readonly bool _removeCooldownDelay = false;
+
+	[UI("Max cooldown adjustment (ms)", Parent = nameof(RemoveCooldownDelay), Filter = Extra)]
+	[Range(10, 150, ConfigUnitType.None, 1f)]
+	public int CooldownAdjustMaxMs { get; set; } = 100;
+
+	// Cactbot timeline integration
+	[ConditionBool, UI("Enable cactbot timeline integration (Extremely experimental)",
+		Description = "Connects to OverlayPlugin's WebSocket server and reacts to cactbot broadcast messages (raidwide, tankbuster, knockback, downtime/untargetable).",
+		Filter = Extra)]
+	private static readonly bool _enableCactbotTimeline = false;
+
+	[ConditionBool, UI("Show cactbot event toasts (debug)",
+	Description = "Show a toast when a cactbot broadcast is received and mapped to a RotationSolver special.",
+	Filter = Extra)]
+	private static readonly bool _showCactbotToasts = false;
+
+	[UI("Highlight color.", Parent = nameof(TeachingMode))]
+	public Vector4 TeachingModeColor { get; set; } = new(0f, 1f, 0f, 1f);
+
+	[UI("Target color", Parent = nameof(TargetColor))]
+	public Vector4 TargetColor { get; set; } = new(1f, 0.2f, 0f, 0.8f);
+
+	[UI("Locked Control Window's Background", Parent = nameof(ShowControlWindow))]
+	public Vector4 ControlWindowLockBg { get; set; } = new(0, 0, 0, 0.55f);
+
+	[UI("Unlocked Control Window's Background", Parent = nameof(ShowControlWindow))]
+	public Vector4 ControlWindowUnlockBg { get; set; } = new(0, 0, 0, 0.75f);
+
+	[UI("Info Window's Background", Filter = UiWindows)]
+	public Vector4 InfoWindowBg { get; set; } = new(0, 0, 0, 0.4f);
+	#endregion
+
+	#region Target
+	[ConditionBool, UI("Use movement actions towards the object/mob in the center of the screen",
+	Description = "If enabled, movement actions target the object or mob at the center of your screen. If disabled, they target the object or mob your character is facing.",
+	Filter = TargetConfig, Section = 2)]
+	private static readonly bool _moveTowardsScreenCenter = false;
+
+	[ConditionBool, UI("Prioritize mob/object targets with attack markers",
+	Description = "Targets with attack markers will be prioritized for actions.",
+	Filter = TargetConfig)]
+	private static readonly bool _chooseAttackMark = true;
+
+	[ConditionBool, UI("Prioritize enemy parts",
+	Description = "Enemy parts, such as Titan's Heart, will be prioritized as targets.",
+	Filter = TargetConfig)]
+	private static readonly bool _prioEnemyParts = true;
+
+	[ConditionBool, UI("Never attack targets with stop markers.",
+	Description = "Targets with stop markers will not be attacked.",
+	Filter = TargetConfig)]
+	private static readonly bool _filterStopMark2 = false;
+
+	[ConditionBool, UI("Treat 1hp targets as invincible.",
+	Description = "Targets with only 1 HP will be treated as invincible and ignored; for rare cases where target is invincible but is not given a status for it.",
+	Filter = TargetConfig)]
+	private static readonly bool _filterOneHPInvincible = true;
+
+	[ConditionBool, UI("Ignore Non-Fate targets while in a Fate and Fate targets if not in Fate.",
+	Description = "When in a Fate, only Fate targets are considered. When not in a Fate, Fate targets are ignored.",
+	Filter = TargetConfig)]
+	private static readonly bool _ignoreNonFateInFate = true;
+
+	[ConditionBool, UI("Move to the furthest position for targeting area movement actions.",
+		Filter = TargetConfig, Section = 2)]
+	private static readonly bool _moveAreaActionFarthest = false;
 
 	[ConditionBool, UI("Hard Target for all actions", Description = "If this is disabled, RSR will only use the game's built-in soft-targeting for allies for heals, shields, etc.",
 		Filter = TargetConfig, Section = 3)]
-    private static readonly bool _switchTargetFriendly2 = false;
+	private static readonly bool _switchTargetFriendly2 = false;
 
-    [ConditionBool, UI("Set target to closest targetable enemy if no valid action target nearby and target not set (This works in Manual mode as well)",
-        Filter = TargetConfig, Section = 3)]
-    private static readonly bool _targetFreely = false;
+	[ConditionBool, UI("Set target to closest targetable enemy if no valid action target nearby and target not set while in combat (This works in Manual mode as well)",
+		Filter = TargetConfig, Section = 3)]
+	private static readonly bool _targetFreely = false;
 
-    [ConditionBool, UI("Only attack targets in view.",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool _onlyAttackInView = false;
+	[ConditionBool, UI("Only attack targets in view.",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool _onlyAttackInView = false;
 
-    [ConditionBool, UI("Only attack targets in vision cone",
-                Filter = TargetConfig, Section = 1)]
-    private static readonly bool _onlyAttackInVisionCone = false;
+	[ConditionBool, UI("Only attack targets in vision cone",
+				Filter = TargetConfig, Section = 1)]
+	private static readonly bool _onlyAttackInVisionCone = false;
 
-    [ConditionBool, UI("Target Hunt/Relic/Leve priority. (Relic behavior bugged)",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool _targetHuntingRelicLevePriority = true;
+	[ConditionBool, UI("Target Hunt/Relic/Leve priority. (Relic behavior bugged)",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool _targetHuntingRelicLevePriority = true;
 
-    [ConditionBool, UI("Target quest priority (Overrides engage setting).",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool _targetQuestPriority = true;
+	[ConditionBool, UI("Target quest priority (Overrides engage setting).",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool _targetQuestPriority = true;
 
-    [ConditionBool, UI("Block targeting quest mobs belonging to other players (Broken).",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool targetQuestThings2 = false;
+	[ConditionBool, UI("Block targeting quest mobs belonging to other players (Experimental).",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool targetQuestThings2 = false;
 
-    [ConditionBool, UI("Ignore all other FATE target when Forlorn available (Experimental).",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool forlornPriority = true;
+	[ConditionBool, UI("Ignore all other FATE target when Forlorn available (Experimental).",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool forlornPriority = true;
 
-    [ConditionBool, UI("Ignore target dummies",
-               Filter = TargetConfig, Section = 1)]
-    private static readonly bool _disableTargetDummys = false;
+	[ConditionBool, UI("Ignore target dummies",
+			   Filter = TargetConfig, Section = 1)]
+	private static readonly bool _disableTargetDummys = false;
 
-    [ConditionBool, UI("Target Fate priority",
-        Filter = TargetConfig, Section = 1)]
-    private static readonly bool _targetFatePriority = true;
+	[ConditionBool, UI("Target Fate priority",
+		Filter = TargetConfig, Section = 1)]
+	private static readonly bool _targetFatePriority = true;
 
-    [ConditionBool, UI("Delay autotarget. (Experimental)",
-        Filter = TargetConfig)]
-    private static readonly bool _targetDelayEnable = false;
+	[ConditionBool, UI("Delay autotarget. (Experimental)",
+		Filter = TargetConfig)]
+	private static readonly bool _targetDelayEnable = false;
 
-    [UI("Range of time before locking onto aggro'd or new target to attack", Description = "(Do not set too low, can rip newly aggro'd dungeon mobs off tanks).",
-        Filter = TargetConfig, Parent = nameof(TargetDelayEnable))]
-    [Range(0, 3, ConfigUnitType.Seconds)]
-    public Vector2 TargetDelay { get; set; } = new(0f, 0f);
+	[UI("Range of time before locking onto aggro'd or new target to attack", Description = "(Do not set too low, can rip newly aggro'd dungeon mobs off tanks).",
+		Filter = TargetConfig, Parent = nameof(TargetDelayEnable))]
+	[Range(0, 3, ConfigUnitType.Seconds)]
+	public Vector2 TargetDelay { get; set; } = new(0f, 0f);
 
-    [UI("The size of the sector angle that can be selected as the moveable target",
-        Description = "If the selection mode is based on character facing, i.e., targets within the character's viewpoint are moveable targets.\nIf the selection mode is screen-centered, i.e., targets within a sector drawn upward from the character's point are movable targets.",
-        Filter = TargetConfig, Section = 2)]
-    [Range(0, 90, ConfigUnitType.Degree, 0.02f)]
-    public float MoveTargetAngle { get; set; } = 24;
+	[UI("The size of the sector angle that can be selected as the moveable target",
+		Description = "If the selection mode is based on character facing, i.e., targets within the character's viewpoint are moveable targets.\nIf the selection mode is screen-centered, i.e., targets within a sector drawn upward from the character's point are movable targets.",
+		Filter = TargetConfig, Section = 2)]
+	[Range(0, 90, ConfigUnitType.Degree, 0.02f)]
+	public float MoveTargetAngle { get; set; } = 24;
 
-    [ConditionBool, UI("Treat target dummy as a boss.",
-        Filter = TargetConfig, Section = 3)]
-    private static readonly bool _dummyBoss = true;
+	[ConditionBool, UI("Treat target dummy as a boss.",
+		Filter = TargetConfig, Section = 3)]
+	private static readonly bool _dummyBoss = true;
 
-    [UI("If target's TTK is higher than this, regard it as boss.",
-        Filter = TargetConfig, Section = 1)]
-    [Range(10, 1800, ConfigUnitType.Seconds, 0.02f)]
-    public float BossTimeToKill { get; set; } = 90;
+	[UI("If target's TTK is higher than this, regard it as boss.",
+		Filter = TargetConfig, Section = 1)]
+	[Range(10, 1800, ConfigUnitType.Seconds, 0.02f)]
+	public float BossTimeToKill { get; set; } = 90;
 
-    [UI("If target's TTK is lower than this, regard it as dying.",
-                Filter = TargetConfig, Section = 1)]
-    [Range(0, 60, ConfigUnitType.Seconds, 0.02f)]
-    public float DyingTimeToKill { get; set; } = 10;
+	[UI("If target's TTK is lower than this, regard it as dying.",
+				Filter = TargetConfig, Section = 1)]
+	[Range(0, 60, ConfigUnitType.Seconds, 0.02f)]
+	public float DyingTimeToKill { get; set; } = 10;
 
-    [UI("If target's HP percentage is lower than this, regard it as dying.",
-                Filter = TargetConfig, Section = 1)]
-    [Range(0, 0.1f, ConfigUnitType.Percent, 0.01f)]
-    public float IsDyingConfig { get; set; } = 0.02f;
+	[UI("If target's HP percentage is lower than this, regard it as dying.",
+				Filter = TargetConfig, Section = 1)]
+	[Range(0, 0.1f, ConfigUnitType.Percent, 0.01f)]
+	public float IsDyingConfig { get; set; } = 0.02f;
 
-    [ConditionBool, UI("Prioritize Low HP targets instead of High HP targets when using Small Target and multiple Small targets present.",
-        Filter = TargetConfig)]
-    private static readonly bool _smallHP = false;
+	[ConditionBool, UI("Prioritize Low HP targets instead of High HP targets when using Small Target and multiple Small targets present.",
+		Filter = TargetConfig)]
+	private static readonly bool _smallHP = false;
 
-    [ConditionBool, UI("Prioritize Low HP targets instead of High HP targets when using Big Target and multiple Big targets present.",
-        Filter = TargetConfig)]
-    private static readonly bool _bigHP = false;
+	[ConditionBool, UI("Prioritize Low HP targets instead of High HP targets when using Big Target and multiple Big targets present.",
+		Filter = TargetConfig)]
+	private static readonly bool _bigHP = false;
 
-    [UI("/rotation Cycle behaviour", Filter = TargetConfig)]
-    public CycleType CycleType { get; set; } = CycleType.CycleNormal;
+	[UI("/rotation Cycle behaviour", Filter = TargetConfig)]
+	public CycleType CycleType { get; set; } = CycleType.CycleNormal;
 
-    [JobConfig, UI("Engage settings", Filter = TargetConfig, PvPFilter = JobFilterType.NoJob)]
-    private readonly TargetHostileType _hostileType = TargetHostileType.AllTargetsWhenSoloInDuty;
-    #endregion
+	[JobConfig, UI("Engage settings", Filter = TargetConfig, PvPFilter = JobFilterType.NoJob)]
+	private readonly TargetHostileType _hostileType = TargetHostileType.AllTargetsWhenSoloInDuty;
+	#endregion
 
-    #region Integer
+	#region Integer
 
-    public int ActionSequencerIndex { get; set; }
+	public int ActionSequencerIndex { get; set; }
 
-    [UI("The modifier key to unlock the movement temporarily", Description = "RB is for gamepad player", Parent = nameof(PoslockCasting))]
-    public ConsoleModifiers PoslockModifier { get; set; }
+	[UI("The modifier key to unlock the movement temporarily", Description = "RB is for gamepad player", Parent = nameof(PoslockCasting))]
+	public ConsoleModifiers PoslockModifier { get; set; }
 
-    [Range(0, 5, ConfigUnitType.None, 1)]
-    [UI("Random range of simulated presses per action", Parent = nameof(KeyboardNoise))]
-    public Vector2Int KeyboardNoisePresses { get; set; } = new(2, 3);
+	[Range(0, 5, ConfigUnitType.None, 1)]
+	[UI("Random range of simulated presses per action", Parent = nameof(KeyboardNoise))]
+	public Vector2Int KeyboardNoisePresses { get; set; } = new(2, 3);
 
-    [Range(0, 10, ConfigUnitType.None)]
-    public int TargetingIndex { get; set; }
+	[Range(0, 10, ConfigUnitType.None)]
+	public int TargetingIndex { get; set; }
 
-    #endregion
+	#endregion
 
-    #region Jobs
+	#region Jobs
 
-    [JobConfig, UI("MP threshold under which to use Lucid Dreaming", Filter = HealingActionCondition)]
-    [Range(0, 10000, ConfigUnitType.None)]
-    private readonly int _lucidDreamingMpThreshold = 6000;
+	[JobConfig, UI("MP threshold under which to use Lucid Dreaming", Filter = HealingActionCondition)]
+	[Range(0, 10000, ConfigUnitType.None)]
+	private readonly int _lucidDreamingMpThreshold = 6000;
 
-    /// <markdown file="Auto" name="HP threshold for AoE healing oGCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **oGCD** AoE healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
-    /// 
-    /// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
-    ///
-    /// Use the button this setting to calculate your preferred values.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthAreaAbilityHot = 0.55f;
+	/// <markdown file="Auto" name="HP threshold for AoE healing oGCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **oGCD** AoE healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
+	/// 
+	/// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
+	///
+	/// Use the button this setting to calculate your preferred values.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthAreaAbilityHot = 0.55f;
 
-    /// <markdown file="Auto" name="HP threshold for AoE healing GCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **GCD** AoE healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
-    /// 
-    /// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
-    ///
-    /// Use the button this setting to calculate your preferred values.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthAreaSpellHot = 0.55f;
+	/// <markdown file="Auto" name="HP threshold for AoE healing GCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **GCD** AoE healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
+	/// 
+	/// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
+	///
+	/// Use the button this setting to calculate your preferred values.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthAreaSpellHot = 0.55f;
 
-    /// <markdown file="Auto" name="HP threshold for AoE healing GCDs (No heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **oGCD** AoE healing abilities.
-    /// 
-    /// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
-    ///
-    /// Use the button this setting to calculate your preferred values.
-    /// </markdown> 
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthAreaAbility = 0.75f;
+	/// <markdown file="Auto" name="HP threshold for AoE healing GCDs (No heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **oGCD** AoE healing abilities.
+	/// 
+	/// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
+	///
+	/// Use the button this setting to calculate your preferred values.
+	/// </markdown> 
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthAreaAbility = 0.75f;
 
-    /// <markdown file="Auto" name="HP threshold for AoE healing GCDs (No heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **GCD** AoE healing abilities.
-    /// 
-    /// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
-    ///
-    /// Use the button this setting to calculate your preferred values.
-    /// </markdown> 
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthAreaSpell = 0.65f;
+	/// <markdown file="Auto" name="HP threshold for AoE healing GCDs (No heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **GCD** AoE healing abilities.
+	/// 
+	/// This is calculated with the <see cref="RotationSolver.Basic.Configuration.Configs.HealthDifference">standard AoE healing deviation</see>.
+	///
+	/// Use the button this setting to calculate your preferred values.
+	/// </markdown> 
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthAreaSpell = 0.65f;
 
-    /// <markdown file="Auto" name="HP threshold for single-target healing oGCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **oGCD** single-target healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthSingleAbilityHot = 0.65f;
+	/// <markdown file="Auto" name="HP threshold for single-target healing oGCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **oGCD** single-target healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthSingleAbilityHot = 0.65f;
 
-    /// <markdown file="Auto" name="HP threshold for single-target healing GCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **GCD** single-target healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthSingleSpellHot = 0.55f;
+	/// <markdown file="Auto" name="HP threshold for single-target healing GCDs (Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **GCD** single-target healing abilities **when they have a heal-over-time already applied to them, by you or a teammate**.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthSingleSpellHot = 0.55f;
 
-    /// <markdown file="Auto" name="HP threshold for single-target healing oGCDs (No Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **oGCD** AoE healing abilities.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthSingleAbility = 0.7f;
+	/// <markdown file="Auto" name="HP threshold for single-target healing oGCDs (No Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **oGCD** AoE healing abilities.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthSingleAbility = 0.7f;
 
-    /// <markdown file="Auto" name="HP threshold for single-target healing GCDs (No Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
-    /// Relates to **GCD** single-target healing abilities.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent)]
-    private readonly float _healthSingleSpell = 0.65f;
+	/// <markdown file="Auto" name="HP threshold for single-target healing GCDs (No Heal-over-time)" section="Healing Usage and Control" subsection="RotationSolver.Basic.Configuration.Configs._autoHeal">
+	/// Relates to **GCD** single-target healing abilities.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent)]
+	private readonly float _healthSingleSpell = 0.65f;
 
-    /// <markdown file="Auto" name="The HP% for tank to use invulnerability" section="Action Usage and Control">
-    /// The threshold to automatically use your tank invulnerability action when falling below the HP percentage set.
-    /// </markdown>
-    [JobConfig, Range(0, 1, ConfigUnitType.Percent, 0.02f)]
-    [UI("The HP%% for tank to use invulnerability",
-        Filter = AutoActionUsage, Section = 3,
-        PvEFilter = JobFilterType.Tank, PvPFilter = JobFilterType.NoJob)]
-    private readonly float _healthForDyingTanks = 0.15f;
+	/// <markdown file="Auto" name="The HP% for tank to use invulnerability" section="Action Usage and Control">
+	/// The threshold to automatically use your tank invulnerability action when falling below the HP percentage set.
+	/// </markdown>
+	[JobConfig, Range(0, 1, ConfigUnitType.Percent, 0.02f)]
+	[UI("The HP%% for tank to use invulnerability",
+		Filter = AutoActionUsage, Section = 3,
+		PvEFilter = JobFilterType.Tank, PvPFilter = JobFilterType.NoJob)]
+	private readonly float _healthForDyingTanks = 0.15f;
 
-    [JobConfig]
-    private readonly string _PvPRotationChoice = string.Empty;
+	[JobConfig]
+	private readonly string _PvPRotationChoice = string.Empty;
 
-    [JobConfig]
-    private readonly string _rotationChoice = string.Empty;
-    #endregion
+	[JobConfig]
+	private readonly string _rotationChoice = string.Empty;
+	#endregion
 
-    [JobConfig]
-    private readonly ConcurrentDictionary<uint, ActionConfig> _rotationActionConfig = new();
+	[JobConfig]
+	private readonly ConcurrentDictionary<uint, ActionConfig> _rotationActionConfig = new();
 
-    [JobConfig]
-    private readonly ConcurrentDictionary<uint, ItemConfig> _rotationItemConfig = new();
+	[JobConfig]
+	private readonly ConcurrentDictionary<uint, ItemConfig> _rotationItemConfig = new();
 
-    [JobChoiceConfig]
-    private readonly ConcurrentDictionary<string, string> _rotationConfigurations = new();
+	[JobChoiceConfig]
+	private readonly ConcurrentDictionary<string, string> _rotationConfigurations = new();
 
-    public ConcurrentDictionary<uint, string> DutyRotationChoice = new();
+	public ConcurrentDictionary<uint, string> DutyRotationChoice = new();
 
-    public void Save()
-    {
+	public void Save()
+	{
 #if DEBUG
 		PluginLog.Information("Saved configurations.");
 #endif
@@ -1353,7 +1380,7 @@ internal partial class Configs : IPluginConfiguration
 		File.Copy(Svc.PluginInterface.ConfigFile.FullName, Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_SafetySave.json", true);
 		File.Copy(Svc.PluginInterface.ConfigFile.Directory + "\\RotationSolver_Backup.json", Svc.PluginInterface.ConfigFile.FullName, true);
 
-		Configs restoredConfigs = JsonConvert.DeserializeObject<Configs>(
+		var restoredConfigs = JsonConvert.DeserializeObject<Configs>(
 									  File.ReadAllText(Svc.PluginInterface.ConfigFile.FullName))
 								  ?? new Configs();
 

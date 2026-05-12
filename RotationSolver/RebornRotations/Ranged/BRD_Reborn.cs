@@ -61,7 +61,7 @@ public sealed class BRD_Reborn : BardRotation
 	protected override IAction? CountDownAction(float remainTime)
 	{
 		// tincture needs to be used on -0.7s exactly
-		if (remainTime <= 0.7f && UseBurstMedicine(out IAction? act))
+		if (remainTime <= 0.7f && UseBurstMedicine(out var act))
 		{
 			return act;
 		}
