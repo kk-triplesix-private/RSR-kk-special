@@ -507,8 +507,8 @@ internal static class DataCenter
 	#region Savage
 	public static bool IsInM9S => TerritoryID == 1321;
 	public static bool IsInM10S => TerritoryID == 1323;
-	public static bool IsInM11S => TerritoryID == 1327;
-	public static bool IsInM12S => TerritoryID == 1325;
+	public static bool IsInM11S => TerritoryID == 1325;
+	public static bool IsInM12S => TerritoryID == 1327;
 	#endregion
 
 	#region Savage
