@@ -463,6 +463,7 @@ public partial class BardRotation
 
 	static partial void ModifyApexArrowPvP(ref ActionSetting setting)
 	{
+		setting.ActionCheck = () => !StatusHelper.PlayerHasStatus(true, StatusID.BlastArrowReady_3142);
 		setting.StatusProvide = [StatusID.BlastArrowReady_3142, StatusID.FrontlinersMarch];
 		setting.CreateConfig = () => new ActionConfig()
 		{

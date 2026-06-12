@@ -8,11 +8,13 @@ using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Logging;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Common.Component.BGCollision;
 using Lumina.Excel.Sheets;
 using RotationSolver.Basic.Configuration;
+using RotationSolver.Basic.Data;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -153,6 +155,17 @@ public static class ObjectHelper
 		}
 	}
 
+	/// <summary>
+	/// Checks if the battle character has the specified NPC name.
+	/// </summary>
+	/// <param name="battleChara">The battle character to check.</param>
+	/// <param name="npcName">The NPC name to compare against.</param>
+	/// <returns>True if the battle character's NameId matches the specified NPC name; otherwise, false.</returns>
+	public static bool IsNamed(this IBattleChara battleChara, NPCName npcName)
+	{
+		return battleChara != null && battleChara.NameId == (uint)npcName;
+	}
+
 	internal static bool IsOthersPlayersMob(this IBattleChara battleChara)
 	{
 		if (battleChara == null)
@@ -176,6 +189,18 @@ public static class ObjectHelper
 		if (Player.Object != null && battleChara.TargetObject?.OwnerId == Player.Object.GameObjectId)
 		{
 			return false;
+		}
+
+		// If the mob's owner is a party member it belongs to our party and can be attacked
+		if (Player.Object != null && battleChara.OwnerId != 0)
+		{
+			foreach (var p in Svc.Party)
+			{
+				if (p.GameObject?.GameObjectId == battleChara.OwnerId)
+				{
+					return false;
+				}
+			}
 		}
 
 		// SpecialType but no NamePlateIcon — check whether the mob's event type matches one of the
@@ -302,7 +327,7 @@ public static class ObjectHelper
             }
         }*/
 
-		if (Service.Config.TargetQuestThings2 && battleChara.IsOthersPlayersMob())
+		if (Service.Config.TargetQuestThings3 && battleChara.IsOthersPlayersMob())
 		{
 			return false;
 		}
@@ -351,7 +376,7 @@ public static class ObjectHelper
 		}
 
 		//Special cases for Black Star and Mythic Idol, which do not have valid target objects but are still attackable.
-		if (battleChara.NameId == 13726 || battleChara.NameId == 13636)
+		if (battleChara.IsNamed(NPCName.BlackStar) || battleChara.IsNamed(NPCName.MythicIdol))
 		{
 			return true;
 		}
@@ -493,9 +518,9 @@ public static class ObjectHelper
 			return false;
 		}
 
-		if (battleChara.NameId == 9441)
+		if (battleChara.IsNamed(NPCName.CastrumGate))
 		{
-			return true; // Special case for Bottom gate in CLL
+			return true;
 		}
 
 		return false;
@@ -838,6 +863,27 @@ public static class ObjectHelper
 	}
 
 	/// <summary>
+	/// Gets the priority value for treasure hunt nameplate icons.
+	/// Lower values indicate higher priority (1 is highest priority).
+	/// </summary>
+	/// <param name="icon">The nameplate icon ID.</param>
+	/// <returns>
+	/// Priority value (1-5) for treasure hunt icons, or int.MaxValue if not a treasure hunt priority icon.
+	/// </returns>
+	internal static int GetNamePlateIconPriority(uint icon)
+	{
+		return icon switch
+		{
+			60687 => 1, // Treasure hunt icon 1
+			60688 => 2, // Treasure hunt icon 2
+			60689 => 3, // Treasure hunt icon 3
+			60690 => 4, // Treasure hunt icon 4
+			60691 => 5, // Treasure hunt icon 5
+			_ => int.MaxValue
+		};
+	}
+
+	/// <summary>
 	/// Determines whether the specified game object is a top priority hostile target based on its name being listed.
 	/// </summary>
 	/// <param name="battleChara">The battleChara to check.</param>
@@ -870,6 +916,8 @@ public static class ObjectHelper
 	/// </returns>
 	internal static bool IsTopPriorityHostile(this IBattleChara battleChara)
 	{
+		var icon = battleChara.GetNamePlateIcon();
+
 		if (battleChara == null)
 		{
 			return false;
@@ -878,6 +926,19 @@ public static class ObjectHelper
 		if (battleChara.IsAllianceMember() || battleChara.IsParty())
 		{
 			return false;
+		}
+
+		if (Service.Config.Treasuredungeonnumbered && DataCenter.IsInTreasureHunt)
+		{
+			if (icon == 60687 || icon == 60688 || icon == 60689 || icon == 60690 || icon == 60691)
+			{
+				return true;
+			}
+		}
+
+		if (Service.Config.Treasuredungeontimed && battleChara.TreasureDungeonPrio())
+		{
+			return true;
 		}
 
 		if (DataCenter.IsInFate && battleChara.IsForlorn())
@@ -986,8 +1047,6 @@ public static class ObjectHelper
 		{
 			return true;
 		}
-
-		var icon = battleChara.GetNamePlateIcon();
 
 		if (Service.Config.TargetHuntingRelicLevePriority && (icon == 60092 || icon == 60094 || icon == 60096 || icon == 60097 || icon == 60098 || icon == 71244))
 		{
@@ -1306,6 +1365,126 @@ public static class ObjectHelper
 			if (battleChara.NameId == 13978)
 			{
 				return true;
+			}
+		}
+
+		return false;
+	}
+
+	internal static bool TreasureDungeonPrio(this IBattleChara battleChara)
+	{
+		if (DataCenter.IsInTreasureHunt)
+		{
+			if (DataCenter.IsInTheLostCanalsofUznair)
+			{
+				if (battleChara.IsNamed(NPCName.NamazuStickywhisker))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheShiftingAltarsofUznair)
+			{
+				if (battleChara.IsNamed(NPCName.GoldWhisker))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.GoldWhisker_7625))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheHiddenCanalsofUznair)
+			{
+				if (battleChara.IsNamed(NPCName.NamazuStickywhisker))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.Abharamu))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheDungeonsofLyheGhiah)
+			{
+				if (battleChara.IsNamed(NPCName.FuathTrickster))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.TheKeeperOfTheKeys))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheShiftingOubliettesofLyheGhiah)
+			{
+				if (battleChara.IsNamed(NPCName.FuathTrickster_9774))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.TheKeeperOfTheKeys_9773))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheExcitatron6000)
+			{
+				if (battleChara.IsNamed(NPCName.RainbowGolem))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.GoldenSupporter))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInTheShiftingGymnasionAgonon)
+			{
+				if (battleChara.IsNamed(NPCName.GymnasiouLampas))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.GymnasiouLyssa))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInCenoteJaJaGural)
+			{
+				if (battleChara.IsNamed(NPCName.AlpacaOfFortune))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.UolonOfFortune))
+				{
+					return true;
+				}
+			}
+
+			if (DataCenter.IsInVaultOneiron)
+			{
+				if (battleChara.IsNamed(NPCName.Vaultkeeper))
+				{
+					return true;
+				}
+
+				if (battleChara.IsNamed(NPCName.GoldyCat))
+				{
+					return true;
+				}
 			}
 		}
 
@@ -1921,7 +2100,8 @@ public static class ObjectHelper
 	/// <returns>True if the target is immune due to any special mechanic; otherwise, false.</returns>
 	public static bool IsSpecialImmune(this IBattleChara battleChara)
 	{
-		return battleChara.IsEnuoGauntletImmune()
+		return battleChara.IsDMUBossImmune()
+			|| battleChara.IsEnuoGauntletImmune()
 			|| battleChara.IsWindurstAlexanderImmune()
 			|| battleChara.IsOrbonneImmune()
 			|| battleChara.IsM9SavageImmune()
@@ -1943,6 +2123,54 @@ public static class ObjectHelper
 			|| battleChara.IsOmegaImmune()
 			|| battleChara.IsLimitlessBlue()
 			|| battleChara.IsHanselorGretelShielded();
+	}
+
+	/// <summary>
+	/// Is target Jeuno Boss immune.
+	/// </summary>
+	/// <param name="battleChara">the object.</param>
+	/// <returns></returns>
+	public static bool IsDMUBossImmune(this IBattleChara battleChara)
+	{
+		if (Service.Config.DmuBossImmune && DataCenter.IsInDMU)
+		{
+			var FatedVillain = battleChara.HasStatus(false, StatusID.FatedVillain);
+			var VauntedVillain = battleChara.HasStatus(false, StatusID.VauntedVillain);
+			var EpicVillain = battleChara.HasStatus(false, StatusID.EpicVillain);
+
+			var VauntedHero = StatusHelper.PlayerHasStatus(false, StatusID.VauntedHero);
+			var FatedHero = StatusHelper.PlayerHasStatus(false, StatusID.FatedHero);
+			var EpicHero = StatusHelper.PlayerHasStatus(false, StatusID.EpicHero);
+
+			if (EpicVillain && (VauntedHero || FatedHero))
+			{
+				if (Service.Config.InDebug)
+				{
+					PluginLog.Information("IsDMUBossImmune: EpicVillain status found");
+				}
+				return true;
+			}
+
+			if (VauntedVillain && (EpicHero || FatedHero))
+			{
+				if (Service.Config.InDebug)
+				{
+					PluginLog.Information("IsDMUBossImmune: VauntedVillain status found");
+				}
+				return true;
+			}
+
+			if (FatedVillain && (EpicHero || VauntedHero))
+			{
+				if (Service.Config.InDebug)
+				{
+					PluginLog.Information("IsDMUBossImmune: FatedVillain status found");
+				}
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/// <summary>
@@ -2672,15 +2900,11 @@ public static class ObjectHelper
 	{
 		if (Service.Config.ForkedtowerDeadStar && DataCenter.IsInForkedTower)
 		{
-			var Triton = battleChara.NameId == 13730;
-			var Nereid = battleChara.NameId == 13731;
-			var Phobos = battleChara.NameId == 13732;
-
 			var PhobosicGravity = StatusHelper.PlayerHasStatus(false, StatusID.PhobosicGravity);
 			var TritonicGravity = StatusHelper.PlayerHasStatus(false, StatusID.TritonicGravity);
 			var NereidicGravity = StatusHelper.PlayerHasStatus(false, StatusID.NereidicGravity);
 
-			if (Triton && (NereidicGravity || PhobosicGravity))
+			if (battleChara.IsNamed(NPCName.Triton) && (NereidicGravity || PhobosicGravity))
 			{
 				if (Service.Config.InDebug)
 				{
@@ -2689,7 +2913,7 @@ public static class ObjectHelper
 				return true;
 			}
 
-			if (Nereid && (TritonicGravity || PhobosicGravity))
+			if (battleChara.IsNamed(NPCName.Nereid) && (TritonicGravity || PhobosicGravity))
 			{
 				if (Service.Config.InDebug)
 				{
@@ -2698,7 +2922,7 @@ public static class ObjectHelper
 				return true;
 			}
 
-			if (Phobos && (TritonicGravity || NereidicGravity))
+			if (battleChara.IsNamed(NPCName.Phobos) && (TritonicGravity || NereidicGravity))
 			{
 				if (Service.Config.InDebug)
 				{
@@ -3035,7 +3259,7 @@ public static class ObjectHelper
 			return 0;
 		}
 
-		var effectiveHp = character.CurrentHp + ObjectHelper.GetObjectShield(battleChara);
+		var effectiveHp = character.CurrentHp + GetObjectShield(battleChara);
 		return (int)Math.Floor((float)effectiveHp / character.MaxHp * 100f);
 	}
 
@@ -3539,10 +3763,18 @@ public static class ObjectHelper
 			return float.MaxValue;
 		}
 
-		// Use XZ-plane (horizontal) distance only — the game engine measures action range
-		// purely on the horizontal plane, ignoring Y-axis differences.
 		var playerPos = Player.Object.Position;
 		var targetPos = battleChara.Position;
+
+		// Check vertical distance first - if too far vertically, the target is unreachable
+		var dy = MathF.Abs(targetPos.Y - playerPos.Y);
+		if (dy > 30f)
+		{
+			return dy;
+		}
+
+		// Use XZ-plane (horizontal) distance only — the game engine measures action range
+		// purely on the horizontal plane, ignoring Y-axis differences (when within vertical threshold).
 		var dx = targetPos.X - playerPos.X;
 		var dz = targetPos.Z - playerPos.Z;
 		var distance = MathF.Sqrt(dx * dx + dz * dz) - (Player.Object.HitboxRadius + battleChara.HitboxRadius);

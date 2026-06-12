@@ -355,7 +355,7 @@ public partial class RedMageRotation
 	/// <summary>
 	/// 
 	/// </summary>
-	public static bool CanInstantCast => HasSwift || HasAccelerate;
+	public static bool CanInstantCast => HasSwift;
 	#endregion
 
 	#region Status Display
@@ -501,6 +501,9 @@ public partial class RedMageRotation
 
 	static partial void ModifyEmboldenPvE(ref ActionSetting setting)
 	{
+		setting.StatusProvide = [StatusID.Embolden];
+		setting.StatusFromSelf = false;
+		setting.TargetType = TargetType.Self;
 		setting.CreateConfig = () => new ActionConfig()
 		{
 			TimeToKill = 10,
@@ -530,26 +533,26 @@ public partial class RedMageRotation
 		setting.ActionCheck = () => Player?.CurrentMp >= RaiseMPMinimum;
 	}
 
-    static partial void ModifyVerflarePvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => ManaStacks == 3;
-		setting.ComboIds = [ActionID.RedoublementPvE, ActionID.EnchantedRedoublementPvE, ActionID.EnchantedRedoublementPvE_45962, ActionID.EnchantedMoulinetDeuxPvE];
+	static partial void ModifyVerflarePvE(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => ManaStacks == 3;
+		setting.ComboIds = [ActionID.RedoublementPvE, ActionID.EnchantedRedoublementPvE, ActionID.EnchantedRedoublementPvE_45962, ActionID.EnchantedMoulinetTroisPvE];
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
-    static partial void ModifyVerholyPvE(ref ActionSetting setting)
-    {
-        setting.UnlockedByQuestID = 68123;
-        setting.ActionCheck = () => ManaStacks == 3;
-        setting.ComboIds = [ActionID.RedoublementPvE, ActionID.EnchantedRedoublementPvE, ActionID.EnchantedRedoublementPvE_45962, ActionID.EnchantedMoulinetDeuxPvE];
+	static partial void ModifyVerholyPvE(ref ActionSetting setting)
+	{
+		setting.UnlockedByQuestID = 68123;
+		setting.ActionCheck = () => ManaStacks == 3;
+		setting.ComboIds = [ActionID.RedoublementPvE, ActionID.EnchantedRedoublementPvE, ActionID.EnchantedRedoublementPvE_45962, ActionID.EnchantedMoulinetTroisPvE];
 		setting.CreateConfig = () => new ActionConfig()
-        {
-            AoeCount = 1,
-        };
-    }
+		{
+			AoeCount = 1,
+		};
+	}
 
 	static partial void ModifyReprisePvE(ref ActionSetting setting)
 	{
@@ -643,8 +646,8 @@ public partial class RedMageRotation
 	}
 
 	static partial void ModifyEnchantedZwerchhauPvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
+	{
+		setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
 		setting.ComboIds = [ActionID.EnchantedRipostePvE];
 	}
 
@@ -659,8 +662,8 @@ public partial class RedMageRotation
 	}
 
 	static partial void ModifyEnchantedRedoublementPvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
+	{
+		setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
 		setting.ComboIds = [ActionID.EnchantedZwerchhauPvE];
 	}
 
@@ -679,23 +682,31 @@ public partial class RedMageRotation
 		setting.ActionCheck = () => HasEnoughManaFor1Combo || CanMagickedSwordplay;
 	}
 
-    static partial void ModifyEnchantedMoulinetDeuxPvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
+	static partial void ModifyEnchantedMoulinetDeuxPvE(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
 		setting.ComboIds = [ActionID.EnchantedMoulinetPvE];
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
 	}
 
-    static partial void ModifyEnchantedMoulinetTroisPvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
+	static partial void ModifyEnchantedMoulinetTroisPvE(ref ActionSetting setting)
+	{
+		setting.ActionCheck = () => HasEnoughManaFor23Combo || CanMagickedSwordplay;
 		setting.ComboIds = [ActionID.EnchantedMoulinetDeuxPvE];
+		setting.CreateConfig = () => new ActionConfig()
+		{
+			AoeCount = 1,
+		};
 	}
 
 	static partial void ModifyEnchantedReprisePvE(ref ActionSetting setting)
-    {
-        setting.ActionCheck = () => HasEnoughManaFor4Combo || CanMagickedSwordplay;
-    }
-    #endregion
+	{
+		setting.ActionCheck = () => HasEnoughManaFor4Combo || CanMagickedSwordplay;
+	}
+	#endregion
 
 	#region PvP Actions
 	static partial void ModifyJoltIiiPvP(ref ActionSetting setting)
@@ -721,18 +732,21 @@ public partial class RedMageRotation
 	{
 		setting.ActionCheck = () => Service.GetAdjustedActionId(ActionID.EnchantedRipostePvP) == ActionID.EnchantedRipostePvP;
 		setting.StatusProvide = [StatusID.EnchantedRiposte];
+		setting.IgnoreGuard = true;
 	}
 
 	static partial void ModifyEnchantedZwerchhauPvP(ref ActionSetting setting)
 	{
 		setting.ActionCheck = () => IsLastComboAction(ActionID.EnchantedRipostePvP);
 		setting.StatusProvide = [StatusID.EnchantedZwerchhau_3238];
+		setting.IgnoreGuard = true;
 	}
 
 	static partial void ModifyEnchantedRedoublementPvP(ref ActionSetting setting)
 	{
 		setting.ActionCheck = () => IsLastComboAction(ActionID.EnchantedZwerchhauPvP);
 		setting.StatusProvide = [StatusID.EnchantedRedoublement_3239];
+		setting.IgnoreGuard = true;
 	}
 
 	static partial void ModifyScorchPvP(ref ActionSetting setting)

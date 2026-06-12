@@ -103,9 +103,11 @@ public static class StatusHelper
 	[
 		StatusID.Holmgang_409,
 		StatusID.LivingDead,
-        //StatusID.WalkingDead,
-        StatusID.Superbolide,
+		//StatusID.WalkingDead,
+		StatusID.Superbolide,
 		StatusID.Invulnerability,
+		StatusID.HpRecoveryDown,
+		StatusID.Mounted,
 	];
 
 	/// <summary>
@@ -116,7 +118,8 @@ public static class StatusHelper
 		StatusID.Swiftcast,
 		StatusID.Triplecast,
 		StatusID.Dualcast,
-		StatusID.OccultQuick
+		StatusID.OccultQuick,
+		StatusID.LostChainspell
 	];
 
 	/// <summary>
@@ -135,16 +138,24 @@ public static class StatusHelper
 	/// </summary>
 	public static StatusID[] RampartStatus { get; } =
 	[
-		StatusID.Superbolide,
-		StatusID.HallowedGround,
 		StatusID.Rampart,
 		StatusID.Bulwark,
 		StatusID.Bloodwhetting,
+
 		StatusID.Vengeance,
+		StatusID.Damnation,
+
 		StatusID.Sentinel,
+		StatusID.Guardian,
+
 		StatusID.ShadowWall,
+		StatusID.ShadowedVigil,
+
 		StatusID.Nebula,
 		StatusID.GreatNebula,
+
+		StatusID.Superbolide,
+		StatusID.HallowedGround,
 		StatusID.Holmgang_409,
 		StatusID.LivingDead,
 	];
@@ -163,6 +174,7 @@ public static class StatusHelper
 	public static StatusID[] DoomHealStatus { get; } =
 	[
 		StatusID.Doom_1769,
+		StatusID.Doom_5473
 	];
 
 	/// <summary>

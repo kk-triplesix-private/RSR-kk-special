@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace RotationSolver.RebornRotations.Tank;
 
 [Rotation("Reborn", CombatType.PvE, GameVersion = "7.5")]
@@ -6,10 +8,35 @@ namespace RotationSolver.RebornRotations.Tank;
 public sealed class GNB_Reborn : GunbreakerRotation
 {
 	#region Config Options
-	[RotationConfig(CombatType.PvE, Name = "Restrict automatic use of Aurora to only being used on self")]
-	public bool AuroraSelf { get; set; } = false;
-	[RotationConfig(CombatType.PvE, Name = "Restrict automatic use of Heart of Stone/Heart of Corundum to only being used on self")]
-	public bool HeartOfStoneSelf { get; set; } = false;
+	[RotationConfig(CombatType.PvE, Name = "How to use Aurora")]
+	public AuroraUsageStrategy AuroraUsage { get; set; } = AuroraUsageStrategy.TankbusterTarget;
+
+	[RotationConfig(CombatType.PvE, Name = "How to use Heart Of Stone/Heart Of Corundum")]
+	public HeartOfStoneStrategy HeartOfStoneUsage { get; set; } = HeartOfStoneStrategy.TankbusterTarget;
+
+	public enum HeartOfStoneStrategy : byte
+	{
+		[Description("Full target usage")]
+		Fullusage,
+
+		[Description("Only use on tankbuster targets prioritizing self")]
+		TankbusterTarget,
+
+		[Description("Only use on self")]
+		SelfOnly,
+	}
+
+	public enum AuroraUsageStrategy : byte
+	{
+		[Description("Full target usage")]
+		Fullusage,
+
+		[Description("Only use on tankbuster targets prioritizing self")]
+		TankbusterTarget,
+
+		[Description("Only use on self")]
+		SelfOnly,
+	}
 
 	#endregion
 
@@ -99,39 +126,81 @@ public sealed class GNB_Reborn : GunbreakerRotation
 
 		if (HeartOfStonePvE.EnoughLevel)
 		{
-			if (!HeartOfStoneSelf && HeartOfCorundumPvE.EnoughLevel && HeartOfCorundumPvE.CanUse(out act, targetOverride: TargetType.Tankbuster))
+			switch (HeartOfStoneUsage)
 			{
-				return true;
-			}
+				case HeartOfStoneStrategy.SelfOnly:
+					if (HeartOfCorundumPvE.EnoughLevel && HeartOfCorundumPvE.CanUse(out act))
+					{
+						return true;
+					}
+					if (!HeartOfCorundumPvE.EnoughLevel && HeartOfStonePvE.CanUse(out act))
+					{
+						return true;
+					}
+					break;
 
-			if (HeartOfStoneSelf && HeartOfCorundumPvE.EnoughLevel && HeartOfCorundumPvE.CanUse(out act))
-			{
-				return true;
-			}
+				case HeartOfStoneStrategy.TankbusterTarget:
+					if (HeartOfCorundumPvE.EnoughLevel && HeartOfCorundumPvE.CanUse(out act, targetOverride: TargetType.Tankbuster))
+					{
+						return true;
+					}
+					if (!HeartOfCorundumPvE.EnoughLevel && HeartOfStonePvE.CanUse(out act, targetOverride: TargetType.Tankbuster))
+					{
+						return true;
+					}
+					break;
 
-			if (!HeartOfStoneSelf && !HeartOfCorundumPvE.EnoughLevel && HeartOfStonePvE.CanUse(out act, targetOverride: TargetType.Tankbuster))
-			{
-				return true;
-			}
-
-			if (HeartOfStoneSelf && !HeartOfCorundumPvE.EnoughLevel && HeartOfStonePvE.CanUse(out act))
-			{
-				return true;
+				case HeartOfStoneStrategy.Fullusage:
+				default:
+					if (HeartOfCorundumPvE.EnoughLevel && HeartOfCorundumPvE.CanUse(out act, targetOverride: TargetType.LowHP))
+					{
+						return true;
+					}
+					if (!HeartOfCorundumPvE.EnoughLevel && HeartOfStonePvE.CanUse(out act, targetOverride: TargetType.LowHP))
+					{
+						return true;
+					}
+					break;
 			}
 		}
 
 		//30
-		if ((!RampartPvE.Cooldown.IsCoolingDown || RampartPvE.Cooldown.ElapsedAfter(60)) && NebulaPvE.CanUse(out act))
-		{
-			return true;
-		}
-		//20
-		if (NebulaPvE.Cooldown.IsCoolingDown && NebulaPvE.Cooldown.ElapsedAfter(60) && RampartPvE.CanUse(out act))
+		if ((!RampartPvE.Cooldown.IsCoolingDown || RampartPvE.Cooldown.ElapsedAfter(60)) && GreatNebulaPvE.CanUse(out act) && GreatNebulaPvE.EnoughLevel)
 		{
 			return true;
 		}
 
-		if (ReprisalPvE.CanUse(out act))
+		if ((!RampartPvE.Cooldown.IsCoolingDown || RampartPvE.Cooldown.ElapsedAfter(60)) && NebulaPvE.CanUse(out act) && !GreatNebulaPvE.EnoughLevel)
+		{
+			return true;
+		}
+
+		//20
+		if (!NebulaPvE.EnoughLevel)
+		{
+			if (RampartPvE.CanUse(out act))
+			{
+				return true;
+			}
+		}
+
+		if (NebulaPvE.EnoughLevel && !GreatNebulaPvE.EnoughLevel)
+		{
+			if (NebulaPvE.Cooldown.IsCoolingDown && NebulaPvE.Cooldown.ElapsedAfter(30) && RampartPvE.CanUse(out act))
+			{
+				return true;
+			}
+		}
+
+		if (GreatNebulaPvE.EnoughLevel)
+		{
+			if (GreatNebulaPvE.Cooldown.IsCoolingDown && GreatNebulaPvE.Cooldown.ElapsedAfter(30) && RampartPvE.CanUse(out act))
+			{
+				return true;
+			}
+		}
+
+		if (ReprisalPvE.CanUse(out act, skipAoeCheck: true))
 		{
 			return true;
 		}
@@ -149,14 +218,29 @@ public sealed class GNB_Reborn : GunbreakerRotation
 
 		if (!IsLastAbility(ActionID.AuroraPvE))
 		{
-			if (!AuroraSelf && AuroraPvE.CanUse(out act, targetOverride: TargetType.LowHP))
+			switch (AuroraUsage)
 			{
-				return true;
-			}
+				case AuroraUsageStrategy.SelfOnly:
+					if (AuroraPvE.CanUse(out act))
+					{
+						return true;
+					}
+					break;
 
-			if (AuroraSelf && AuroraPvE.CanUse(out act))
-			{
-				return true;
+				case AuroraUsageStrategy.TankbusterTarget:
+					if (AuroraPvE.CanUse(out act, targetOverride: TargetType.Tankbuster))
+					{
+						return true;
+					}
+					break;
+
+				case AuroraUsageStrategy.Fullusage:
+				default:
+					if (AuroraPvE.CanUse(out act, targetOverride: TargetType.LowHP))
+					{
+						return true;
+					}
+					break;
 			}
 		}
 

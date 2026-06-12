@@ -241,10 +241,28 @@ public sealed class PLD_Reborn : PaladinRotation
 				return true;
 			}
 
-			// If Sentinel is at an enough level and is cooling down for more than 60 seconds, or if Sentinel is not at an enough level, and Rampart can be used, use Rampart and return true.
-			if (((GuardianPvE.EnoughLevel && GuardianPvE.Cooldown.IsCoolingDown && GuardianPvE.Cooldown.ElapsedAfter(60)) || (!GuardianPvE.EnoughLevel && SentinelPvE.EnoughLevel && SentinelPvE.Cooldown.IsCoolingDown && SentinelPvE.Cooldown.ElapsedAfter(60)) || !SentinelPvE.EnoughLevel) && RampartPvE.CanUse(out act))
+			if (!SentinelPvE.EnoughLevel)
 			{
-				return true;
+				if (RampartPvE.CanUse(out act))
+				{
+					return true;
+				}
+			}
+
+			if (SentinelPvE.EnoughLevel && !GuardianPvE.EnoughLevel)
+			{
+				if (SentinelPvE.Cooldown.IsCoolingDown && SentinelPvE.Cooldown.ElapsedAfter(30) && RampartPvE.CanUse(out act))
+				{
+					return true;
+				}
+			}
+
+			if (GuardianPvE.EnoughLevel)
+			{
+				if (GuardianPvE.Cooldown.IsCoolingDown && GuardianPvE.Cooldown.ElapsedAfter(30) && RampartPvE.CanUse(out act))
+				{
+					return true;
+				}
 			}
 
 			// If Reprisal can be used, use it and return true.

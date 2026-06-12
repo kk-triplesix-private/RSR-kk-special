@@ -15,6 +15,7 @@ using RotationSolver.Basic.Configuration;
 using RotationSolver.Basic.Rotations.Duties;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Drawing;
 using Action = Lumina.Excel.Sheets.Action;
 using CharacterManager = FFXIVClientStructs.FFXIV.Client.Game.Character.CharacterManager;
 using CombatRole = RotationSolver.Basic.Data.CombatRole;
@@ -501,6 +502,10 @@ internal static class DataCenter
 	public static bool IsInDSR => TerritoryID == 968;
 	public static bool IsInTOP => TerritoryID == 1122;
 	public static bool IsInFRU => TerritoryID == 1238;
+	public static bool IsInDMU => TerritoryID == 1363;
+	#endregion
+
+	#region Chaotic
 	public static bool IsInCOD => TerritoryID == 1241;
 	#endregion
 
@@ -552,6 +557,63 @@ internal static class DataCenter
 
 	#endregion
 
+	#region Treasure Hunt
+	/// <summary>
+	/// 
+	/// </summary>
+	public static bool IsInTreasureHunt => Territory?.ContentType == TerritoryContentType.TreasureHunt;
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public static bool IsInTheAquapolis => TerritoryID == 558;
+
+	/// <summary>
+	/// The Lost Canals of Uznair
+	/// </summary>
+	public static bool IsInTheLostCanalsofUznair => TerritoryID == 712;
+
+	/// <summary>
+	/// The Shifting Altars of Uznair
+	/// </summary>
+	public static bool IsInTheShiftingAltarsofUznair => TerritoryID == 794;
+
+	/// <summary>
+	/// The Hidden Canals of Uznair
+	/// </summary>
+	public static bool IsInTheHiddenCanalsofUznair => TerritoryID == 725;
+
+	/// <summary>
+	/// The Dungeons of Lyhe Ghiah
+	/// </summary>
+	public static bool IsInTheDungeonsofLyheGhiah => TerritoryID == 879;
+
+	/// <summary>
+	/// The Shifting Oubliettes of Lyhe Ghiah
+	/// </summary>
+	public static bool IsInTheShiftingOubliettesofLyheGhiah => TerritoryID == 924;
+
+	/// <summary>
+	/// The Excitatron 6000
+	/// </summary>
+	public static bool IsInTheExcitatron6000 => TerritoryID == 1000;
+
+	/// <summary>
+	/// The Shifting Gymnasion Agonon
+	/// </summary>
+	public static bool IsInTheShiftingGymnasionAgonon => TerritoryID == 1123;
+
+	/// <summary>
+	/// Cenote Ja Ja Gural
+	/// </summary>
+	public static bool IsInCenoteJaJaGural => TerritoryID == 1209;
+
+	/// <summary>
+	/// Vault Oneiron
+	/// </summary>
+	public static bool IsInVaultOneiron => TerritoryID == 1279;
+	#endregion
+
 	#region Bozja
 	/// <summary>
 	/// Determines if the current content is Bozjan Southern Front or Zadnor.
@@ -584,18 +646,26 @@ internal static class DataCenter
 	public static bool IsInBozja => IsInBozjanFieldOp || IsInDelubrumNormal || IsInDelubrumSavage;
 	#endregion
 
+	/// <summary>
+	///
+	/// </summary>
+	public static bool IsInFieldOperations => Content.ContentType == ECommons.GameHelpers.ContentType.FieldOperations;
+
+	/// <summary>
+	///
+	/// </summary>
+	public static bool IsInFieldRaid => Content.ContentType == ECommons.GameHelpers.ContentType.FieldRaid;
+
 	#region Occult Crescent
 	/// <summary>
-	/// Determines if the current content is Occult
+	/// Determines if the current content is Occult Crescent.
 	/// </summary>
-	public static bool IsInOccultCrescentOp => Content.ContentType == ECommons.GameHelpers.ContentType.FieldOperations
-		&& Territory?.ContentType == TerritoryContentType.OccultCrescent;
+	public static bool IsInOccultCrescentOp => Territory?.ContentType == TerritoryContentType.OccultCrescent;
 
 	/// <summary>
 	/// Determines if the current content is Forked Tower.
 	/// </summary>
-	public static bool IsInForkedTower => IsInOccultCrescentOp
-		&& StatusHelper.PlayerHasStatus(false, StatusID.DutiesAsAssigned_4228);
+	public static bool IsInForkedTower => IsInOccultCrescentOp && StatusHelper.PlayerHasStatus(false, StatusID.DutiesAsAssigned_4228);
 	#endregion
 
 	#region Variant Dungeon

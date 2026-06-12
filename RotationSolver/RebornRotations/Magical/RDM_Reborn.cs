@@ -186,23 +186,23 @@ public sealed class RDM_Reborn : RedMageRotation
 					}
 				}
 
-                if (EnhancedAccelerationTrait.EnoughLevel && !EnhancedAccelerationIiTrait.EnoughLevel)
-                {
-                    if (AccelerationPvE.CanUse(out act, usedUp: HasEmbolden || !EmboldenPvE.EnoughLevel || AccelerationPvE.Cooldown.WillHaveXChargesGCD(2, 1) || AccelerationPvE.Cooldown.CurrentCharges == 2))
-                    {
-                        return true;
-                    }
-                }
-
-                if (EnhancedAccelerationIiTrait.EnoughLevel)
-                {
+				if (EnhancedAccelerationTrait.EnoughLevel && !EnhancedAccelerationIiTrait.EnoughLevel)
+				{
 					if (AccelerationPvE.CanUse(out act, usedUp: HasEmbolden || !EmboldenPvE.EnoughLevel || AccelerationPvE.Cooldown.WillHaveXChargesGCD(2, 1) || AccelerationPvE.Cooldown.CurrentCharges == 2))
 					{
-                        return true;
-                    }
-                }
-            }
-        }
+						return true;
+					}
+				}
+
+				if (EnhancedAccelerationIiTrait.EnoughLevel)
+				{
+					if (AccelerationPvE.CanUse(out act, usedUp: HasEmbolden || !EmboldenPvE.EnoughLevel || AccelerationPvE.Cooldown.WillHaveXChargesGCD(2, 1) || AccelerationPvE.Cooldown.CurrentCharges == 2))
+					{
+						return true;
+					}
+				}
+			}
+		}
 
 		if (FlechePvE.CanUse(out act))
 		{
@@ -364,30 +364,78 @@ public sealed class RDM_Reborn : RedMageRotation
 			}
 		}
 
-		if (CanInstantCast && !CanVerEither)
+		if ((CanInstantCast || HasAccelerate) && !CanVerEither)
 		{
-			if (ImpactPvE.EnoughLevel && ImpactPvE.CanUse(out act, skipAoeCheck: !GrandImpactPvE.EnoughLevel && HasAccelerate && ImpactPvE.Target.AffectedTargets.Length >= 2))
+			if (!ImpactPvE.EnoughLevel)
+			{
+				if (ScatterPvE.CanUse(out act))
+				{
+					return true;
+				}
+			}
+
+			if (!GrandImpactPvE.EnoughLevel && ImpactPvE.EnoughLevel)
+			{
+				if (ImpactPvE.CanUse(out act))
+				{
+					return true;
+				}
+			}
+
+			if (EnhancedAccelerationIiTrait.EnoughLevel)
+			{
+				if (GrandImpactPvE.CanUse(out act, skipStatusProvideCheck: CanGrandImpact, skipCastingCheck: true))
+				{
+					return true;
+				}
+			}
+
+			if (WhiteMana < BlackMana)
+			{
+				if (VeraeroIiiPvE.EnoughLevel && VeraeroIiiPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true) && BlackMana - WhiteMana != 6)
+				{
+					return true;
+				}
+
+				if (!VeraeroIiiPvE.EnoughLevel && VeraeroPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true) && BlackMana - WhiteMana != 6)
+				{
+					return true;
+				}
+			}
+
+			if (BlackMana < WhiteMana)
+			{
+				if (VerthunderIiiPvE.EnoughLevel && VerthunderIiiPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true) && WhiteMana - BlackMana != 6)
+				{
+					return true;
+				}
+
+				if (!VerthunderIiiPvE.EnoughLevel && VerthunderPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true) && WhiteMana - BlackMana != 6)
+				{
+					return true;
+				}
+			}
+
+			if (VerthunderIiiPvE.EnoughLevel && VerthunderIiiPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true))
+			{
+				return true;
+			}
+
+			if (!VerthunderIiiPvE.EnoughLevel && VerthunderPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true))
+			{
+				return true;
+			}
+
+			if (VeraeroIiiPvE.EnoughLevel && VeraeroIiiPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true))
+			{
+				return true;
+			}
+
+			if (!VeraeroIiiPvE.EnoughLevel && VeraeroPvE.CanUse(out act, skipCastingCheck: HasAccelerate, usedUp: true))
 			{
 				return true;
 			}
 		}
-
-		// Hardcode Resolution & Scorch to avoid double melee without finishers
-		if (ResolutionPvE.CanUse(out act, skipStatusProvideCheck: true))
-		{
-			return true;
-		}
-
-		if (ScorchPvE.CanUse(out act, skipStatusProvideCheck: true))
-		{
-			return true;
-		}
-
-		//Melee AOE combo
-		if (IsLastGCD(false, EnchantedMoulinetDeuxPvE) && EnchantedMoulinetTroisPvE.CanUse(out act))
-        {
-            return true;
-        }
 
 		// Hardcode Resolution & Scorch to avoid double melee without finishers
 		if (ResolutionPvE.CanUse(out act, skipStatusProvideCheck: true))
@@ -451,9 +499,12 @@ public sealed class RDM_Reborn : RedMageRotation
 			}
 		}
 		//Grand impact usage if not interrupting melee combo
-		if (GrandImpactPvE.CanUse(out act, skipStatusProvideCheck: CanGrandImpact, skipCastingCheck: true))
+		if (EnhancedAccelerationIiTrait.EnoughLevel)
 		{
-			return true;
+			if (GrandImpactPvE.CanUse(out act, skipStatusProvideCheck: CanGrandImpact, skipCastingCheck: true))
+			{
+				return true;
+			}
 		}
 
 		if (ManaStacks == 3)
@@ -559,7 +610,7 @@ public sealed class RDM_Reborn : RedMageRotation
 			}
 		}
 
-		if (UseVercure && !InCombat && VercurePvE.CanUse(out act))
+		if (UseVercure && !InCombat && !HasDualcast && VercurePvE.CanUse(out act))
 		{
 			return true;
 		}

@@ -308,7 +308,7 @@ public partial class WarriorRotation
 
 	static partial void ModifyDamnationPvE(ref ActionSetting setting)
 	{
-		setting.StatusProvide = [StatusID.PrimevalImpulse];
+		setting.StatusProvide = StatusHelper.RampartStatus;
 		setting.CreateConfig = () => new ActionConfig()
 		{
 			AoeCount = 1,

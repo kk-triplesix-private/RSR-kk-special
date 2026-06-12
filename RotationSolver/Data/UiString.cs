@@ -484,6 +484,9 @@ namespace RotationSolver.Data
 		[Description("Variant Dungeon")]
 		ConfigWindow_Duty_VariantDungeon,
 
+		[Description("Treasure Dungeon")]
+		ConfigWindow_Duty_TreasureDungeon,
+
 		[Description("Alliance Raid")]
 		ConfigWindow_Duty_Alliance,
 

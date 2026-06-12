@@ -474,6 +474,11 @@ public sealed class SAM_Reborn : SamuraiRotation
 			}
 		}
 
+		if (!HasSetsu && HasGetsu && HasKa && HasMeikyoShisui && YukikazePvE.CanUse(out act, skipComboCheck: HasMeikyoShisui))
+		{
+			return true;
+		}
+
 		return base.GeneralGCD(out act);
 	}
 
